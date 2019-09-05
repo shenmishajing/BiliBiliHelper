@@ -14,7 +14,7 @@ from AsyncioCurl import AsyncioCurl
 class Utils:
 
     @staticmethod
-    def cpirnt(message):
+    def cprint(message):
         for each in message:
             print(each)
 
@@ -188,7 +188,7 @@ class Utils:
                     if show:
                         printlist.append("{} {} {:^14} {:^14} {} {:^6} {:^9}".format(adjust_for_chinese(i["medal_name"] + "|" + str(i["level"])), adjust_for_chinese(i["anchorInfo"]["uname"]), str(i["intimacy"]) + "/" + str(i["next_intimacy"]), str(i["todayFeed"]) + "/" + str(i["dayLimit"]), adjust_for_chinese(str(i["rank"])), dic_worn[str(i["status"])], i["roomid"]))
         if show:
-            Utils.cpirnt(printlist)
+            Utils.cprint(printlist)
         if list_wanted_mendal is not None:
             list_return_medal = []
             for roomid in list_wanted_mendal:

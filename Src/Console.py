@@ -4,7 +4,7 @@
 # 本文件对yjqiang大佬的版本进行了一些删减
 # 代码来自:https://github.com/yjqiang/bilibili-live-tools/blob/master/bili_console.py
 
-import sys
+import os
 from Statistics import Statistics
 from Utils import Utils
 import platform
@@ -45,6 +45,7 @@ class Console(Cmd):
         print('|9 房间号码查看主播          |')
         print('|10 当前拥有的扭蛋币         |')
         print('|11 开扭蛋币(只能1，10，100) |')
+        print('|12 退出BiliBiliHelper     |')
         print('￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣')
         
     def default(self, line):
@@ -99,7 +100,10 @@ class Console(Cmd):
     def do_11(self, line):
         count = input('请输入要开的扭蛋数目(1或10或100):')
         self.append2list_console([[count], Utils.open_capsule])
-        
+    
+    def do_12(self, line):
+        os._exit(0)
+    
     def append2list_console(self, request):
         asyncio.run_coroutine_threadsafe(self.excute_async(request), self.loop)
         # inst.loop.call_soon_threadsafe(inst.queue_console.put_nowait, request)

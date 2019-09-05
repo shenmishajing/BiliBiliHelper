@@ -24,6 +24,10 @@ from Task import Task
 from Sentence import Sentence
 from Timer import Timer
 from config import config
+from configcheck import ConfigCheck
+
+# 检查Config
+ConfigCheck()
 
 # 初始化所有class
 Auth = Auth()

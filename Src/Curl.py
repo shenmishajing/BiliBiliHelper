@@ -9,6 +9,10 @@ from Base import Sign
 from config import config
 
 class Curl():
+    def __init__(self):
+        if config["Proxy"]["PROXY_TYPE"] != "None":
+            if config["Proxy"]["PROXY_TYPE"].lowercased() == "http":
+                self.proxies = {"http": config["Proxy"]["PROXY_ADDRESS"] + ":" + config["PROXY"]["PROXY_PORT"], "https": config["Proxy"]["PROXY_ADDRESS"] + ":" + config["PROXY"]["PROXY_PORT"]}
 
     def request_json(self,
                      method,
