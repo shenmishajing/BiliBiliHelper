@@ -22,8 +22,8 @@ script:
   - cp -r Conf ./dist/
   - cp -r Log ./dist/
   - cp -r Doc ./dist/
-  - cd dist
 before_deploy:
+  - cd dist
   - if [[ $TRAVIS_OS_NAME == "linux" ]]; then
       zip -r BiliBiliHelper-linux.zip *
     elif [[ $TRAVIS_OS_NAME == "osx" ]]; then
