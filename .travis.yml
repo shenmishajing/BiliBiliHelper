@@ -13,6 +13,6 @@ matrix:
       before_install:
         - choco install python
         - python -m pip install --upgrade pip
-      env: PATH=/c/Python37:/c/Python37/Scripts:$PATHs
+      env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
 install: pip3 install -r requirements.txt
-script: python3 make.py || pyinstaller BiliBiliHelper.spec
+script: python3 make.py || pyinstaller BiliBiliHelper.spec || cp Conf dist/ || cp Log dist/ || cd dist || zip -q -r BiliBiliHelper-$TRAVIS_OS_NAME.zip

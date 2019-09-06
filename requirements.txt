@@ -2,3 +2,4 @@ aiohttp
 rsa
 requests[socks]
 configobj
+pyinstaller
