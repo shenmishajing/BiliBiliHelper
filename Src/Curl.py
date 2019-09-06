@@ -10,9 +10,31 @@ from config import config
 
 class Curl():
     def __init__(self):
+        # 给一个初始值方便判断
+        self.proxies = None
         if config["Proxy"]["PROXY_TYPE"] != "None":
-            if config["Proxy"]["PROXY_TYPE"].lowercased() == "http":
-                self.proxies = {"http": config["Proxy"]["PROXY_ADDRESS"] + ":" + config["PROXY"]["PROXY_PORT"], "https": config["Proxy"]["PROXY_ADDRESS"] + ":" + config["PROXY"]["PROXY_PORT"]}
+            if config["Proxy"]["PROXY_TYPE"].lower() == "http":
+                if config["Proxy"]["PROXY_USERNAME"] != "" and config["Proxy"]["PROXY_PASSWORD"] != "":
+                    self.proxies = {
+                        "http": "http://" + config["Proxy"]["PROXY_USERNAME"] + ":" + config["Proxy"]["PROXY_PASSWORD"] + "@" + config["Proxy"]["PROXY_ADDRESS"] + ":" + config["Proxy"]["PROXY_PORT"], 
+                        "https": "https://" + config["Proxy"]["PROXY_USERNAME"] + ":" + config["Proxy"]["PROXY_PASSWORD"] + "@" + config["Proxy"]["PROXY_ADDRESS"] + ":" + config["Proxy"]["PROXY_PORT"]
+                    }
+                else:
+                    self.proxies = {
+                        "http": config["Proxy"]["PROXY_ADDRESS"] + ":" + config["Proxy"]["PROXY_PORT"],
+                        "https": config["Proxy"]["PROXY_ADDRESS"] + ":" + config["Proxy"]["PROXY_PORT"]
+                    }
+            elif config["Proxy"]["PROXY_TYPE"].lower() == "socks5":
+                if config["Proxy"]["PROXY_USERNAME"] != "" and config["Proxy"]["PROXY_PASSWORD"] != "":
+                    self.proxies = {
+                    "http": "socks5://" + config["Proxy"]["PROXY_USERNAME"] + ":" + config["Proxy"]["PROXY_PASSWORD"] + "@" + config["Proxy"]["PROXY_ADDRESS"] + ":" + config["Proxy"]["PROXY_PORT"], 
+                    "https": "socks5://" + config["Proxy"]["PROXY_USERNAME"] + ":" + config["Proxy"]["PROXY_PASSWORD"] + "@" + config["Proxy"]["PROXY_ADDRESS"] + ":" + config["Proxy"]["PROXY_PORT"]
+                    }
+                else:
+                    self.proxies = {
+                    "http": "socks5://" + config["Proxy"]["PROXY_ADDRESS"] + ":" + config["Proxy"]["PROXY_PORT"], 
+                    "https": "socks5://" + config["Proxy"]["PROXY_ADDRESS"] + ":" + config["Proxy"]["PROXY_PORT"]
+                    }
 
     def request_json(self,
                      method,
@@ -30,12 +52,19 @@ class Curl():
                 if method == "GET":
                     if sign == True:
                         params = Sign(params)
-                    r = requests.get(url,headers=headers,params=params)
+                    if self.proxies != None:
+                        r = requests.get(url,headers=headers,params=params,proxies=self.proxies)
+                    else:
+                        r = requests.get(url,headers=headers,params=params)
                     return json.loads(r.text)
                 elif method == "POST":
                     if sign == True:
                         data = Sign(data)
-                    r = requests.post(url,headers=headers,data=data)
+                    if self.proxies != None:
+                        r = requests.post(url,headers=headers,data=data,proxies=self.proxies)
+                    else:
+                        r = requests.post(url,headers=headers,data=data)
                     return json.loads(r.text)
-            except:
+            except Exception as e:
+                # Log.error(e)
                 continue

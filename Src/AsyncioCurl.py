@@ -13,6 +13,18 @@ class AsyncioCurl:
 
     def __init__(self):
         self.session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=4))
+        self.proxies = None
+        if config["Proxy"]["PROXY_TYPE"] != "None":
+            if config["Proxy"]["PROXY_TYPE"].lower() == "http":
+                if config["Proxy"]["PROXY_USERNAME"] != "" and config["Proxy"]["PROXY_PASSWORD"] != "":
+                    self.proxies = "http://" + config["Proxy"]["PROXY_USERNAME"] + ":" + config["Proxy"]["PROXY_PASSWORD"] + "@" + config["Proxy"]["PROXY_ADDRESS"] + ":" + config["Proxy"]["PROXY_PORT"]
+                else:
+                    self.proxies = "http://" + config["Proxy"]["PROXY_ADDRESS"] + ":" + config["Proxy"]["PROXY_PORT"]
+            elif config["Proxy"]["PROXY_TYPE"].lower() == "socks5":
+                self.proxies = {
+                    "http": "socks5://" + config["Proxy"]["PROXY_ADDRESS"] + ":" + config["Proxy"]["PROXY_PORT"], 
+                    "https": "socks5://" + config["Proxy"]["PROXY_ADDRESS"] + ":" + config["Proxy"]["PROXY_PORT"]
+                }
 
     async def __get_json_body(self, rsp):
         json_body = await rsp.json(content_type=None)
@@ -44,7 +56,7 @@ class AsyncioCurl:
                 if i >= 10:
                     Log.warning(url)
                 try:
-                    async with self.session.request(method, url, headers=headers, data=data, params=params) as rsp:
+                    async with self.session.request(method, url, headers=headers, data=data, params=params,proxy=self.proxies) as rsp:
                         if rsp.status == 200:
                             json_body = await self.__get_json_body(
                                 rsp)
@@ -56,5 +68,6 @@ class AsyncioCurl:
                             await asyncio.sleep(240)
                         elif rsp.status == 404:
                             return None
-                except:
+                except Exception as e:
+                    # Log.error(e)
                     continue

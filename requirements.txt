@@ -1,4 +1,4 @@
 aiohttp
 rsa
-requests
+requests[socks]
 configobj
