@@ -26,9 +26,11 @@ before_deploy:
   - cd dist
   - if [[ $TRAVIS_OS_NAME == "linux" ]]; then
       zip -r BiliBiliHelper-linux.zip *
-    elif [[ $TRAVIS_OS_NAME == "osx" ]]; then
+    fi
+  - if [[ $TRAVIS_OS_NAME == "osx" ]]; then
       zip -r BiliBiliHelper-osx.zip *
-    elif [[ $TRAVIS_OS_NAME == "windows" ]]; then
+    fi
+  - if [[ $TRAVIS_OS_NAME == "windows" ]]; then
       zip -r BiliBiliHelper-windows.zip *
     fi
 deploy: 
