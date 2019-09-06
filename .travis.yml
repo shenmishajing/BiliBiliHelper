@@ -23,7 +23,7 @@ script:
   - cp -r Log ./dist/
   - cp -r Doc ./dist/
   - cd dist
-  - zip -q -r BiliBiliHelper-$TRAVIS_OS_NAME.zip *
+  - zip -q -r BiliBiliHelper-${TRAVIS_OS_NAME}.zip *
 deploy:
   provider: releases
   file: "dist/BiliBiliHelper-$TRAVIS_OS_NAME.zip"
