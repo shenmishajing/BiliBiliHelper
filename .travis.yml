@@ -25,13 +25,13 @@ script:
 before_deploy:
   - cd dist
   - if [[ $TRAVIS_OS_NAME == "linux" ]]; then
-      zip -r BiliBiliHelper-linux.zip *
+      zip -r BiliBiliHelper-linux.zip *;
     fi
   - if [[ $TRAVIS_OS_NAME == "osx" ]]; then
-      zip -r BiliBiliHelper-osx.zip *
+      zip -r BiliBiliHelper-osx.zip *;
     fi
   - if [[ $TRAVIS_OS_NAME == "windows" ]]; then
-      zip -r BiliBiliHelper-windows.zip *
+      zip -r BiliBiliHelper-windows.zip *;
     fi
 deploy: 
   provider: releases
