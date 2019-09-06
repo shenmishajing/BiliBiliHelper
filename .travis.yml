@@ -23,8 +23,15 @@ script:
   - cp -r Log ./dist/
   - cp -r Doc ./dist/
   - cd dist
-  - zip -q -r BiliBiliHelper-${TRAVIS_OS_NAME}.zip *
-deploy:
+before_deploy:
+  - if [[ $TRAVIS_OS_NAME == "linux" ]]; then
+      zip -r BiliBiliHelper-linux.zip *
+    elif [[ $TRAVIS_OS_NAME == "osx" ]]; then
+      zip -r BiliBiliHelper-osx.zip *
+    elif [[ $TRAVIS_OS_NAME == "windows" ]]; then
+      zip -r BiliBiliHelper-windows.zip *
+    fi
+deploy: 
   provider: releases
   file: "dist/BiliBiliHelper-$TRAVIS_OS_NAME.zip"
   api_key: $GIT_REPO_TOKEN
