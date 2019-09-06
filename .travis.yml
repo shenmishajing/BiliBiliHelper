@@ -33,6 +33,7 @@ before_deploy:
   - if [[ $TRAVIS_OS_NAME == "windows" ]]; then
       zip -r BiliBiliHelper-windows.zip *;
     fi
+  - cd ..
 deploy: 
   provider: releases
   file: "dist/BiliBiliHelper-$TRAVIS_OS_NAME.zip"
