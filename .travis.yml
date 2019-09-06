@@ -2,14 +2,17 @@ language: python
 matrix:
   include:
     - name: "Python3.6 on Linux"
-      python: "3.6"
-    - name: "Python3.6 on MacOs"
-      python: "3.6"
+      python: 3.6
+    - name: "Python on MacOs"
       os: osx
       osx_image: xcode11
       language: shell
-    - name: "Python3.6 on Windows"
-      python: "3.6"
+    - name: "Python on Windows"
       os: windows
       language: shell
-install: pip install -r requirements.txt
+      before_install:
+        - choco install python
+        - python -m pip install --upgrade pip
+      env: PATH=/c/Python37:/c/Python37/Scripts:$PATHs
+install: pip3 install -r requirements.txt
+script: python3 make.py || pyinstaller BiliBiliHelper.spec
