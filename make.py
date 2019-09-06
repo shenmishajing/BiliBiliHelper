@@ -1,4 +1,5 @@
 import os
+import platform
 
 f = open("BiliBiliHelper.spec","w")
 f.write("# -*- mode: python -*-\n")
@@ -11,7 +12,10 @@ f.write("\n")
 f.write("\n")
 f.write("\n")
 f.write("a = Analysis(['main.py'],\n")
-f.write("             pathex=['%s'],\n"%os.getcwd())
+if platform.system().lower() != "windows":
+    f.write("             pathex=['%s'],\n"%os.getcwd())
+else:
+    f.write("             pathex=[r'%s'],\n"%os.getcwd())
 f.write("             binaries=[],\n")
 f.write("             datas=[],\n")
 f.write("             hiddenimports=[],\n")
