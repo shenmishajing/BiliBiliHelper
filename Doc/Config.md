@@ -45,6 +45,13 @@
 ``INFO_MESSAGE`` 欢迎信息,**True**开启**False**关闭  
 ``SENTENCE`` 名句,强烈推荐开启,**True**开启**False**关闭  
 
+## [Proxy] 代理设置区域
+``PROXY_TYPE`` 代理类型,支持None,Http和Socks5
+``PROXY_ADDRESS`` 代理服务器地址
+``PROXY_PORT`` 代理服务器端口
+``PROXY_USERNAME`` 代理服务器用户名(非必须)
+``PROXY_PASSWORD`` 代理服务器密码(非必须)
+
 ## [pcheaders] pc请求头 (该区域无需填写)
 ``Accept`` 接受类型  
 ``User-Agent`` 用户代理  

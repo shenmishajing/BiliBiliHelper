@@ -15,4 +15,20 @@ matrix:
         - python -m pip install --upgrade pip
       env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
 install: pip3 install -r requirements.txt
-script: python3 make.py || pyinstaller BiliBiliHelper.spec || cp Conf dist/ || cp Log dist/ || cd dist || zip -q -r BiliBiliHelper-$TRAVIS_OS_NAME.zip
+script: 
+  - python3 make.py 
+  - pyinstaller BiliBiliHelper.spec
+  - cp -r Conf ./dist/
+  - cp -r Log ./dist/
+  - cp -r Doc ./dist/
+  - cd dist
+  - zip -q -r BiliBiliHelper-$TRAVIS_OS_NAME.zip *
+deploy:
+  provider: releases
+  file: "dist/BiliBiliHelper-$TRAVIS_OS_NAME.zip"
+  api_key: $GIT_REPO_TOKEN
+  skip_cleanup: true
+  overwrite: true
+  on:
+    branch: master
+    tags: true
