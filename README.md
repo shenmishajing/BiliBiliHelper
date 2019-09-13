@@ -2,8 +2,9 @@
 <p align="center"><img width="300px" src="https://i.loli.net/2018/04/20/5ad97bd395912.jpeg"></p>
 
 <p align="center">
-<img src="https://img.shields.io/badge/version-0.0.1-green.svg?longCache=true&style=for-the-badge">
+<img src="https://img.shields.io/badge/version-0.0.2-green.svg?longCache=true&style=for-the-badge">
 <img src="https://img.shields.io/badge/license-GPL%20V3-blue.svg?longCache=true&style=for-the-badge">
+<img src="https://travis-ci.org/TheWanderingCoel/BiliBiliHelper.svg?branch=master">
 </p>
 
 
@@ -36,6 +37,7 @@ B 站直播实用脚本Python版本
 |待续|
 |-------|
 | ~~节奏风暴抽奖卡死修复~~ |
+| ~~代理设置~~ |
 | 动态抽奖 |
 
 
@@ -44,6 +46,7 @@ B 站直播实用脚本Python版本
 |-------|
 |Python 3.6+|
 |aiohttp  |
+|aiosocksy |
 |  rsa    |
 |requests |
 |configobj|

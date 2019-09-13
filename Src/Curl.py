@@ -66,5 +66,5 @@ class Curl():
                         r = requests.post(url,headers=headers,data=data)
                     return json.loads(r.text)
             except Exception as e:
-                # Log.error(e)
+                Log.error(e)
                 continue

@@ -1,8 +1,7 @@
 language: python
 matrix:
   include:
-    - name: "Python3.6 on Linux"
-      python: 3.6
+    - name: "Python on Linux"
     - name: "Python on MacOs"
       os: osx
       osx_image: xcode11
@@ -17,7 +16,7 @@ matrix:
       env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
 install: pip3 install -r requirements.txt
 script: 
-  - python make.py 
+  - python Make.py 
   - pyinstaller BiliBiliHelper.spec
   - cp -r Conf ./dist/
   - cp -r Log ./dist/

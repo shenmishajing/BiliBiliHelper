@@ -6,13 +6,16 @@ if platform.system() == "Windows":
 else:
     from Unix_Log import Log
 from config import config
+from aiosocksy import Socks5Auth
+from aiosocksy.connector import ProxyConnector, ProxyClientRequest
 
 sem = asyncio.Semaphore(3)
 
 class AsyncioCurl:
 
     def __init__(self):
-        self.session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=4))
+        self.connector = ProxyConnector()
+        self.session = aiohttp.ClientSession(connector=self.connector,request_class=ProxyClientRequest, timeout=aiohttp.ClientTimeout(total=4))
         self.proxies = None
         if config["Proxy"]["PROXY_TYPE"] != "None":
             if config["Proxy"]["PROXY_TYPE"].lower() == "http":
@@ -21,10 +24,10 @@ class AsyncioCurl:
                 else:
                     self.proxies = "http://" + config["Proxy"]["PROXY_ADDRESS"] + ":" + config["Proxy"]["PROXY_PORT"]
             elif config["Proxy"]["PROXY_TYPE"].lower() == "socks5":
-                self.proxies = {
-                    "http": "socks5://" + config["Proxy"]["PROXY_ADDRESS"] + ":" + config["Proxy"]["PROXY_PORT"], 
-                    "https": "socks5://" + config["Proxy"]["PROXY_ADDRESS"] + ":" + config["Proxy"]["PROXY_PORT"]
-                }
+                if config["Proxy"]["PROXY_USERNAME"] != "" and config["Proxy"]["PROXY_PASSWORD"] != "":
+                    self.proxies = "socks5://" + config["Proxy"]["PROXY_USERNAME"] + ":" + config["Proxy"]["PROXY_PASSWORD"] + "@" + config["Proxy"]["PROXY_ADDRESS"] + ":" + config["Proxy"]["PROXY_PORT"]
+                else:
+                    self.proxies = "socks5://" + config["Proxy"]["PROXY_ADDRESS"] + ":" + config["Proxy"]["PROXY_PORT"]
 
     async def __get_json_body(self, rsp):
         json_body = await rsp.json(content_type=None)
@@ -69,5 +72,5 @@ class AsyncioCurl:
                         elif rsp.status == 404:
                             return None
                 except Exception as e:
-                    # Log.error(e)
+                    Log.error(e)
                     continue

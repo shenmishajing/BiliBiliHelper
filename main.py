@@ -14,6 +14,7 @@ else:
 from Auth import Auth
 from Capsule import Capsule
 from Coin2Silver import Coin2Silver
+from DailyBag import DailyBag
 from GiftSend import GiftSend
 from Group import Group
 from Heart import Heart
@@ -33,6 +34,7 @@ ConfigCheck()
 Auth = Auth()
 Capsule = Capsule()
 Coin2Silver = Coin2Silver()
+DailyBag = DailyBag()
 GiftSend = GiftSend()
 Group = Group()
 Heart = Heart()
@@ -72,6 +74,7 @@ def daily_job():
         Auth.work()
         Capsule.work()
         Coin2Silver.work()
+        DailyBag.work()
         GiftSend.work()
         Group.work()
         Heart.work()
