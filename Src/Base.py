@@ -23,7 +23,7 @@ def Sign(payload):
         "access_key":config["Token"]["ACCESS_TOKEN"],
         "actionKey":"appkey",
         "appkey":appkey,
-        "build":"8290",
+        "build":"8820",
         "device":"phone",
         "mobi_app":"iphone",
         "platform":"ios",
