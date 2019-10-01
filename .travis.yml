@@ -16,9 +16,7 @@ matrix:
         - choco install python
         - python -m pip install --upgrade pip
       env:
-        global:
-          - PATH=/c/Python37:/c/Python37/Scripts:$PATH
-          - BADGE=windows
+        - PATH=/c/Python37:/c/Python37/Scripts:$PATH BADGE=windows
 
 install: pip3 install -r requirements.txt
 script: 
