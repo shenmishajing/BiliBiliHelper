@@ -9,6 +9,7 @@ import random
 class Sentence():
     def get_sentence(self):
         sentence = [
+            "凡是过往 | 皆为序章",
             "生而为人，我很抱歉。",
             "理想很丰满，现实很骨感。",
             "愿我惦记的人岁岁平安，即使生生不见。",

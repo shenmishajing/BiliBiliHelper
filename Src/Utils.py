@@ -260,6 +260,11 @@ class Utils:
             print("普通扭蛋币: "+str(data["normal"]["coin"])+" 个")
         else:
             print("普通扭蛋币暂不可用")
+        
+        if data["colorful"]["status"]:
+            print("彩色扭蛋币: "+str(data["colorful"]["coin"])+" 个")
+        else:
+            print("彩色扭蛋币暂不可用")
 
     @staticmethod
     async def open_capsule(count):

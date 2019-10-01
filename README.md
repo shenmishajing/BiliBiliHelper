@@ -2,11 +2,13 @@
 <p align="center"><img width="300px" src="https://i.loli.net/2018/04/20/5ad97bd395912.jpeg"></p>
 
 <p align="center">
-<img src="https://img.shields.io/badge/version-0.0.2-green.svg?longCache=true&style=for-the-badge">
+<img src="https://img.shields.io/badge/version-0.0.3-green.svg?longCache=true&style=for-the-badge">
 <img src="https://img.shields.io/badge/license-GPL%20V3-blue.svg?longCache=true&style=for-the-badge">
-<img src="https://travis-ci.org/TheWanderingCoel/BiliBiliHelper.svg?branch=master">
 </p>
 
+| 0S | Windows | macOS | Linux |
+| --- | --- | -- | --- | --- |
+| Build Status | ![Build Status Windows](http://badges.herokuapp.com/travis.org/TheWanderingCoel/BiliBiliHelper?style=flat-square&env=OS=windows&label=Windows&branch=master) | ![Build Status macOS](http://badges.herokuapp.com/travis.org/TheWanderingCoel/BiliBiliHelper?style=flat-square&env=OS=osx&label=macOS&branch=master) | ![Build Status Linux](http://badges.herokuapp.com/travis.org/TheWanderingCoel/BiliBiliHelper?style=flat-square&env=OS=linux&label=Linux&branch=master) |
 
 # BiliBiliHelper
 B 站直播实用脚本Python版本
@@ -38,6 +40,8 @@ B 站直播实用脚本Python版本
 |-------|
 | ~~节奏风暴抽奖卡死修复~~ |
 | ~~代理设置~~ |
+| 抽奖结果图表可视化 |
+| RESTFUL API |
 | 动态抽奖 |
 
 
@@ -48,8 +52,9 @@ B 站直播实用脚本Python版本
 |aiohttp  |
 |aiosocksy |
 |  rsa    |
-|requests |
+|requests[socks] |
 |configobj|
+| flask   |
 
 通常使用 `pip` 工具安装依赖。
 

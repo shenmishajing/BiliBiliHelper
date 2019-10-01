@@ -237,6 +237,7 @@ class DanmuRaffleHandler(BaseDanmu):
                 # 如果不是全区就设置为1(分区)
                 broadcast_type = 0 if broadcast == '全区' else 1
                 Statistics.add2pushed_raffles(raffle_name,broadcast_type,raffle_num)
+                Statistics.add2joined_rooms(real_roomid,broadcast_type,raffle_num)
             # 大航海
             elif msg_type == 3:
                 raffle_name = msg_common.split("开通了")[-1][:2]
@@ -246,6 +247,7 @@ class DanmuRaffleHandler(BaseDanmu):
                 # 如果不是总督就设置为2(本房间)
                 broadcast_type = 0 if raffle_name == "总督" else 2
                 Statistics.add2pushed_raffles(raffle_name,broadcast_type)
+                Statistics.add2joined_rooms(real_roomid)
             # 节奏风暴
             elif msg_type == 6:
                 raffle_name = "二十倍节奏风暴"
@@ -253,6 +255,7 @@ class DanmuRaffleHandler(BaseDanmu):
                 if config["Raffle_Handler"]["STORM"] != "False":
                     Raffle_Handler.RaffleHandler.push2queue((real_roomid,),StormRaffleHandler.check)
                 Statistics.add2pushed_raffles(raffle_name)
+                Statistics.add2joined_rooms(real_roomid)
         
         # 论缩进的重要性,缩进太多永远都是: 
         # 网络波动, X 号弹幕姬延迟3s后重启

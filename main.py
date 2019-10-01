@@ -26,11 +26,13 @@ from Sentence import Sentence
 from Timer import Timer
 from config import config
 from configcheck import ConfigCheck
+from API import API
 
 # 检查Config
 ConfigCheck()
 
 # 初始化所有class
+API = API()
 Auth = Auth()
 Capsule = Capsule()
 Coin2Silver = Coin2Silver()
@@ -44,7 +46,7 @@ Task = Task()
 rafflehandler = RaffleHandler()
 
 if config["Other"]["INFO_MESSAGE"] != "False":
-    Log.info("BiliBiliHelper Python Version Beta 0.0.1")
+    Log.info("BiliBiliHelper Python Version Beta 0.0.2")
 
 Log.info("Powered By TheWanderingCoel")
 
@@ -62,6 +64,9 @@ danmu_tasks = [Danmu_Monitor.run_Danmu_Raffle_Handler(i) for i in area_ids]
 other_tasks = [
     rafflehandler.run()
 ]
+
+api_thread = threading.Thread(target=API.work)
+api_thread.start()
 
 console_thread = threading.Thread(target=console.cmdloop)
 console_thread.start()
@@ -90,6 +95,7 @@ daily_job_thread.start()
 if config["Function"]["RAFFLE_HANDLER"] != "False":
     loop.run_until_complete(asyncio.wait(danmu_tasks+other_tasks))
 
+api_thread.join()
 console_thread.join()
 daily_job_thread.join()
 

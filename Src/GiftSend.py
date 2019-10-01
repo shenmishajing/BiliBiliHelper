@@ -85,6 +85,8 @@ class GiftSend():
 
     def send(self,value):
         url = "https://api.live.bilibili.com/gift/v2/live/bag_send"
+        csrf = config["Token"]["CSRF"]
+        
         payload = {
             "coin_type":"silver",
             "gift_id":value["gift_id"],
@@ -94,7 +96,9 @@ class GiftSend():
             "gift_num":value["gift_num"],
             "data_source_id":"",
             "data_behavior_id":"",
-            "bag_id":value["bag_id"]
+            "bag_id":value["bag_id"],
+            "csrf_token":csrf,
+            "csrf":csrf
         }
         data = Curl().request_json("POST",url,headers=config["pcheaders"],data=payload)
         

@@ -15,5 +15,6 @@ config["Token"]["REFRESH_TOKEN"] = ""
 config["Token"]["CSRF"] = ""
 config["Token"]["UID"] = ""
 config["Token"]["COOKIE"] = ""
+config["Live"]["ROOM_ID"] = ""
 config["pcheaders"]["cookie"] = ""
 config.write()

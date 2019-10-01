@@ -2,10 +2,12 @@ language: python
 matrix:
   include:
     - name: "Python on Linux"
+      env: BADGE=linux
     - name: "Python on MacOs"
       os: osx
       osx_image: xcode11
       language: shell
+      env: BADGE=osx
     - name: "Python on Windows"
       os: windows
       language: shell
@@ -13,7 +15,11 @@ matrix:
         - choco install zip
         - choco install python
         - python -m pip install --upgrade pip
-      env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
+      env:
+        global:
+          - PATH=/c/Python37:/c/Python37/Scripts:$PATH
+          - BADGE=windows
+
 install: pip3 install -r requirements.txt
 script: 
   - python Make.py 
@@ -23,13 +29,13 @@ script:
   - cp -r Doc ./dist/
 before_deploy:
   - cd dist
-  - if [[ $TRAVIS_OS_NAME == "linux" ]]; then
+  - if [[ $BADGE == "linux" ]]; then
       zip -r BiliBiliHelper-linux.zip *;
     fi
-  - if [[ $TRAVIS_OS_NAME == "osx" ]]; then
+  - if [[ $BADGE == "osx" ]]; then
       zip -r BiliBiliHelper-osx.zip *;
     fi
-  - if [[ $TRAVIS_OS_NAME == "windows" ]]; then
+  - if [[ $BADGE == "windows" ]]; then
       zip -r BiliBiliHelper-windows.zip *;
     fi
   - cd ..
