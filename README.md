@@ -7,7 +7,7 @@
 </p>
 
 | OS | Windows | macOS | Linux |
-| --- | --- | --- | --- | --- |
+| --- | --- | --- | --- |
 | Build Status | ![Build Status Windows](http://badges.herokuapp.com/travis.org/TheWanderingCoel/BiliBiliHelper?style=flat-square&env=BADGE=windows&label=Windows&branch=master) | ![Build Status macOS](http://badges.herokuapp.com/travis.org/TheWanderingCoel/BiliBiliHelper?style=flat-square&env=BADGE=osx&label=macOS&branch=master) | ![Build Status Linux](http://badges.herokuapp.com/travis.org/TheWanderingCoel/BiliBiliHelper?style=flat-square&env=BADGE=linux&label=Linux&branch=master) |
 
 # BiliBiliHelper
