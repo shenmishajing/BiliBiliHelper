@@ -55,6 +55,7 @@ B 站直播实用脚本Python版本
 |requests[socks] |
 |configobj|
 | flask   |
+| tailer  |
 
 通常使用 `pip` 工具安装依赖。
 
