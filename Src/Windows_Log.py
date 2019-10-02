@@ -51,6 +51,7 @@ class Logger(object):
         th.setFormatter(format_str)#设置文件里写入的格式
         self.logger.addHandler(sh) #把对象加到logger里
         self.logger.addHandler(th)
+        self.count = 0
 
     def debug(self,message,color=FOREGROUND_BLUE):
         set_color(color)
@@ -58,6 +59,7 @@ class Logger(object):
         # 不sleep会有info提示变成白色,不知道什么情况
         time.sleep(0.1)
         set_color(FOREGROUND_WHITE)
+        self.clean_log()
         
     def info(self,message,color=FOREGROUND_GREEN):
         set_color(color)
@@ -65,6 +67,7 @@ class Logger(object):
         # 不sleep会有info提示变成白色,不知道什么情况
         time.sleep(0.1)
         set_color(FOREGROUND_WHITE)
+        self.clean_log()
 
     def warning(self,message,color=FOREGROUND_YELLOW):
         set_color(color)
@@ -72,6 +75,7 @@ class Logger(object):
         # 不sleep会有info提示变成白色,不知道什么情况
         time.sleep(0.1)
         set_color(FOREGROUND_WHITE)
+        self.clean_log()
     
     def error(self,message,color=FOREGROUND_RED):
         set_color(color)
@@ -79,6 +83,7 @@ class Logger(object):
         # 不sleep会有info提示变成白色,不知道什么情况
         time.sleep(0.1)
         set_color(FOREGROUND_WHITE)
+        self.clean_log()
     
     def critical(self,message,color=FOREGROUND_PURPLE):
         set_color(color)
@@ -86,5 +91,13 @@ class Logger(object):
         # 不sleep会有info提示变成白色,不知道什么情况
         time.sleep(0.1)
         set_color(FOREGROUND_WHITE)
+        self.clean_log()
+    
+    def clean_log(self,startup=False):
+        if (self.count > int(config["Log"]["LOG_LIMIT"]) and config["Log"]["AUTO_CLEAN"] == True) or startup == True:
+            open(os.getcwd()+"/Log/BiliBiliHelper.log", 'w').close()
+            self.count = 0
+        else:
+            self.count += 1
 
 Log = Logger('./Log/BiliBiliHelper.log',level=config["Log"]["LOG_LEVEL"])

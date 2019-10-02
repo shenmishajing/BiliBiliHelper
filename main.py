@@ -45,8 +45,11 @@ SilverBox = SilverBox()
 Task = Task()
 rafflehandler = RaffleHandler()
 
+# 开启时清理日志
+Log.clean_log(startup=True)
+
 if config["Other"]["INFO_MESSAGE"] != "False":
-    Log.info("BiliBiliHelper Python Version Beta 0.0.2")
+    Log.info("BiliBiliHelper Python Beta v0.0.3")
 
 Log.info("Powered By TheWanderingCoel")
 

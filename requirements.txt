@@ -4,3 +4,5 @@ rsa
 requests[socks]
 configobj
 pyinstaller
+flask
+tailer

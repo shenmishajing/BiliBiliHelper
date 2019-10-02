@@ -6,7 +6,7 @@
 
 import random
 
-class Sentence():
+class Sentence:
     def get_sentence(self):
         sentence = [
             "凡是过往 | 皆为序章",
