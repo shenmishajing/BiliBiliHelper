@@ -8,33 +8,15 @@ else:
 from Base import Sign
 from config import config
 
-class Curl():
+class Curl:
     def __init__(self):
         # 给一个初始值方便判断
         self.proxies = None
         if config["Proxy"]["PROXY_TYPE"] != "None":
-            if config["Proxy"]["PROXY_TYPE"].lower() == "http":
-                if config["Proxy"]["PROXY_USERNAME"] != "" and config["Proxy"]["PROXY_PASSWORD"] != "":
-                    self.proxies = {
-                        "http": "http://" + config["Proxy"]["PROXY_USERNAME"] + ":" + config["Proxy"]["PROXY_PASSWORD"] + "@" + config["Proxy"]["PROXY_ADDRESS"] + ":" + config["Proxy"]["PROXY_PORT"], 
-                        "https": "https://" + config["Proxy"]["PROXY_USERNAME"] + ":" + config["Proxy"]["PROXY_PASSWORD"] + "@" + config["Proxy"]["PROXY_ADDRESS"] + ":" + config["Proxy"]["PROXY_PORT"]
-                    }
-                else:
-                    self.proxies = {
-                        "http": config["Proxy"]["PROXY_ADDRESS"] + ":" + config["Proxy"]["PROXY_PORT"],
-                        "https": config["Proxy"]["PROXY_ADDRESS"] + ":" + config["Proxy"]["PROXY_PORT"]
-                    }
-            elif config["Proxy"]["PROXY_TYPE"].lower() == "socks5":
-                if config["Proxy"]["PROXY_USERNAME"] != "" and config["Proxy"]["PROXY_PASSWORD"] != "":
-                    self.proxies = {
-                    "http": "socks5://" + config["Proxy"]["PROXY_USERNAME"] + ":" + config["Proxy"]["PROXY_PASSWORD"] + "@" + config["Proxy"]["PROXY_ADDRESS"] + ":" + config["Proxy"]["PROXY_PORT"], 
-                    "https": "socks5://" + config["Proxy"]["PROXY_USERNAME"] + ":" + config["Proxy"]["PROXY_PASSWORD"] + "@" + config["Proxy"]["PROXY_ADDRESS"] + ":" + config["Proxy"]["PROXY_PORT"]
-                    }
-                else:
-                    self.proxies = {
-                    "http": "socks5://" + config["Proxy"]["PROXY_ADDRESS"] + ":" + config["Proxy"]["PROXY_PORT"], 
-                    "https": "socks5://" + config["Proxy"]["PROXY_ADDRESS"] + ":" + config["Proxy"]["PROXY_PORT"]
-                    }
+            self.proxies = {
+                "http": config["Proxy"]["PROXY_ADDRESS"],
+                "https": config["Proxy"]["PROXY_ADDRESS"]
+            }
 
     def request_json(self,
                      method,

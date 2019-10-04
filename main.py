@@ -28,9 +28,6 @@ from config import config
 from configcheck import ConfigCheck
 from API import API
 
-# 检查Config
-ConfigCheck()
-
 # 初始化所有class
 API = API()
 Auth = Auth()
@@ -48,6 +45,14 @@ rafflehandler = RaffleHandler()
 # 开启时清理日志
 Log.clean_log(startup=True)
 
+print("""
+ ______     __     __         __     ______     __     __         __     __  __     ______     __         ______   ______     ______    
+/\  == \   /\ \   /\ \       /\ \   /\  == \   /\ \   /\ \       /\ \   /\ \_\ \   /\  ___\   /\ \       /\  == \ /\  ___\   /\  == \   
+\ \  __<   \ \ \  \ \ \____  \ \ \  \ \  __<   \ \ \  \ \ \____  \ \ \  \ \  __ \  \ \  __\   \ \ \____  \ \  _-/ \ \  __\   \ \  __<   
+ \ \_____\  \ \_\  \ \_____\  \ \_\  \ \_____\  \ \_\  \ \_____\  \ \_\  \ \_\ \_\  \ \_____\  \ \_____\  \ \_\    \ \_____\  \ \_\ \_\ 
+  \/_____/   \/_/   \/_____/   \/_/   \/_____/   \/_/   \/_____/   \/_/   \/_/\/_/   \/_____/   \/_____/   \/_/     \/_____/   \/_/ /_/ 
+""")
+
 if config["Other"]["INFO_MESSAGE"] != "False":
     Log.info("BiliBiliHelper Python Beta v0.0.3")
 
@@ -55,6 +60,9 @@ Log.info("Powered By TheWanderingCoel")
 
 if config["Other"]["SENTENCE"] != "False":
     Log.info(Sentence().get_sentence())
+
+# 检查Config
+ConfigCheck()
 
 loop = asyncio.get_event_loop()
 

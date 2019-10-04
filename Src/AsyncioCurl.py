@@ -6,7 +6,8 @@ if platform.system() == "Windows":
 else:
     from Unix_Log import Log
 from config import config
-from aiosocksy import Socks5Auth
+from aiosocksy import Socks5Auth
+
 from aiosocksy.connector import ProxyConnector, ProxyClientRequest
 
 sem = asyncio.Semaphore(3)
@@ -18,16 +19,10 @@ class AsyncioCurl:
         self.session = aiohttp.ClientSession(connector=self.connector,request_class=ProxyClientRequest, timeout=aiohttp.ClientTimeout(total=4))
         self.proxies = None
         if config["Proxy"]["PROXY_TYPE"] != "None":
-            if config["Proxy"]["PROXY_TYPE"].lower() == "http":
-                if config["Proxy"]["PROXY_USERNAME"] != "" and config["Proxy"]["PROXY_PASSWORD"] != "":
-                    self.proxies = "http://" + config["Proxy"]["PROXY_USERNAME"] + ":" + config["Proxy"]["PROXY_PASSWORD"] + "@" + config["Proxy"]["PROXY_ADDRESS"] + ":" + config["Proxy"]["PROXY_PORT"]
-                else:
-                    self.proxies = "http://" + config["Proxy"]["PROXY_ADDRESS"] + ":" + config["Proxy"]["PROXY_PORT"]
-            elif config["Proxy"]["PROXY_TYPE"].lower() == "socks5":
-                if config["Proxy"]["PROXY_USERNAME"] != "" and config["Proxy"]["PROXY_PASSWORD"] != "":
-                    self.proxies = "socks5://" + config["Proxy"]["PROXY_USERNAME"] + ":" + config["Proxy"]["PROXY_PASSWORD"] + "@" + config["Proxy"]["PROXY_ADDRESS"] + ":" + config["Proxy"]["PROXY_PORT"]
-                else:
-                    self.proxies = "socks5://" + config["Proxy"]["PROXY_ADDRESS"] + ":" + config["Proxy"]["PROXY_PORT"]
+            self.proxies = {
+                "http": config["Proxy"]["PROXY_ADDRESS"],
+                "https": config["Proxy"]["PROXY_ADDRESS"]
+            }
 
     async def __get_json_body(self, rsp):
         json_body = await rsp.json(content_type=None)

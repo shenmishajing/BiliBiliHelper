@@ -1,10 +1,17 @@
 
 <p align="center"><img width="300px" src="https://i.loli.net/2018/04/20/5ad97bd395912.jpeg"></p>
 
-<p align="center">
-<img src="https://img.shields.io/badge/version-0.0.3-green.svg?longCache=true&style=for-the-badge">
-<img src="https://img.shields.io/badge/license-GPL%20V3-blue.svg?longCache=true&style=for-the-badge">
-</p>
+[![codebeat][1]][2] [![Downloads][3]][4] [![Version][5]][6]
+[![License][7]][8]
+
+[1]: https://codebeat.co/badges/4171ff04-5cff-4bed-8213-b82944e130e6 "Codebeat badge"
+[2]: https://codebeat.co/projects/github-com-thewanderingcoel-bilibilihelper-master "Codebeat"
+[3]: https://img.shields.io/github/downloads/TheWanderingCoel/BiliBiliHelper/total.svg "All releases badge"
+[4]: https://github.com/TheWanderingCoel/BiliBiliHelper/releases/ "All releases number"
+[5]: https://img.shields.io/badge/version-0.0.3-green.svg?longCache=true
+[6]: https://github.com/TheWanderingCoel/BiliBiliHelper
+[7]: https://img.shields.io/badge/license-GPL%20V3-blue.svg?longCache=true
+[8]: https://github.com/TheWanderingCoel/BiliBiliHelper/blob/master/LICENSE
 
 | OS | Windows | macOS | Linux |
 | --- | --- | --- | --- |
