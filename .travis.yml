@@ -23,15 +23,9 @@ install: pip3 install -r requirements.txt
 script: 
   - python Make.py 
   - pyinstaller BiliBiliHelper.spec
-  - pip3 install codecov
-  - pip3 install coverage
-  - coverage run main.py
   - cp -r Conf ./dist/
   - cp -r Log ./dist/
   - cp -r Doc ./dist/
-
-after_success:
-  - codecov
 
 before_deploy:
   - cd dist
@@ -45,6 +39,7 @@ before_deploy:
       zip -r BiliBiliHelper-windows.zip *;
     fi
   - cd ..
+
 deploy: 
   provider: releases
   file: "dist/BiliBiliHelper-$TRAVIS_OS_NAME.zip"
