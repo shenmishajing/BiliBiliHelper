@@ -46,11 +46,16 @@
 ``SENTENCE`` 名句,强烈推荐开启,**True**开启**False**关闭  
 
 ## [Proxy] 代理设置区域
-``PROXY_TYPE`` 代理类型,支持None,Http和Socks5
-``PROXY_ADDRESS`` 代理服务器地址
-``PROXY_PORT`` 代理服务器端口
-``PROXY_USERNAME`` 代理服务器用户名(非必须)
-``PROXY_PASSWORD`` 代理服务器密码(非必须)
+``PROXY_TYPE`` 代理类型,支持None,Http和Socks5  
+``PROXY_ADDRESS`` 代理服务器地址(配置见下)  
+socks5填写:  
+``socks5://用户名:密码@IP地址:端口``  
+没有用户名密码:  
+``socks5://IP地址:端口``  
+http填写:  
+``http://用户名:密码@IP地址:端口``  
+没有用户名密码:  
+``http://IP地址:端口``  
 
 ## [pcheaders] pc请求头 (该区域无需填写)
 ``Accept`` 接受类型  
