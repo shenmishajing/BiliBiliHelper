@@ -215,6 +215,7 @@ class DanmuRaffleHandler(BaseDanmu):
             # 6 <%user_name%> 在直播间 <%529%> 使用了 <%20%> 倍节奏风暴，大家快去跟风领取奖励吧！(只报20的)
             msg_type = data["msg_type"]
             msg_common = data["msg_common"]
+            print(msg_common)
             real_roomid = data["real_roomid"]
             msg_common = data["msg_common"].replace(" ","")
             msg_common = msg_common.replace("“","")
