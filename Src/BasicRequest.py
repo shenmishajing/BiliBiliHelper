@@ -22,13 +22,15 @@ class BasicRequest:
         return response
     
     @staticmethod
-    async def tv_req_join(real_roomid,TV_raffleid):
-        url = "https://api.live.bilibili.com/xlive/lottery-interface/v3/smalltv/Join"
+    async def tv_req_join(real_roomid,TV_raffleid,raffle_type):
+        url = "https://api.live.bilibili.com/xlive/lottery-interface/v5/smalltv/join"
         payload = {
             "roomid": real_roomid,
-            "raffleId": TV_raffleid,
-            "type": "Gift",
-            "csrf_token": ""
+            "id": TV_raffleid,
+            "type": raffle_type,
+            "csrf": config["Token"]["CSRF"],
+            "csrf_token": config["Token"]["CSRF"],
+            "visit_id": ""
         }
 
         response = await AsyncioCurl().request_json("POST",url,data=payload,headers=config["pcheaders"])
