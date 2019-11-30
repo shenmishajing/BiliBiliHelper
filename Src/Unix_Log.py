@@ -27,7 +27,7 @@ class Loggger():
     def debug(self,data,level=0):
         if self.current_level > level:
             return
-        data = f"{self.timestamp()} - {__file__}[Line:{sys._getframe().f_lineno}] - DEBUG: {data}"
+        data = f"{self.timestamp()} - DEBUG: {data}"
         print("\033[34;1m"+data+"\033[0m")
         with open(self.filename,"a",encoding="utf-8") as f:
             f.write(data+"\n")
@@ -36,7 +36,7 @@ class Loggger():
     def info(self,data,level=1):
         if self.current_level > level:
             return
-        data = f"{self.timestamp()} - {__file__}[Line:{sys._getframe().f_lineno}] - INFO: {data}"
+        data = f"{self.timestamp()} - INFO: {data}"
         print("\033[32;1m"+data+"\033[0m")
         with open(self.filename,"a",encoding="utf-8") as f:
             f.write(data+"\n")
@@ -45,7 +45,7 @@ class Loggger():
     def warning(self,data,level=2):
         if self.current_level > level:
             return
-        data = f"{self.timestamp()} - {__file__}[Line:{sys._getframe().f_lineno}] - WARNING: {data}"
+        data = f"{self.timestamp()} - WARNING: {data}"
         print("\033[33;1m"+data+"\033[0m")
         with open(self.filename,"a",encoding="utf-8") as f:
             f.write(data+"\n")
@@ -54,7 +54,7 @@ class Loggger():
     def error(self,data,level=3):
         if self.current_level > level:
             return
-        data = f"{self.timestamp()} - {__file__}[Line:{sys._getframe().f_lineno}] - ERROR: {data}"
+        data = f"{self.timestamp()} - ERROR: {data}"
         print("\033[31;1m"+data+"\033[0m")
         with open(self.filename,"a",encoding="utf-8") as f:
             f.write(data+"\n")
@@ -63,14 +63,14 @@ class Loggger():
     def critical(self,data,level=4):
         if self.current_level > level:
             return
-        data = f"{self.timestamp()} - {__file__}[Line:{sys._getframe().f_lineno}] - CRITICAL: {data}"
+        data = f"{self.timestamp()} - CRITICAL: {data}"
         print("\033[35;1m"+data+"\033[0m")
         with open(self.filename,"a",encoding="utf-8") as f:
             f.write(data+"\n")
         self.clean_log()
     
     def timestamp(self):
-        str_time = time.strftime("[%Y-%m-%d %H:%M:%S] ", time.localtime())
+        str_time = time.strftime("[%Y-%m-%d %H:%M:%S]", time.localtime())
         return str_time
     
     def clean_log(self,startup=False,http_delete=False):

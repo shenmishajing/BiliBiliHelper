@@ -45,12 +45,14 @@ class TvRaffleHandler:
         Statistics.add2joined_raffles("小电视类(合计)")
 
         code = data2["code"]
-        tasklist = []
+        # tasklist = []
         if not code:
-            await asyncio.sleep(random.randint(170,190))
-            task = asyncio.ensure_future(TvRaffleHandler.notice(raffle_id,real_roomid,raffle_name))
-            tasklist.append(task)
-            await asyncio.wait(tasklist, return_when=asyncio.FIRST_COMPLETED)
+            # await asyncio.sleep(random.randint(170,190))
+            # task = asyncio.ensure_future(TvRaffleHandler.notice(raffle_id,real_roomid,raffle_name))
+            # tasklist.append(task)
+            # await asyncio.wait(tasklist, return_when=asyncio.FIRST_COMPLETED)
+            Log.critical("房间 %s %s 抽奖结果: %s X %s"%(real_roomid,raffle_name,data2["data"]["award_name"],data2["data"]["award_num"]))
+            Statistics.add2results(data2["data"]["award_name"],int(data2["data"]["award_num"]))
         elif code == -500:
             Log.error("-500繁忙,稍后重试")
             return False
