@@ -9,7 +9,6 @@ class Statistics:
             cls.instance.pushed_raffles = {}
             cls.instance.joined_raffles = {}
             cls.instance.raffle_results = {}
-            cls.instance.joined_rooms = {}
 
             cls.list_raffle_id = []
         return cls.instance
@@ -30,11 +29,6 @@ class Statistics:
         print("本次抽奖结果统计：")
         for k, v in inst.raffle_results.items():
             print(f"{v:^5} X {k}")
-
-        print()
-        print("本次进入房间排名:")
-        for k, v in inst.joined_rooms.items():
-            print(f"{k} X {v:^5.0f}")
         
     @staticmethod
     def add2pushed_raffles(raffle_name,broadcast_type=0,num=1):
@@ -54,17 +48,6 @@ class Statistics:
     def add2results(result,num=1):
         inst = Statistics.instance
         inst.raffle_results[result] = inst.raffle_results.get(result, 0) + int(num)
-
-    @staticmethod
-    def add2joined_rooms(room_num,broadcast_type=0,num=1):
-        inst = Statistics.instance
-        if broadcast_type == 0:
-            inst.joined_rooms[room_num] = inst.joined_rooms.get(room_num, 0) + int(num) / inst.area_num
-        else:
-            inst.joined_rooms[room_num] = inst.joined_rooms.get(room_num, 0) + int(num)
-
-        if len(inst.joined_rooms) > 50:
-            del inst.joined_rooms[:25]
 
     @staticmethod
     def add2raffle_ids(raffle_id):
