@@ -11,7 +11,7 @@ if platform.system() == "Windows":
 else:
     from Unix_Log import Log
 from Curl import Curl
-from config import config
+from config import *
 
 class GiftSend():
     
@@ -85,7 +85,7 @@ class GiftSend():
 
     def send(self,value):
         url = "https://api.live.bilibili.com/gift/v2/live/bag_send"
-        csrf = config["Token"]["CSRF"]
+        csrf = account["Token"]["CSRF"]
         
         payload = {
             "coin_type":"silver",

@@ -11,7 +11,7 @@ if platform.system() == "Windows":
 else:
     from Unix_Log import Log
 from Curl import Curl
-from config import config
+from config import *
 from Base import std235959
 
 class Task():
@@ -96,8 +96,8 @@ class Task():
         url = "https://api.live.bilibili.com/activity/v1/task/receive_award"
         payload = {
             "task_id":"double_watch_task",
-            "csrf_token":config["Token"]["CSRF"],
-            "csrf":config["Token"]["CSRF"]
+            "csrf_token":account["Token"]["CSRF"],
+            "csrf":account["Token"]["CSRF"]
         }
         data = Curl().request_json("POST",url,headers=config["pcheaders"],data=payload)
         

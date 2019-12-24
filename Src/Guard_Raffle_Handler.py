@@ -10,7 +10,7 @@ from Utils import Utils
 from Statistics import Statistics
 from AsyncioCurl import AsyncioCurl
 from BasicRequest import BasicRequest
-from config import config
+from config import *
 from Raffle_Handler import RaffleHandler
 
 class GuardRaffleHandler:

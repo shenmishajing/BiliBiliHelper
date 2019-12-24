@@ -11,7 +11,7 @@ if platform.system() == "Windows":
 else:
     from Unix_Log import Log
 from Curl import Curl
-from config import config
+from config import *
 
 class Capsule():
 
@@ -45,7 +45,7 @@ class Capsule():
 
     def open(self,num):
         url = "https://api.live.bilibili.com/xlive/web-ucenter/v1/capsule/open_capsule"
-        csrf = config["Token"]["CSRF"]
+        csrf = account["Token"]["CSRF"]
 
         payload = {
             "type":"normal",

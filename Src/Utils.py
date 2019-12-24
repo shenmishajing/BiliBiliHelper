@@ -1,4 +1,5 @@
 import json
+import asyncio
 import random
 from Base import adjust_for_chinese
 from BasicRequest import BasicRequest
@@ -7,7 +8,7 @@ if platform.system() == "Windows":
     from Windows_Log import Log
 else:
     from Unix_Log import Log
-from config import config
+from config import *
 from operator import itemgetter
 from AsyncioCurl import AsyncioCurl
 
@@ -202,6 +203,11 @@ class Utils:
 
     @staticmethod
     async def send_danmu(msg,roomId):
+        data = await BasicRequest.req_send_danmu(msg,roomId)
+        Log.info(data)
+
+    @staticmethod
+    async def boom_danmu(msg,roomId):
         data = await BasicRequest.req_send_danmu(msg,roomId)
         Log.info(data)
 

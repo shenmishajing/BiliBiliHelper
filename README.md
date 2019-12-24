@@ -8,7 +8,7 @@
 [2]: https://codebeat.co/projects/github-com-thewanderingcoel-bilibilihelper-master "Codebeat"
 [3]: https://img.shields.io/github/downloads/TheWanderingCoel/BiliBiliHelper/total.svg "All releases badge"
 [4]: https://github.com/TheWanderingCoel/BiliBiliHelper/releases/ "All releases number"
-[5]: https://img.shields.io/badge/version-0.0.3-green.svg?longCache=true
+[5]: https://img.shields.io/badge/version-0.0.4-green.svg?longCache=true
 [6]: https://github.com/TheWanderingCoel/BiliBiliHelper
 [7]: https://img.shields.io/badge/license-GPL%20V3-blue.svg?longCache=true
 [8]: https://github.com/TheWanderingCoel/BiliBiliHelper/blob/master/LICENSE
@@ -40,13 +40,14 @@ B 站直播实用脚本Python版本
 |Storm_Raffle_Handler|19.03.07 |节奏风暴抽奖模块|
 |Task                |19.04.06 |每日任务       |
 |Tv_Raffle_Handler   |19.03.31 |小电视抽奖模块 |
-
+|Monitor_Server      |19.12.24 |舰长服务器连接模块|
 
 ## 未完成功能
 |待续|
 |-------|
 | ~~节奏风暴抽奖卡死修复~~ |
 | ~~代理设置~~ |
+| ~~舰长监听服务器~~ |
 | 抽奖结果图表可视化 |
 | RESTFUL API |
 | 动态抽奖 |
@@ -139,6 +140,7 @@ http://live.bilibili.com/23058
  - blivedm             https://github.com/yjqiang/blivedm
  - bilibili-live-tools https://github.com/yjqiang/bilibili-live-tools
  - bili2.0             https://github.com/yjqiang/bili2.0
+ - bilibili-live-monitor-js https://github.com/Billyzou0741326/bilibili-live-monitor-js
 
 
 

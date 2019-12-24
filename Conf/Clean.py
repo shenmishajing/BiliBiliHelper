@@ -6,15 +6,17 @@
 import os
 from configobj import ConfigObj
 
+account = ConfigObj(os.getcwd()+"/Account.conf")
 config = ConfigObj(os.getcwd()+"/BiliBiliHelper.conf")
 
-config["Account"]["BILIBILI_USER"] = ""
-config["Account"]["BILIBILI_PASSWORD"] = ""
-config["Token"]["ACCESS_TOKEN"] = ""
-config["Token"]["REFRESH_TOKEN"] = ""
-config["Token"]["CSRF"] = ""
-config["Token"]["UID"] = ""
-config["Token"]["COOKIE"] = ""
+account["Account"]["BILIBILI_USER"] = ""
+account["Account"]["BILIBILI_PASSWORD"] = ""
+account["Token"]["ACCESS_TOKEN"] = ""
+account["Token"]["REFRESH_TOKEN"] = ""
+account["Token"]["CSRF"] = ""
+account["Token"]["UID"] = ""
+account["Token"]["COOKIE"] = ""
 config["Live"]["ROOM_ID"] = ""
 config["pcheaders"]["cookie"] = ""
+account.write()
 config.write()

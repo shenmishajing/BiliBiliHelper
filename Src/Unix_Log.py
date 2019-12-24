@@ -7,7 +7,7 @@
 import os
 import sys
 import time
-from config import config
+from config import *
 
 class Loggger():
 

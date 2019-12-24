@@ -10,7 +10,7 @@ else:
     from Unix_Log import Log
 from Base import std235959
 from Curl import Curl
-from config import config
+from config import *
 
 class Coin2Silver():
     def __init__(self):
@@ -31,7 +31,7 @@ class Coin2Silver():
         
         payload = {
             "num":num,
-            "csrf_token":config["Token"]["CSRF"]
+            "csrf_token":account["Token"]["CSRF"]
         }
 
         data = Curl().request_json("POST",url,headers=config["pcheaders"],data=payload,sign=False)

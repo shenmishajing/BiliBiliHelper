@@ -4,7 +4,7 @@ if platform.system() == "Windows":
     from Windows_Log import Log
 else:
     from Unix_Log import Log
-from config import config
+from config import *
 
 class ConfigCheck():
     def __init__(self):
@@ -20,7 +20,7 @@ class ConfigCheck():
     # 检查值是否为空
     def check_null(self, mainname, subname):
         for each in subname:
-            if config[mainname][each] == "":
+            if account[mainname][each] == "":
                 Log.error(mainname +" -> "+ each + " entered incorrectly!")
                 self.error_count += 1
         

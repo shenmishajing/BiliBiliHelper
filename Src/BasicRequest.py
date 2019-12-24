@@ -8,7 +8,7 @@ if platform.system() == "Windows":
     from Windows_Log import Log
 else:
     from Unix_Log import Log
-from config import config
+from config import *
 from Base import get_default,msign
 from AsyncioCurl import AsyncioCurl
 
@@ -28,8 +28,8 @@ class BasicRequest:
             "roomid": real_roomid,
             "id": TV_raffleid,
             "type": raffle_type,
-            "csrf": config["Token"]["CSRF"],
-            "csrf_token": config["Token"]["CSRF"],
+            "csrf": account["Token"]["CSRF"],
+            "csrf_token": account["Token"]["CSRF"],
             "visit_id": ""
         }
 
@@ -56,7 +56,7 @@ class BasicRequest:
             "roomid": real_roomid,
             "id": raffle_id,
             "type": "guard",
-            "csrf_token": config["Token"]["CSRF"]
+            "csrf_token": account["Token"]["CSRF"]
         }
         response = await AsyncioCurl().request_json("POST",url,data=payload,headers=config["pcheaders"])
         return response
@@ -90,7 +90,7 @@ class BasicRequest:
             return
         data = {
             "room_id":room_id,
-            "csrf_token": config["Token"]["CSRF"]
+            "csrf_token": account["Token"]["CSRF"]
         }
         url = "https://api.live.bilibili.com/room/v1/Room/room_entry_action"
         response = await AsyncioCurl().request_json("POST",url,data=data,headers=config["pcheaders"])
@@ -142,8 +142,8 @@ class BasicRequest:
             "msg": msg,
             "rnd": "0",
             "roomid": int(roomId),
-            "csrf_token": config["Token"]["CSRF"],
-            "csrf": config["Token"]["CSRF"]
+            "csrf_token": account["Token"]["CSRF"],
+            "csrf": account["Token"]["CSRF"]
         }
         response = await AsyncioCurl().request_json("POST",url,data=data,headers=config["pcheaders"])
         return response
@@ -152,7 +152,7 @@ class BasicRequest:
     async def req_send_gift(giftid,giftnum,bagid,ruid,biz_id):
         url = "https://api.live.bilibili.com/gift/v2/live/bag_send"
         data = {
-            "uid": config["Token"]["UID"],
+            "uid": account["Token"]["UID"],
             "gift_id": giftid,
             "ruid": ruid,
             "gift_num": giftnum,
@@ -164,7 +164,7 @@ class BasicRequest:
             "storm_beat_id": "0",
             "metadata": "",
             "price": "0",
-            "csrf_token": config["Token"]["CSRF"]
+            "csrf_token": account["Token"]["CSRF"]
         }
         response = await AsyncioCurl().request_json("POST",url,data=data,headers=config["pcheaders"])
         return response
@@ -193,8 +193,8 @@ class BasicRequest:
         data = {
             "type":"normal",
             "count":count,
-            "csrf_token":config["Token"]["CSRF"],
-            "csrf":config["Token"]["CSRF"]
+            "csrf_token":account["Token"]["CSRF"],
+            "csrf":account["Token"]["CSRF"]
         }
         response = await AsyncioCurl().request_json("POST",url,data=data,headers=config["pcheaders"])
         return response
@@ -213,7 +213,7 @@ class BasicRequest:
             "act": 1,
             "re_src": 11,
             "jsonp": "jsonp",
-            "csrf": config["Token"]["CSRF"]
+            "csrf": account["Token"]["CSRF"]
         }
         response = await AsyncioCurl().request_json("POST",url,data=payload,headers=config["pcheaders"])
         return response
@@ -226,7 +226,7 @@ class BasicRequest:
             "act": 2,
             "re_src": 11,
             "jsonp": "jsonp",
-            "csrf": config["Token"]["CSRF"]
+            "csrf": account["Token"]["CSRF"]
         }
         response = await AsyncioCurl().request_json("POST",url,data=data,headers=config["pcheaders"])
         return response
@@ -248,7 +248,7 @@ class BasicRequest:
         url = "https://api.bilibili.com/x/relation/tag/create"
         payload = {
             "tag": name,
-            "csrf": config["Token"]["CSRF"],
+            "csrf": account["Token"]["CSRF"],
             "jsonp": "jsonp"
         }
         response = await AsyncioCurl().request_json("POST", url, data=payload, headers=config["pcheaders"])
@@ -264,7 +264,7 @@ class BasicRequest:
         payload = {
             "fids": uid,
             "tagids": group_id,
-            "csrf": config["Token"]["CSRF"]
+            "csrf": account["Token"]["CSRF"]
         }
         response = await AsyncioCurl().request_json("POST",url,data=payload,headers=headers)
         return response

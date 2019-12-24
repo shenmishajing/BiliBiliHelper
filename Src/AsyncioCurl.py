@@ -5,7 +5,7 @@ if platform.system() == "Windows":
     from Windows_Log import Log
 else:
     from Unix_Log import Log
-from config import config
+from config import *
 from aiosocksy import Socks5Auth
 
 from aiosocksy.connector import ProxyConnector, ProxyClientRequest

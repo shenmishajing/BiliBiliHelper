@@ -14,7 +14,7 @@ else:
     from Unix_Log import Log
 import asyncio
 from cmd import Cmd
-from config import config
+from config import *
 
 def fetch_real_roomid(roomid):
     if roomid:

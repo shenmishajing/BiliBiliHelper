@@ -16,7 +16,7 @@ if platform.system() == "Windows":
 else:
     from Unix_Log import Log
 from Utils import Utils
-from config import config
+from config import *
 from Statistics import Statistics
 from Tv_Raffle_Handler import TvRaffleHandler
 from Guard_Raffle_Handler import GuardRaffleHandler

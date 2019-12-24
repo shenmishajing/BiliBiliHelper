@@ -14,7 +14,7 @@ if platform.system() == "Windows":
 else:
     from Unix_Log import Log
 from Curl import Curl
-from config import config
+from config import *
 from Base import openssl_public_encrypt,arrange_cookie,set_cookie
 
 class Auth():
@@ -26,7 +26,7 @@ class Auth():
         if self.lock > int(time.time()):
             return
         
-        if config["Token"]["ACCESS_TOKEN"] == "":
+        if account["Token"]["ACCESS_TOKEN"] == "":
             self.loginPassword()
         else:
             self.loginToken()
@@ -38,8 +38,8 @@ class Auth():
     def loginPassword(self):
         data = self.getPublicKey()
 
-        user = config["Account"]["BILIBILI_USER"]
-        password = config["Account"]["BILIBILI_PASSWORD"]
+        user = account["Account"]["BILIBILI_USER"]
+        password = account["Account"]["BILIBILI_PASSWORD"]
         key = data["data"]["key"]
         hash_ = data["data"]["hash"]
         crypt = openssl_public_encrypt(hash_+password,key)
@@ -70,7 +70,7 @@ class Auth():
     def checkToken(self):
         url = "https://passport.bilibili.com/api/v2/oauth2/info"
         payload = {
-            "access_token":config["Token"]["ACCESS_TOKEN"]
+            "access_token":account["Token"]["ACCESS_TOKEN"]
         }
         data = Curl().request_json("GET",url,headers=config["pcheaders"],params=payload)
 
@@ -85,8 +85,8 @@ class Auth():
     def refresh(self):
         url = "https://passport.bilibili.com/api/oauth2/refreshToken"
         payload = {
-            "access_token":config["Token"]["ACCESS_TOKEN"],
-            "refresh_token":config["Token"]["REFRESH_TOKEN"],
+            "access_token":account["Token"]["ACCESS_TOKEN"],
+            "refresh_token":account["Token"]["REFRESH_TOKEN"],
             }
         data = Curl().request_json("POST",url,headers=config["pcheaders"],data=payload)
 
@@ -120,7 +120,7 @@ class Auth():
             "password":password,
             "captcha":"",
             "challenge":"",
-            "cookies":config["Token"]["COOKIE"]
+            "cookies":account["Token"]["COOKIE"]
         }
 
         data = Curl().request_json("POST",url,headers=config["pcheaders"],data=payload)
@@ -130,13 +130,13 @@ class Auth():
         else:
             Log.error("账号登陆失败"+"-"+data["message"])
     
-        config["Token"]["ACCESS_TOKEN"] = data["data"]["token_info"]["access_token"]
-        config["Token"]["REFRESH_TOKEN"] = data["data"]["token_info"]["refresh_token"]
+        account["Token"]["ACCESS_TOKEN"] = data["data"]["token_info"]["access_token"]
+        account["Token"]["REFRESH_TOKEN"] = data["data"]["token_info"]["refresh_token"]
 
         csrf,uid,cookie = arrange_cookie(data)
-        config["Token"]["CSRF"] = csrf
-        config["Token"]["UID"] = uid
+        account["Token"]["CSRF"] = csrf
+        account["Token"]["UID"] = uid
 
         set_cookie(cookie)
 
-        config.write()
+        account.write()

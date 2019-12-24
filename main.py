@@ -24,9 +24,10 @@ from Statistics import Statistics
 from Task import Task
 from Sentence import Sentence
 from Timer import Timer
-from config import config
+from config import *
 from configcheck import ConfigCheck
 from API import API
+from Monitor_Server import MonitorServer
 
 # 初始化所有class
 API = API()
@@ -41,20 +42,21 @@ Silver2Coin = Silver2Coin()
 SilverBox = SilverBox()
 Task = Task()
 rafflehandler = RaffleHandler()
+MonitorServer = MonitorServer(config["Server"]["ADDRESS"], config["Server"]["PASSWORD"])
 
 # 开启时清理日志
 Log.clean_log(startup=True)
 
-print("""
+print("""\033[32;1m
  ______     __     __         __     ______     __     __         __     __  __     ______     __         ______   ______     ______    
 /\  == \   /\ \   /\ \       /\ \   /\  == \   /\ \   /\ \       /\ \   /\ \_\ \   /\  ___\   /\ \       /\  == \ /\  ___\   /\  == \   
 \ \  __<   \ \ \  \ \ \____  \ \ \  \ \  __<   \ \ \  \ \ \____  \ \ \  \ \  __ \  \ \  __\   \ \ \____  \ \  _-/ \ \  __\   \ \  __<   
  \ \_____\  \ \_\  \ \_____\  \ \_\  \ \_____\  \ \_\  \ \_____\  \ \_\  \ \_\ \_\  \ \_____\  \ \_____\  \ \_\    \ \_____\  \ \_\ \_\ 
   \/_____/   \/_/   \/_____/   \/_/   \/_____/   \/_/   \/_____/   \/_/   \/_/\/_/   \/_____/   \/_____/   \/_/     \/_____/   \/_/ /_/ 
-""")
+\033[0m""")
 
 if config["Other"]["INFO_MESSAGE"] != "False":
-    Log.info("BiliBiliHelper Python Beta v0.0.3")
+    Log.info("BiliBiliHelper Python v0.0.4")
 
 Log.info("Powered By TheWanderingCoel")
 
@@ -71,6 +73,9 @@ console = Console.Console(loop)
 
 area_ids = [1,2,3,4,5,6,]
 Statistics(len(area_ids))
+server_tasks = [
+    MonitorServer.run_forever()
+]
 danmu_tasks = [Danmu_Monitor.run_Danmu_Raffle_Handler(i) for i in area_ids]
 other_tasks = [
     rafflehandler.run()
@@ -104,7 +109,7 @@ daily_job_thread = threading.Thread(target=daily_job)
 daily_job_thread.start()
 
 if config["Function"]["RAFFLE_HANDLER"] != "False":
-    loop.run_until_complete(asyncio.wait(danmu_tasks+other_tasks))
+    loop.run_until_complete(asyncio.wait(server_tasks+danmu_tasks+other_tasks))
 
 api_thread.join()
 console_thread.join()

@@ -31,7 +31,7 @@ class TvRaffleHandler:
                 Log.info("本次获取到 %s 的抽奖id为: %s"%(raffle_name,raffle_id))
                 list_available_raffleid.append((raffle_id,raffle_type,time_wanted))
                 Statistics.add2raffle_ids(raffle_id)
-        # 暂时没啥用    
+        # 暂时没啥用
         #num_aviable = len(list_available_raffleid)
         for raffle_id,raffle_type,time_wanted in list_available_raffleid:
             Timer.add2list_jobs(TvRaffleHandler.join,time_wanted,(real_roomid,raffle_id,raffle_type,raffle_name))

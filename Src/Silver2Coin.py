@@ -10,7 +10,7 @@ else:
     from Unix_Log import Log
 from Curl import Curl
 from Base import std235959
-from config import config
+from config import *
 
 class Silver2Coin():
     def __init__(self):

@@ -9,7 +9,7 @@ import os
 import time
 import ctypes
 import logging
-from config import config
+from config import *
 from logging import handlers
 
 FOREGROUND_WHITE = 0x0007

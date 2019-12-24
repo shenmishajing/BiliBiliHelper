@@ -7,7 +7,7 @@ if platform.system() == "Windows":
 else:
     from Unix_Log import Log
 from flask import Flask, jsonify, request, stream_with_context, Response
-from config import config
+from config import *
 from Sentence import Sentence
 
 class API:

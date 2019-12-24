@@ -3,7 +3,7 @@ import time
 import datetime
 import hashlib
 import urllib.parse
-from config import config
+from config import *
 
 def Sign(payload):
 
@@ -20,7 +20,7 @@ def Sign(payload):
     # appsecret = "59b43e04ad6965f34319062b478f83dd"
 
     default = {
-        "access_key":config["Token"]["ACCESS_TOKEN"],
+        "access_key":account["Token"]["ACCESS_TOKEN"],
         "actionKey":"appkey",
         "appkey":appkey,
         "build":"8820",
@@ -77,7 +77,7 @@ def get_default():
      appkey = "27eb53fc9058f8c3"
 
      default = {
-        "access_key":config["Token"]["ACCESS_TOKEN"],
+        "access_key":account["Token"]["ACCESS_TOKEN"],
         "actionKey":"appkey",
         "appkey":appkey,
         "build":"8290",
@@ -91,7 +91,7 @@ def get_default():
      return default
 
 def set_cookie(cookie):
-     config["Token"]["COOKIE"] = cookie
+     account["Token"]["COOKIE"] = cookie
      config["pcheaders"]["cookie"] = cookie
 
 def adjust_for_chinese(str):
