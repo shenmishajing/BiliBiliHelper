@@ -4,54 +4,63 @@
 # 代码根据metowolf大佬的PHP版本进行改写
 
 import time
+import asyncio
 import platform
 if platform.system() == "Windows":
     from Windows_Log import Log
 else:
     from Unix_Log import Log
 from Config import *
-from Curl import Curl
-from Base import std235959
+from AsyncioCurl import AsyncioCurl
+from Base import std235959ptm
 
 class DailyBag():
     def __init__(self):
-        self.lock_web = int(time.time())
-        self.lock_mobile = int(time.time())
+        self.done = []
 
-    def work(self):
+    async def work(self):
         if config["Function"]["DAILYBAG"] == "False":
             return
-        if self.lock_web < int(time.time()):
-            self.web()
-        if self.lock_mobile < int(time.time()):
-            self.mobile()
         
-    
-    def web(self):
-        url = "https://api.live.bilibili.com/gift/v2/live/receive_daily_bag"
-        payload = {}
-        data = Curl().request_json("GET",url,headers=config["pcheaders"],params=payload)
-        
-        if data["code"] != 0:
-            Log.warning("每日礼包领取失败")
-            self.lock_wb = int(time.time()) + 600
-            return
-        else:
-            Log.info("每日礼包领取成功")
-            self.lock_web = std235959() + 600
+        while 1:
+            await self.web()
+
+            await self.mobile()
+
+            if len(self.done >= 2):
+                self.done = []
+                await asyncio.sleep(std235959ptm())
+            else:
+                await asyncio.sleep(600)
+                
+    async def web(self):
+        if "web" in self.done:
             return
 
-    def mobile(self):
+        url = "https://api.live.bilibili.com/gift/v2/live/receive_daily_bag"
+        data = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
+        
+        if data["code"] != 0:
+            Log.warning("每日礼包领取失败(WEB)")
+            return
+        else:
+            Log.info("每日礼包领取成功(WEB)")
+            self.done.append("web")
+            return
+
+    async def mobile(self):
+
+        if "app" in self.done:
+            return
+
         url = "https://api.live.bilibili.com/AppBag/sendDaily"
-        payload = {}
-        data = Curl().request_json("GET",url,headers=config["pcheaders"],params=payload)
+        data = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
         
         if data["code"] != 0:
             Log.warning("每日礼包领取失败(APP)")
-            self.lock_mobile = int(time.time()) + 600
             return
         else:
             Log.info("每日礼包领取成功(APP)")
-            self.lock_mobile = std235959() + 600
+            self.done.append("app")
             return
 

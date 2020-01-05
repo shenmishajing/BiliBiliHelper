@@ -6,40 +6,36 @@
 
 import json
 import time
+import asyncio
 import platform
 if platform.system() == "Windows":
     from Windows_Log import Log
 else:
     from Unix_Log import Log
-from Curl import Curl
-from Base import std235959
+from AsyncioCurl import AsyncioCurl
+from Base import std235959ptm
 from Config import *
 
-class Group():
+class Group:
 
-    def __init__(self):
-        self.lock = int(time.time())
-
-    def work(self):
+    async def work(self):
         if config["Function"]["GROUP"] == "False":
             return
-        if self.lock > int(time.time()):
-            return
         
-        groups = self.getList()
-        count = len(groups)
-        for each in groups:
-            count -= self.signIn(each)
+        while 1:
+            groups = await self.getList()
+            count = len(groups)
+            for each in groups:
+                count -= await self.signIn(each)
 
-        if count == 0:
-            self.lock = std235959()
-        else:
-            self.lock = int(time.time()) + 3600
+            if count == 0:
+                await asyncio.sleep(std235959ptm())
+            else:
+                await asyncio.sleep(3600)
 
-    def getList(self):
+    async def getList(self):
         url = "https://api.vc.bilibili.com/link_group/v1/member/my_groups"
-        payload = {}
-        data = Curl().request_json("GET",url,headers=config["pcheaders"],params=payload)
+        data = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
 
         if data["code"] != 0:
             Log.warning("查询应援团名单异常")
@@ -51,13 +47,13 @@ class Group():
         
         return data["data"]["list"]
 
-    def signIn(self,value):
+    async def signIn(self,value):
         url = "https://api.vc.bilibili.com/link_setting/v1/link_setting/sign_in"
         payload = {
             "group_id":value["group_id"],
             "owner_id":value["owner_uid"]
         }
-        data = Curl().request_json("POST",url,headers=config["pcheaders"],data=payload)
+        data = await AsyncioCurl().request_json("POST",url,headers=config["pcheaders"],data=payload)
 
         if data["code"] != 0:
             Log.warning("应援团 %s 签到异常"%value["group_name"])

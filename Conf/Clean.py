@@ -3,14 +3,20 @@
 # 直接在git的项目改的,测试要要清理配置文件很烦。
 # 干脆写一个小脚本,快速删除重要信息
 
-import os
+import sys
+import optparse
 from configobj import ConfigObj
 
-account = ConfigObj(os.getcwd()+"/Account.conf", encoding="UTF8")
-config = ConfigObj(os.getcwd()+"/BiliBiliHelper.conf", encoding="UTF8")
+parser = optparse.OptionParser()
+parser.add_option("-t", "--token-only", action="store_true", dest="clean_token", help="Clean Token Only")
+(options,args)=parser.parse_args()
 
-account["Account"]["BILIBILI_USER"] = ""
-account["Account"]["BILIBILI_PASSWORD"] = ""
+account = ConfigObj(sys.path[0]+"/Account.conf", encoding="UTF8")
+config = ConfigObj(sys.path[0]+"/BiliBiliHelper.conf", encoding="UTF8")
+
+if options.clean_token != True:
+    account["Account"]["BILIBILI_USER"] = ""
+    account["Account"]["BILIBILI_PASSWORD"] = ""
 account["Token"]["ACCESS_TOKEN"] = ""
 account["Token"]["REFRESH_TOKEN"] = ""
 account["Token"]["CSRF"] = ""

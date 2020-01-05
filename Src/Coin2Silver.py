@@ -3,30 +3,28 @@
 # 该代码实现了硬币换银瓜子功能
 
 import time
+import asyncio
 import platform
 if platform.system() == "Windows":
     from Windows_Log import Log
 else:
     from Unix_Log import Log
-from Base import std235959
-from Curl import Curl
+from AsyncioCurl import AsyncioCurl
+from Base import std235959ptm
 from Config import *
 
-class Coin2Silver():
-    def __init__(self):
-        self.lock = int(time.time())
+class Coin2Silver:
 
-    def work(self):
+    async def work(self):
         if config["Function"]["COIN2SILVER"] == "False":
             return
-        if self.lock > int(time.time()):
-            return
-        
-        self.exchange(config["Coin2Silver"]["COIN"])
 
-        self.lock = std235959() + 600
+        while 1:
+            await self.exchange(config["Coin2Silver"]["COIN"])
+            
+            await asyncio.sleep(std235959ptm())
     
-    def exchange(self,num):
+    async def exchange(self, num):
         url = "https://api.live.bilibili.com/pay/v1/Exchange/coin2silver"
         
         payload = {
@@ -34,7 +32,7 @@ class Coin2Silver():
             "csrf_token":account["Token"]["CSRF"]
         }
 
-        data = Curl().request_json("POST",url,headers=config["pcheaders"],data=payload,sign=False)
+        data = await AsyncioCurl().request_json("POST", url, headers=config["pcheaders"], data=payload, sign=False)
 
         if data["code"] != 0:
             Log.warning(data["message"])

@@ -1,4 +1,5 @@
 import rsa
+import random
 import time
 import datetime
 import hashlib
@@ -71,6 +72,11 @@ def std235959():
      zeroToday = now - datetime.timedelta(hours=now.hour, minutes=now.minute, seconds=now.second,microseconds=now.microsecond)
      lastToday = zeroToday + datetime.timedelta(hours=23, minutes=59, seconds=59)
      return int(time.mktime(lastToday.timetuple()))
+
+# 获取Asyncio需要休眠多少时间才能到明天
+def std235959ptm():
+     time235959 = std235959()
+     return time235959 + random.randint(300,600) - int(time.time())
 
 def get_default():
      # ios 6680

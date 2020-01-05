@@ -5,85 +5,79 @@
 # PHP代码地址:https://github.com/metowolf/BilibiliHelper/blob/0.9x/src/plugins/GiftSend.php
 
 import time
+import asyncio
 import platform
 if platform.system() == "Windows":
     from Windows_Log import Log
 else:
     from Unix_Log import Log
-from Curl import Curl
+from AsyncioCurl import AsyncioCurl
 from Config import *
 
-class GiftSend():
+class GiftSend:
     
     def __init__(self):
-        self.lock = int(time.time())
         self.uid = 0
         self.ruid = 0
         self.roomid = 0
 
-    def work(self):
+    async def work(self):
         if config["Function"]["GIFTSEND"] == "False":
             return
 
-        if self.lock > int(time.time()):
-            return
+        while 1:
+            if self.ruid == 0:
+                status = await self.getRoomInfo()
+                if not status:
+                    return
 
-        if self.ruid == 0:
-            self.getRoomInfo()
         
-        if self.lock > int(time.time()):
-            return
+            url = "https://api.live.bilibili.com/gift/v2/gift/bag_list"
+            data = await AsyncioCurl().request_json("GET",url,headers=config["pcheaders"])
         
-        url = "https://api.live.bilibili.com/gift/v2/gift/bag_list"
-        payload = {}
-        data = Curl().request_json("GET",url,headers=config["pcheaders"],params=payload)
+            if data["code"] != 0:
+                Log.warning("背包查看失败!"+data["message"])
         
-        if data["code"] != 0:
-            Log.warning("背包查看失败!"+data["message"])
-        
-        if len(data["data"]["list"]) != 0:
-            for each in data["data"]["list"]:
-                if each["expire_at"] >= data["data"]["time"] and each["expire_at"] <= data["data"]["time"] + int(config["GiftSend"]["TIME"]):
-                    self.send(each)
-                    time.sleep(3)
-        
-        self.lock = int(time.time()) + 600
+            if len(data["data"]["list"]) != 0:
+                for each in data["data"]["list"]:
+                    if each["expire_at"] >= data["data"]["time"] and each["expire_at"] <= data["data"]["time"] + int(config["GiftSend"]["TIME"]):
+                        await self.send(each)
+                        await asyncio.sleep(3)
+                
+            await asyncio.sleep(600)
 
 
-    def getRoomInfo(self):
+    async def getRoomInfo(self):
         Log.info("正在生成直播间信息...")
 
-        url = "https://account.bilibili.com/api/myinfo/v2"
-        payload = {}
-        data = Curl().request_json("GET",url,headers=config["pcheaders"],params=payload)
+        url = "https://api.bilibili.com/x/member/web/account"
+        data = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
 
         if "code" in data and data["code"] != 0:
             Log.warning("获取账号信息失败!"+data["message"])
             Log.warning("清空礼物功能禁用!")
-            self.lock = int(time.time()) + 100000000
-            return
+            return False
         
-        self.uid = data["mid"]
+        self.uid = data["data"]["mid"]
 
         url = "https://api.live.bilibili.com/room/v1/Room/get_info"
         payload = {
             "id":config["Live"]["ROOM_ID"]
         }
 
-        data = Curl().request_json("GET",url,headers=config["pcheaders"],params=payload)
+        data = await AsyncioCurl().request_json("GET",url,headers=config["pcheaders"],params=payload)
 
         if data["code"] != 0:
             Log.warning("获取主播房间号失败!"+data["message"])
             Log.warning("清空礼物功能禁用!")
-            self.lock = int(time.time()) + 100000000
-            return
+            return False
 
         Log.info("直播间信息生成完毕!")
 
         self.ruid = data["data"]["uid"]
         self.roomid = data["data"]["room_id"]
 
-    def send(self,value):
+    async def send(self,value):
         url = "https://api.live.bilibili.com/gift/v2/live/bag_send"
         csrf = account["Token"]["CSRF"]
         
@@ -100,7 +94,7 @@ class GiftSend():
             "csrf_token":csrf,
             "csrf":csrf
         }
-        data = Curl().request_json("POST",url,headers=config["pcheaders"],data=payload)
+        data = await AsyncioCurl().request_json("POST", url, headers=config["pcheaders"], data=payload)
         
         if data["code"] != 0:
             Log.warning("送礼失败!"+data["message"])

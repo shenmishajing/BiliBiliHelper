@@ -5,50 +5,48 @@
 # PHP代码地址:https://github.com/metowolf/BilibiliHelper/blob/0.9x/src/plugins/Task.php
 
 import time
+import asyncio
 import platform
 if platform.system() == "Windows":
     from Windows_Log import Log
 else:
     from Unix_Log import Log
-from Curl import Curl
+from AsyncioCurl import AsyncioCurl
 from Config import *
-from Base import std235959
+from Base import std235959ptm
 
-class Task():
+class Task:
 
     def __init__(self):
-        self.lock = int(time.time())
         self.done = []
     
-    def work(self):
+    async def work(self):
         if config["Function"]["TASK"] == "False":
             return
-        if self.lock > int(time.time()):
-            return
         
-        Log.info("检查每日任务")
-        data = self.check()
+        while 1:
+            Log.info("检查每日任务")
+            data = await self.check()
 
-        self.double_watch_info(data)
-        self.sign_info(data)
+            await self.double_watch_info(data)
+            await self.sign_info(data)
 
-        if len(self.done) >= 2:
-            self.done = []
-            self.lock = std235959() + 600
-        else:
-            self.lock = int(time.time()) + 3600
+            if len(self.done) >= 2:
+                self.done = []
+                await asyncio.sleep(std235959ptm())
+            else:
+                await asyncio.sleep(600)
 
-    def check(self):
+    async def check(self):
         url = "https://api.live.bilibili.com/i/api/taskInfo"
-        payload = {}
-        data = Curl().request_json("GET",url,headers=config["pcheaders"],params=payload)
+        data = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
 
         if data["code"] != 0:
             Log.error("每日任务检查失败")
 
         return data
 
-    def sign_info(self,value):
+    async def sign_info(self,value):
         if len(value["data"]["sign_info"]) == 0:
             return
         if "sign_info" in self.done:
@@ -64,8 +62,7 @@ class Task():
             return
 
         url = "https://api.live.bilibili.com/sign/doSign"
-        payload = {}
-        data = Curl().request_json("GET",url,headers=config["pcheaders"],params=payload)
+        data = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
 
         if data["code"] == 0:
             Log.info("「每日签到」成功，您已连续签到 %s 天，获得 %s，%s"%(data["data"]["hadSignDays"], data["data"]["text"], data["data"]["specialText"]))
@@ -76,7 +73,7 @@ class Task():
             Log.error("「每日签到」失败")
 
 
-    def double_watch_info(self,value):
+    async def double_watch_info(self,value):
         if len(value["data"]["double_watch_info"]) == 0:
             return
         if "double_watch_info" in self.done:
@@ -101,7 +98,7 @@ class Task():
             "csrf_token":account["Token"]["CSRF"],
             "csrf":account["Token"]["CSRF"]
         }
-        data = Curl().request_json("POST",url,headers=config["pcheaders"],data=payload)
+        data = await AsyncioCurl().request_json("POST", url, headers=config["pcheaders"], data=payload)
         
         if data["code"] != 0:
             Log.error("「双端观看直播」奖励领取失败")

@@ -8,7 +8,7 @@
 [2]: https://codebeat.co/projects/github-com-thewanderingcoel-bilibilihelper-master "Codebeat"
 [3]: https://img.shields.io/github/downloads/TheWanderingCoel/BiliBiliHelper/total.svg "All releases badge"
 [4]: https://github.com/TheWanderingCoel/BiliBiliHelper/releases/ "All releases number"
-[5]: https://img.shields.io/badge/version-v0.0.5-green.svg?longCache=true
+[5]: https://img.shields.io/badge/version-v0.0.6-green.svg?longCache=true
 [6]: https://github.com/TheWanderingCoel/BiliBiliHelper
 [7]: https://img.shields.io/badge/license-GPL%20V3-blue.svg?longCache=true
 [8]: https://github.com/TheWanderingCoel/BiliBiliHelper/blob/master/LICENSE

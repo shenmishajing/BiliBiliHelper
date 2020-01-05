@@ -3,39 +3,36 @@
 # 该代码实现了银瓜子对换硬币的功能
 
 import time
+import asyncio
 import platform
 if platform.system() == "Windows":
     from Windows_Log import Log
 else:
     from Unix_Log import Log
-from Curl import Curl
-from Base import std235959
+from AsyncioCurl import AsyncioCurl
+from Base import std235959ptm
 from Config import *
 
-class Silver2Coin():
-    def __init__(self):
-        self.lock = int(time.time())
+class Silver2Coin:
 
-    def work(self):
+    async def work(self):
         if config["Function"]["SILVER2COIN"] == "False":
             return
-        if self.lock > int(time.time()):
-            return
-        
-        self.exchange()
 
-        self.lock = std235959() + 600
+        while 1:
+            await self.exchange()
+
+            await asyncio.sleep(std235959ptm())
     
-    def exchange(self):
+    async def exchange(self):
         url = "https://api.live.bilibili.com/pay/v1/Exchange/silver2coin"
-        payload = {}
-        data = Curl().request_json("GET",url,headers=config["pcheaders"],params=payload)
+        data = await AsyncioCurl().request_json("GET",url,headers=config["pcheaders"])
         
         if data["code"] == 403:
             if "每天" in data["message"]:
                 Log.warning(data["message"]+"硬币")
             else:
-                 Log.warning(data["message"])
+                Log.warning(data["message"])
             return
         
         Log.info(data["message"]+",兑换了一枚硬币")

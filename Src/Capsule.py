@@ -5,40 +5,37 @@
 # PHP代码地址:https://github.com/metowolf/BilibiliHelper/blob/0.9x/src/plugins/Capsule.php
 
 import time
+import asyncio
 import platform
 if platform.system() == "Windows":
     from Windows_Log import Log
 else:
     from Unix_Log import Log
-from Curl import Curl
+from AsyncioCurl import AsyncioCurl
+from Base import std235959ptm
 from Config import *
 
 class Capsule():
 
-    def __init__(self):
-        self.lock = int(time.time())
-
-    def work(self):
+    async def work(self):
         if config["Function"]["CAPSULE"] == "False":
             return
-        if self.lock > int(time.time()):
-            return
         
-        count = self.info()
-        while (count > 0):
-            if count >= 100:
-                count -= self.open(100)
-            elif count >= 10:
-                count -= self.open(10)
-            elif count > 0:
-                count -= self.open(1)
+        while 1:
+            count = await self.info()
+            while (count > 0):
+                if count >= 100:
+                    count -= await self.open(100)
+                elif count >= 10:
+                    count -= await self.open(10)
+                elif count > 0:
+                    count -= await self.open(1)
         
-        self.lock = int(time.time()) + 86400
+            await asyncio.sleep(std235959ptm())
     
-    def info(self):
+    async def info(self):
         url = "https://api.live.bilibili.com/xlive/web-ucenter/v1/capsule/get_detail"
-        payload = {}
-        data = Curl().request_json("GET",url,headers=config["pcheaders"],params=payload)
+        data = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
 
         if data["code"] != 0:
             Log.warning("扭蛋币余额查询异常")
@@ -48,7 +45,7 @@ class Capsule():
         
         return data["data"]["normal"]["coin"]
 
-    def open(self,num):
+    async def open(self,num):
         url = "https://api.live.bilibili.com/xlive/web-ucenter/v1/capsule/open_capsule"
         csrf = account["Token"]["CSRF"]
 
@@ -58,7 +55,7 @@ class Capsule():
             "csrf_token":csrf,
             "csrf":csrf
         }
-        data = Curl().request_json("POST",url,headers=config["pcheaders"],data=payload,sign=False)
+        data = await AsyncioCurl().request_json("POST", url, headers=config["pcheaders"], data=payload)
 
         if data["code"] != 0:
             Log.warning("扭蛋失败,请稍后重试")

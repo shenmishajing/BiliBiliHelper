@@ -4,55 +4,52 @@
 
 import time
 import random
+import asyncio
 import platform
 if platform.system() == "Windows":
     from Windows_Log import Log
 else:
     from Unix_Log import Log
-from Curl import Curl
+from AsyncioCurl import AsyncioCurl
 from Config import *
-from Base import std235959
+from Base import std235959ptm
 
-class SilverBox():
+class SilverBox:
     
     def __init__(self):
-        self.lock = int(time.time())
         self.task = 0
 
-    def work(self):
+    async def work(self):
         if config["Function"]["SILVERBOX"] == "False":
             return
-        if self.lock > int(time.time()):
-            return
         
-        if self.task == 0:
-            self.getTask()
-        else:
-            self.openTask()
+        while 1:
+            if self.task == 0:
+                await self.getTask()
+            else:
+                await self.openTask()
         
-    def openTask(self):
+    async def openTask(self):
         url = "https://api.live.bilibili.com/mobile/freeSilverAward"
-        payload = {}
-        data = Curl().request_json("GET",url,headers=config["pcheaders"],params=payload)
+        data = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
     
         if data["code"] != 0:
             Log.warning("开启宝箱失败")
-            self.lock = int(time.time()) + random.randint(60,120)
+            await asyncio.sleep(random.randint(60,120))
             return
     
         Log.info("开始宝箱成功,获得 %s 个银瓜子,当前有 %s 个银瓜子"%(data["data"]["awardSilver"],int(data["data"]["silver"])))
         self.task = 0
-        self.lock = int(time.time()) + random.randint(5,20)
+        await asyncio.sleep(random.randint(5,20))
     
     
-    def getTask(self):
+    async def getTask(self):
         url = "https://api.live.bilibili.com/lottery/v1/SilverBox/getCurrentTask"
-        payload = {}
-        data = Curl().request_json("GET",url,headers=config["pcheaders"],params=payload)
+        data = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
         
         if data["code"] == -10017:
             Log.warning(data["message"])
-            self.lock = std235959() + 600
+            await asyncio.sleep(std235959ptm())
             return
     
         if data["code"] != 0:
@@ -63,4 +60,4 @@ class SilverBox():
         Log.info("等待 %s 分钟后打开宝箱"%data["data"]["minute"])
 
         self.task = data["data"]["time_start"]
-        self.lock = int(time.time()) + data["data"]["minute"] * 60 + random.randint(5,30)
+        await asyncio.sleep(data["data"]["minute"] * 60 + random.randint(5,30))

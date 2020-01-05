@@ -74,6 +74,18 @@ console = Console.Console(loop)
 
 area_ids = [1,2,3,4,5,6,]
 Statistics(len(area_ids))
+
+daily_tasks = [
+    Capsule.work(),
+    Coin2Silver.work(),
+    DailyBag.work(),
+    GiftSend.work(),
+    Group.work(),
+    Heart.work(),
+    Silver2Coin.work(),
+    SilverBox.work(),
+    Task.work()
+]
 server_tasks = [
     MonitorServer.run_forever()
 ]
@@ -91,29 +103,10 @@ console_thread.start()
 # 先登陆一次,防止速度太快导致抽奖模块出错
 Auth.work()
 
-def daily_job():
-    while (1):
-        Auth.work()
-        Capsule.work()
-        Coin2Silver.work()
-        DailyBag.work()
-        GiftSend.work()
-        Group.work()
-        Heart.work()
-        Silver2Coin.work()
-        SilverBox.work()
-        Task.work()
-        # 休息0.5s,减少CPU占用
-        time.sleep(0.5)
-
-daily_job_thread = threading.Thread(target=daily_job)
-daily_job_thread.start()
-
 if config["Function"]["RAFFLE_HANDLER"] != "False":
-    loop.run_until_complete(asyncio.wait(server_tasks+danmu_tasks+other_tasks))
+    loop.run_until_complete(asyncio.wait(daily_tasks+server_tasks+danmu_tasks+other_tasks))
 
 api_thread.join()
 console_thread.join()
-daily_job_thread.join()
 
 loop.close()
