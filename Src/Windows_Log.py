@@ -86,7 +86,7 @@ class Logger(object):
         set_color(FOREGROUND_WHITE)
         self.clean_log()
     
-    def critical(self,message,color=FOREGROUND_PURPLE):
+    def raffle(self,message,color=FOREGROUND_BLUE):
         set_color(color)
         self.logger.critical(message)
         # 不sleep会有info提示变成白色,不知道什么情况
