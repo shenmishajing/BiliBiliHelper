@@ -1,3 +1,7 @@
+# BiliBiliHelper Python Version
+# Copy right (c) 2019-2020 TheWanderingCoel
+# BiliBiliHelper API核心模块
+
 import os
 import tailer
 import logging
@@ -7,8 +11,9 @@ if platform.system() == "Windows":
 else:
     from Unix_Log import Log
 from flask import Flask, jsonify, request, stream_with_context, Response
-from config import *
+from Config import *
 from Sentence import Sentence
+from Version import version
 
 class API:
 
@@ -33,6 +38,7 @@ class API:
             },
             "Raffle_Handler": {
                 "tv": config["Raffle_Handler"]["TV"],
+                "pk": config["Raffle_Handler"]["PK"],
                 "guard": config["Raffle_Handler"]["GUARD"],
                 "storm": config["Raffle_Handler"]["STORM"]
             },
@@ -46,13 +52,14 @@ class API:
             "Proxy": {
                 "proxy_type": config["Proxy"]["PROXY_TYPE"],
                 "proxy_address": config["Proxy"]["PROXY_ADDRESS"],
-                "proxy_port": config["Proxy"]["PROXY_PORT"],
-                "proxy_username": config["Proxy"]["PROXY_USERNAME"],
-                "proxy_password": config["Proxy"]["PROXY_PASSWORD"]
             },
             "API": {
                 "listen_port": config["API"]["LISTEN_PORT"],
                 "allow_lan": config["API"]["ALLOW_LAN"]
+            },
+            "Server": {
+                "address": config["Server"]["ADDRESS"],
+                "password": config["Server"]["PASSWORD"]
             }
 
         }
@@ -82,7 +89,7 @@ class API:
         @app.route("/version",methods=["GET"])
         def version():
             data = {
-                "version": "v0.0.3"
+                "version": version
             }
             return jsonify(data)
         
@@ -93,11 +100,13 @@ class API:
             }
             return jsonify(data)
 
-        @app.route("/configs",methods=["GET", "PATCH"])
+        @app.route("/configs",methods=["GET", "PATCH", "PUT"])
         def configs():
             if request.method == "GET":
                 return self.get_configs()
             elif request.method == "PATCH":
+                return
+            elif request.method == "PUT":
                 return
 
         @app.route("/logs",methods=["GET","DELETE"])

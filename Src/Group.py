@@ -1,5 +1,5 @@
 # BiliBiliHelper Python Version
-# Copy right (c) 2019 TheWanderingCoel
+# Copy right (c) 2019-2020 TheWanderingCoel
 # 该代码实现了应援团签到功能
 # 代码根据metowolf大佬的PHP版本进行改写
 # PHP代码地址:https://github.com/metowolf/BilibiliHelper/blob/0.9x/src/plugins/Group.php
@@ -13,7 +13,7 @@ else:
     from Unix_Log import Log
 from Curl import Curl
 from Base import std235959
-from config import *
+from Config import *
 
 class Group():
 
@@ -61,10 +61,11 @@ class Group():
 
         if data["code"] != 0:
             Log.warning("应援团 %s 签到异常"%value["group_name"])
+            Log.erorr(data)
             return False
 
         if data["data"]["status"] != 0:
-            Log.info("应援团 %s 已经签到过了"%value["group_name"])
+            Log.warning("应援团 %s 已经签到过了"%value["group_name"])
         else:
             Log.info("应援团 %s 签到成功,增加 %s 点亲密度"%(value["group_name"],data["data"]["add_num"]))
         

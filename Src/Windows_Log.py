@@ -1,5 +1,5 @@
 # BiliBiliHelper Python Version
-# Copy right (c) 2019 TheWanderingCoel
+# Copy right (c) 2019-2020 TheWanderingCoel
 # 本文件实现了项目的日志功能,彩色输出以及写入文件
 # 代码来自于以下两个网站,感谢这些开发者所做的贡献
 # https://www.cnblogs.com/nancyzhu/p/8551506.html
@@ -9,7 +9,7 @@ import os
 import time
 import ctypes
 import logging
-from config import *
+from Config import *
 from logging import handlers
 
 FOREGROUND_WHITE = 0x0007
@@ -34,7 +34,7 @@ class Logger(object):
         'crit':logging.CRITICAL
     }#日志级别关系映射
 
-    def __init__(self,filename,level='info',when='D',backCount=3,fmt='[%(asctime)s] - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s'):
+    def __init__(self,filename,level='info',when='D',backCount=3,fmt='[%(asctime)s] - %(levelname)s: %(message)s'):
         self.logger = logging.getLogger(filename)
         format_str = logging.Formatter(fmt)#设置日志格式
         self.logger.setLevel(self.level_relations.get(level))#设置日志级别

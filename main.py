@@ -24,10 +24,11 @@ from Statistics import Statistics
 from Task import Task
 from Sentence import Sentence
 from Timer import Timer
-from config import *
+from Config import *
 from configcheck import ConfigCheck
 from API import API
 from Monitor_Server import MonitorServer
+from Version import version
 
 # 初始化所有class
 API = API()
@@ -56,9 +57,9 @@ print("""\033[32;1m
 \033[0m""")
 
 if config["Other"]["INFO_MESSAGE"] != "False":
-    Log.info("BiliBiliHelper Python v0.0.4")
+    Log.info("BiliBiliHelper Python " + version)
 
-Log.info("Powered By TheWanderingCoel")
+Log.info("Powered By TheWanderingCoel with love❤️")
 
 if config["Other"]["SENTENCE"] != "False":
     Log.info(Sentence().get_sentence())

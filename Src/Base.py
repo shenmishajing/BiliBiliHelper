@@ -3,7 +3,7 @@ import time
 import datetime
 import hashlib
 import urllib.parse
-from config import *
+from Config import *
 
 def Sign(payload):
 

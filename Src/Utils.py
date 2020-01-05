@@ -8,7 +8,7 @@ if platform.system() == "Windows":
     from Windows_Log import Log
 else:
     from Unix_Log import Log
-from config import *
+from Config import *
 from operator import itemgetter
 from AsyncioCurl import AsyncioCurl
 
@@ -34,7 +34,7 @@ class Utils:
                 return False
             # 否则
             else:
-                Log.info("抽奖脚本检测到房间 %s 为正常房间"%roomid)
+                Log.raffle("抽奖脚本检测到房间 %s 为正常房间"%roomid)
                 return True
 
     @staticmethod

@@ -6,7 +6,7 @@ if platform.system() == "Windows":
 else:
     from Unix_Log import Log
 from Base import Sign
-from config import *
+from Config import *
 
 class Curl:
     def __init__(self):

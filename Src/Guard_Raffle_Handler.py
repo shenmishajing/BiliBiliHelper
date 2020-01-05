@@ -1,3 +1,7 @@
+# BiliBiliHelper Python Version
+# Copy right (c) 2019-2020 TheWanderingCoel
+# 舰长抽奖处理模块
+
 import re
 import random
 import asyncio
@@ -10,7 +14,7 @@ from Utils import Utils
 from Statistics import Statistics
 from AsyncioCurl import AsyncioCurl
 from BasicRequest import BasicRequest
-from config import *
+from Config import *
 from Raffle_Handler import RaffleHandler
 
 class GuardRaffleHandler:
@@ -36,7 +40,7 @@ class GuardRaffleHandler:
             for j in data["data"]:
                 raffle_id = j["id"]
                 if not Statistics.is_raffleid_duplicate(raffle_id):
-                    Log.info("本次获取到的 大航海 抽奖id为 %s"%raffle_id)
+                    Log.raffle("本次获取到的 大航海 抽奖id为 %s"%raffle_id)
                     list_available_raffleid.append(raffle_id)
                     Statistics.add2raffle_ids(raffle_id)
             
@@ -55,12 +59,12 @@ class GuardRaffleHandler:
     async def join(num,real_roomid,raffle_id):
         await asyncio.sleep(random.uniform(0.5, min(30, num * 1.3)))
         data = await BasicRequest.guard_req_join(real_roomid,raffle_id)
-        Log.info("参与了房间 %s 的大航海抽奖"%(real_roomid))
+        Log.raffle("参与了房间 %s 的大航海抽奖"%(real_roomid))
         if not data["code"]:
             for award in data["data"]["award_list"]:
                 result = re.search("(^获得|^)(.*)<%(\+|X)(\d*)%>", award['name'])
                 Statistics.add2results(result.group(2),result.group(4))
-            Log.critical("房间 %s 大航海抽奖结果: %s"%(real_roomid,data["data"]["message"]))
+            Log.raffle("房间 %s 大航海抽奖结果: %s"%(real_roomid,data["data"]["message"]))
             Statistics.add2joined_raffles("大航海(合计)")
         else:
             Log.info(data)

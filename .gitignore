@@ -13,6 +13,7 @@ ehthumbs.db
 Thumbs.db
 *.pyc
 BiliBiliHelper.log
+Account.conf
 ####################################
 ############# packages #############
 ####################################
@@ -24,7 +25,3 @@ BiliBiliHelper.log
 *.rar
 *.tar
 *.zip
-####################################
-########## project files ###########
-####################################
-BiliBiliHelper.log

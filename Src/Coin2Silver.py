@@ -1,5 +1,5 @@
 # BiliBiliHelper Python Version
-# Copy right (c) 2019 TheWanderingCoel
+# Copy right (c) 2019-2020 TheWanderingCoel
 # 该代码实现了硬币换银瓜子功能
 
 import time
@@ -10,7 +10,7 @@ else:
     from Unix_Log import Log
 from Base import std235959
 from Curl import Curl
-from config import *
+from Config import *
 
 class Coin2Silver():
     def __init__(self):

@@ -1,5 +1,5 @@
 # BiliBiliHelper Python Version
-# Copy right (c) 2019 TheWanderingCoel
+# Copy right (c) 2019-2020 TheWanderingCoel
 # 该代码实现了自动领取银瓜子宝箱的功能
 
 import time
@@ -10,7 +10,7 @@ if platform.system() == "Windows":
 else:
     from Unix_Log import Log
 from Curl import Curl
-from config import *
+from Config import *
 from Base import std235959
 
 class SilverBox():
@@ -51,7 +51,7 @@ class SilverBox():
         data = Curl().request_json("GET",url,headers=config["pcheaders"],params=payload)
         
         if data["code"] == -10017:
-            Log.info(data["message"])
+            Log.warning(data["message"])
             self.lock = std235959() + 600
             return
     

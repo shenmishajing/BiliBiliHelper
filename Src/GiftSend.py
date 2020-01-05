@@ -1,5 +1,5 @@
 # BiliBiliHelper Python Version
-# Copy right (c) 2019 TheWanderingCoel
+# Copy right (c) 2019-2020 TheWanderingCoel
 # 该代码实现了自动送出即将过期礼物的功能
 # 代码根据metowolf大佬的PHP版本进行改写
 # PHP代码地址:https://github.com/metowolf/BilibiliHelper/blob/0.9x/src/plugins/GiftSend.php
@@ -11,7 +11,7 @@ if platform.system() == "Windows":
 else:
     from Unix_Log import Log
 from Curl import Curl
-from config import *
+from Config import *
 
 class GiftSend():
     
@@ -43,7 +43,7 @@ class GiftSend():
         
         if len(data["data"]["list"]) != 0:
             for each in data["data"]["list"]:
-                if each["expire_at"] >= data["data"]["time"] and each["expire_at"] <= data["data"]["time"] + 3600:
+                if each["expire_at"] >= data["data"]["time"] and each["expire_at"] <= data["data"]["time"] + int(config["GiftSend"]["TIME"]):
                     self.send(each)
                     time.sleep(3)
         

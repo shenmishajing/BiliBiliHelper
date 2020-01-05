@@ -5,7 +5,7 @@ if platform.system() == "Windows":
     from Windows_Log import Log
 else:
     from Unix_Log import Log
-from config import *
+from Config import *
 from aiosocksy import Socks5Auth
 
 from aiosocksy.connector import ProxyConnector, ProxyClientRequest
@@ -54,7 +54,7 @@ class AsyncioCurl:
                 if i >= 10:
                     Log.warning(url)
                 try:
-                    async with self.session.request(method, url, headers=headers, data=data, params=params,proxy=self.proxies) as rsp:
+                    async with self.session.request(method, url, headers=headers, data=data, params=params, proxy=self.proxies) as rsp:
                         if rsp.status == 200:
                             json_body = await self.__get_json_body(
                                 rsp)
@@ -66,6 +66,5 @@ class AsyncioCurl:
                             await asyncio.sleep(240)
                         elif rsp.status == 404:
                             return None
-                except Exception as e:
-                    Log.error(e)
+                except:
                     continue

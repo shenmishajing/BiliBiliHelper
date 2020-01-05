@@ -23,10 +23,13 @@ class StormRaffleHandler:
             data = await BasicRequest.storm_req_check(room_id)
         list_available_raffleid = []
         data = data["data"]
+        num = int(data["num"])
+
         if data:
             raffle_id = data["id"]
             if not Statistics.is_raffleid_duplicate(raffle_id):
-                Log.info("本次获取到 二十倍节奏风暴 的抽奖id为 %s"%raffle_id)
+                raffle_name = "二十倍节奏风暴" if num == 20 else "节奏风暴"
+                Log.raffle("本次获取到 %s 的抽奖id为 %s"%(raffle_name, raffle_id))
                 list_available_raffleid.append((raffle_id,0))
                 Statistics.add2raffle_ids(raffle_id)
             for raffle_id,time_wanted in list_available_raffleid:
@@ -41,5 +44,5 @@ class StormRaffleHandler:
             data = data["data"]
             gift_name = data["gift_name"]
             gift_num = data["gift_num"]
-            Log.critical("房间 %s 节奏风暴抽奖结果: %s X %s"%(room_id,gift_name,gift_num))
+            Log.raffle("房间 %s 节奏风暴抽奖结果: %s X %s"%(room_id,gift_name,gift_num))
             Statistics.add2results(gift_name,int(gift_num))

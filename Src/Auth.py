@@ -1,5 +1,5 @@
 # BiliBiliHelper Python Version
-# Copy right (c) 2019 TheWanderingCoel
+# Copy right (c) 2019-2020 TheWanderingCoel
 # 该代码实现了登陆验证功能
 # 代码根据metowolf大佬的PHP版本进行改写
 # PHP代码地址:https://github.com/metowolf/BilibiliHelper/blob/0.9x/src/plugins/Auth.php
@@ -14,7 +14,7 @@ if platform.system() == "Windows":
 else:
     from Unix_Log import Log
 from Curl import Curl
-from config import *
+from Config import *
 from Base import openssl_public_encrypt,arrange_cookie,set_cookie
 
 class Auth():
@@ -140,3 +140,4 @@ class Auth():
         set_cookie(cookie)
 
         account.write()
+        config.write()

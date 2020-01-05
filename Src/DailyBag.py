@@ -1,5 +1,5 @@
 # BiliBiliHelper Python Version
-# Copy right (c) 2019 TheWanderingCoel
+# Copy right (c) 2019-2020 TheWanderingCoel
 # 该代码实现了每日礼包功能
 # 代码根据metowolf大佬的PHP版本进行改写
 
@@ -9,7 +9,7 @@ if platform.system() == "Windows":
     from Windows_Log import Log
 else:
     from Unix_Log import Log
-from config import *
+from Config import *
 from Curl import Curl
 from Base import std235959
 

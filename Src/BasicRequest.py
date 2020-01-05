@@ -1,5 +1,5 @@
 # BiliBiliHelper Python Version
-# Copy right (c) 2019 TheWanderingCoel
+# Copy right (c) 2019-2020 TheWanderingCoel
 # 直接把所有请求写在一个文件里了
 
 import time
@@ -8,7 +8,7 @@ if platform.system() == "Windows":
     from Windows_Log import Log
 else:
     from Unix_Log import Log
-from config import *
+from Config import *
 from Base import get_default,msign
 from AsyncioCurl import AsyncioCurl
 
@@ -22,43 +22,64 @@ class BasicRequest:
         return response
     
     @staticmethod
-    async def tv_req_join(real_roomid,TV_raffleid,raffle_type):
+    async def tv_req_join(real_roomid, TV_raffleid, raffle_type):
         url = "https://api.live.bilibili.com/xlive/lottery-interface/v5/smalltv/join"
         payload = {
-            "roomid": real_roomid,
             "id": TV_raffleid,
+            "roomid": real_roomid,
             "type": raffle_type,
             "csrf": account["Token"]["CSRF"],
             "csrf_token": account["Token"]["CSRF"],
             "visit_id": ""
         }
 
-        response = await AsyncioCurl().request_json("POST",url,data=payload,headers=config["pcheaders"])
+        response = await AsyncioCurl().request_json("POST", url, data=payload, headers=config["pcheaders"])
         return response
     
     @staticmethod
     async def tv_req_notice(TV_roomid, TV_raffleid):
         url = "https://api.live.bilibili.com/xlive/lottery-interface/v3/smalltv/Notice?type=small_tv&raffleId=%s"%TV_raffleid
-        response = await AsyncioCurl().request_json("GET",url,headers=config["pcheaders"])
+        response = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
+        return response
+
+# PK类的请求
+    @staticmethod
+    async def pk_req_check():
+        url = "https://api.live.bilibili.com/xlive/lottery-interface/v2/pk/check"
+        response = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
         return response
     
+    @staticmethod
+    async def pk_req_join(real_roomid, PK_raffleId, raffle_type):
+        url = "https://api.live.bilibili.com/xlive/lottery-interface/v2/pk/join"
+        payload = {
+            "id": PK_raffleId,
+            "roomid": real_roomid,
+            "type": raffle_type,
+            "csrf": account["Token"]["CSRF"],
+            "csrf_token": account["Token"]["CSRF"]
+        }
+        response = await AsyncioCurl().request_json("POST", url, data=payload, headers=config["pcheaders"])
+        return response
+
 # 大航海请求
     @staticmethod
     async def guard_req_check(real_roomid):
         url = "https://api.live.bilibili.com/lottery/v1/Lottery/check_guard?roomid=%s"%real_roomid
-        response = await AsyncioCurl().request_json("GET",url,headers=config["pcheaders"])
+        response = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
         return response
 
     @staticmethod
-    async def guard_req_join(real_roomid,raffle_id):
+    async def guard_req_join(real_roomid, raffle_id):
         url = "https://api.live.bilibili.com/lottery/v2/Lottery/join"
         payload = {
             "roomid": real_roomid,
             "id": raffle_id,
             "type": "guard",
-            "csrf_token": account["Token"]["CSRF"]
+            "csrf_token": account["Token"]["CSRF"],
+            "csrf": account["Token"]["CSRF"]
         }
-        response = await AsyncioCurl().request_json("POST",url,data=payload,headers=config["pcheaders"])
+        response = await AsyncioCurl().request_json("POST", url, data=payload, headers=config["pcheaders"])
         return response
 
 # 节奏风暴请求
@@ -93,13 +114,13 @@ class BasicRequest:
             "csrf_token": account["Token"]["CSRF"]
         }
         url = "https://api.live.bilibili.com/room/v1/Room/room_entry_action"
-        response = await AsyncioCurl().request_json("POST",url,data=data,headers=config["pcheaders"])
+        response = await AsyncioCurl().request_json("POST", url, data=data,headers=config["pcheaders"])
         return response
 
     @staticmethod
     async def get_room_info(roomid):
         url = "https://api.live.bilibili.com/room/v1/Room/get_info?room_id=%s"%roomid
-        response = await AsyncioCurl().request_json("GET",url)
+        response = await AsyncioCurl().request_json("GET", url)
         return response
 
     @staticmethod
@@ -111,19 +132,19 @@ class BasicRequest:
     @staticmethod
     async def req_fetch_user_info():
         url = "https://api.live.bilibili.com/i/api/liveinfo"
-        response = await AsyncioCurl().request_json("GET",url,headers=config["pcheaders"])
+        response = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
         return response
     
     @staticmethod
     async def req_fetch_bag_list():
         url = "https://api.live.bilibili.com/gift/v2/gift/bag_list"
-        response = await AsyncioCurl().request_json("GET",url,headers=config["pcheaders"])
+        response = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
         return response
 
     @staticmethod
     async def req_fetch_medal():
         url = "https://api.live.bilibili.com/i/api/medal?page=1&pageSize=50"
-        response = await AsyncioCurl().request_json("GET",url,headers=config["pcheaders"])
+        response = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
         return response
 
     @staticmethod
@@ -149,7 +170,7 @@ class BasicRequest:
         return response
     
     @staticmethod
-    async def req_send_gift(giftid,giftnum,bagid,ruid,biz_id):
+    async def req_send_gift(giftid, giftnum, bagid, ruid, biz_id):
         url = "https://api.live.bilibili.com/gift/v2/live/bag_send"
         data = {
             "uid": account["Token"]["UID"],

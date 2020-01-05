@@ -1,3 +1,8 @@
+# BiliBiliHelper Python Version
+# Copy right (c) 2019-2020 TheWanderingCoel
+# 舰长服务器连接核心模块
+# 支持服务器: https://github.com/Billyzou0741326/bilibili-live-monitor-js
+
 import json
 import struct
 import asyncio
@@ -8,9 +13,10 @@ if platform.system() == "Windows":
     from Windows_Log import Log
 else:
     from Unix_Log import Log
-from config import *
+from Config import *
 from Statistics import Statistics
 from Tv_Raffle_Handler import TvRaffleHandler
+from Pk_Raffle_Handler import PkRaffleHandler
 from Guard_Raffle_Handler import GuardRaffleHandler
 from Storm_Raffle_Handler import StormRaffleHandler
 
@@ -70,16 +76,8 @@ class MonitorServer:
         try:
             url = f"ws://{self.address}"
             self.ws = await asyncio.wait_for(self.client.ws_connect(url),timeout=3)
-            size = 0
-            response = b''
-            while (size < 16):
-                response += await self.read_bytes()
-                size += len(response)
-            msgs = self.decode_message(response)[0]
-            if msgs["cmd"] == 8:
-                self.accepted = True
+            self.accepted = True
         except Exception as e:
-            Log.error(e)
             Log.error("无法连接到舰长监控服务器,请检查网络连接以及端口是否开放")
             return False
         Log.info("舰长监控已成功连接到服务器: %s"%url)
@@ -105,11 +103,8 @@ class MonitorServer:
             data = await self.read_bytes()
             if data is None:
                 return
-            msgs = self.decode_message(data)
-            for msg in msgs:
-                if msg["cmd"] == 5:
-                    body = self.deserialize(msg["body"])
-                    self.handle_message(body)
+            body = self.deserialize(data)
+            self.handle_message(body)
 
     async def close(self):
         try:
@@ -126,19 +121,23 @@ class MonitorServer:
 
         # 大航海
         if cmd == "guard":
-            Log.critical("舰长监控检测到 %s 的 %s"%(room_id,raffle_name))
-            Raffle_Handler.RaffleHandler.push2queue((room_id,),GuardRaffleHandler.check)
-            # 如果不是总督就设置为2(本房间)
-            broadcast_type = 0 if raffle_name == "总督" else 2
-            Statistics.add2pushed_raffles(raffle_name,broadcast_type)
-        # PK, (咕咕咕)
+            if config["Raffle_Handler"]["GUARD"] != "False":
+                Log.raffle("舰长监控检测到 %s 的 %s"%(room_id,raffle_name))
+                Raffle_Handler.RaffleHandler.push2queue((room_id,),GuardRaffleHandler.check)
+                # 如果不是总督就设置为2(本房间)
+                broadcast_type = 0 if raffle_name == "总督" else 2
+                Statistics.add2pushed_raffles(raffle_name,broadcast_type)
+        # PK(WIP)
         elif cmd == "pk":
-            pass
+            if config["Raffle_Handler"]["PK"] != "False":
+                Log.raffle("舰长监控检测到 %s 的 %s"%(room_id,raffle_name))
+                Raffle_Handler.RaffleHandler.push2queue((room_id,raffle_name,),PkRaffleHandler.check)
+        # 节奏风暴
         elif cmd == "storm":
-            Log.critical("舰长监控检测到 %s 的 %s"%(room_id,raffle_name))
             if config["Raffle_Handler"]["STORM"] != "False":
+                Log.raffle("舰长监控检测到 %s 的 %s"%(room_id,raffle_name))
                 Raffle_Handler.RaffleHandler.push2queue((room_id,),StormRaffleHandler.check)
-            Statistics.add2pushed_raffles(raffle_name)
+                Statistics.add2pushed_raffles(raffle_name)
 
     async def run_forever(self):
         while True:

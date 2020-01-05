@@ -1,10 +1,14 @@
+# BiliBiliHelper Python Version
+# Copy right (c) 2019-2020 TheWanderingCoel
+# 该代码对配置文件的有效性进行检查
+
 import sys
 import platform
 if platform.system() == "Windows":
     from Windows_Log import Log
 else:
     from Unix_Log import Log
-from config import *
+from Config import *
 
 class ConfigCheck():
     def __init__(self):
@@ -40,5 +44,5 @@ class ConfigCheck():
     # 有错误直接退出
     def error_exit(self):
         if self.error_count > 0:
-            Log.critical(str(self.error_count) + " errors in config reached! Exiting...")
+            Log.raffle(str(self.error_count) + " errors in config reached! Exiting...")
             sys.exit(1)

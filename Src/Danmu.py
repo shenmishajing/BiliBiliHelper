@@ -1,5 +1,5 @@
 # BiliBiliHelper Python Version
-# Copy right (c) 2019 TheWanderingCoel
+# Copy right (c) 2019-2020 TheWanderingCoel
 # 该代码实现了弹幕监听,并调用其它Py文件进行处理
 # 代码来自:https://github.com/yjqiang/blivedm
 # 感谢yjqiang大佬和xfgryujk大佬
@@ -16,7 +16,7 @@ if platform.system() == "Windows":
 else:
     from Unix_Log import Log
 from Utils import Utils
-from config import *
+from Config import *
 from Statistics import Statistics
 from Tv_Raffle_Handler import TvRaffleHandler
 from Guard_Raffle_Handler import GuardRaffleHandler
@@ -219,6 +219,8 @@ class DanmuRaffleHandler(BaseDanmu):
             msg_common = data["msg_common"].replace(" ","")
             msg_common = msg_common.replace("“","")
             msg_common = msg_common.replace("”","")
+            for each in ["~", "点击前往TA的直播间抽奖吧！", "快来抽奖吧！", "继续进击小电视地图哦！", "完成今日", "啦"]:
+                msg_common = msg_common.replace(each, "")
             # 小电视,DokiDoki,摩天大楼之类的抽奖活动
             if msg_type == 2 or msg_type == 8:
                 str_gift = msg_common.split('%>')[-1].split('，')[0]
@@ -231,28 +233,28 @@ class DanmuRaffleHandler(BaseDanmu):
                     raffle_num = 1
                     raffle_name = str_gift
                 broadcast = msg_common.split("广播")[0]
-                Log.critical("%s 号弹幕监控检测到 %s 的 %s 个 %s"%(self._area_id,real_roomid,raffle_num,raffle_name))
                 if config["Raffle_Handler"]["TV"] != "False":
+                    Log.raffle("%s 号弹幕监控检测到 %s 的 %s 个 %s"%(self._area_id,real_roomid,raffle_num,raffle_name))
                     Raffle_Handler.RaffleHandler.push2queue((real_roomid,raffle_name,),TvRaffleHandler.check)
-                # 如果不是全区就设置为1(分区)
-                broadcast_type = 0 if broadcast == '全区' else 1
-                Statistics.add2pushed_raffles(raffle_name,broadcast_type,raffle_num)
+                    # 如果不是全区就设置为1(分区)
+                    broadcast_type = 0 if broadcast == '全区' else 1
+                    Statistics.add2pushed_raffles(raffle_name,broadcast_type,raffle_num)
             # 大航海
             elif msg_type == 3:
                 raffle_name = msg_common.split("开通了")[-1][:2]
-                Log.critical("%s 号弹幕监控检测到 %s 的 %s"%(self._area_id,real_roomid,raffle_name))
                 if config["Raffle_Handler"]["GUARD"] != "False":
+                    Log.raffle("%s 号弹幕监控检测到 %s 的 %s"%(self._area_id,real_roomid,raffle_name))
                     Raffle_Handler.RaffleHandler.push2queue((real_roomid,),GuardRaffleHandler.check)
-                # 如果不是总督就设置为2(本房间)
-                broadcast_type = 0 if raffle_name == "总督" else 2
-                Statistics.add2pushed_raffles(raffle_name,broadcast_type)
+                    # 如果不是总督就设置为2(本房间)
+                    broadcast_type = 0 if raffle_name == "总督" else 2
+                    Statistics.add2pushed_raffles(raffle_name,broadcast_type)
             # 节奏风暴
             elif msg_type == 6:
                 raffle_name = "二十倍节奏风暴"
-                Log.critical("%s 号弹幕监控检测到 %s 的 %s"%(self._area_id,real_roomid,raffle_name))
                 if config["Raffle_Handler"]["STORM"] != "False":
+                    Log.raffle("%s 号弹幕监控检测到 %s 的 %s"%(self._area_id,real_roomid,raffle_name))
                     Raffle_Handler.RaffleHandler.push2queue((real_roomid,),StormRaffleHandler.check)
-                Statistics.add2pushed_raffles(raffle_name)
+                    Statistics.add2pushed_raffles(raffle_name)
         
         # 论缩进的重要性,缩进太多永远都是: 
         # 网络波动, X 号弹幕姬延迟3s后重启
@@ -286,4 +288,4 @@ class DanmuRaffleHandler(BaseDanmu):
                 task_checkarea.cancel()
             await self.close()
             await asyncio.wait(pending)
-            Log.info("%s 号弹幕姬退出，剩余任务处理完毕"%self._area_id)
+            Log.warning("%s 号弹幕姬退出，剩余任务处理完毕"%self._area_id)

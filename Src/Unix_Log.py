@@ -1,5 +1,5 @@
 # BiliBiliHelper Python Version
-# Copy right (c) 2019 TheWanderingCoel
+# Copy right (c) 2019-2020 TheWanderingCoel
 # 本文件实现了项目的Unix下日志功能,彩色输出以及写入文件
 # 无奈ctypes的那个方法无法在Windows以外系统实现
 # 只能写了一个在Unix下实现的日志的模块
@@ -7,7 +7,7 @@
 import os
 import sys
 import time
-from config import *
+from Config import *
 
 class Loggger():
 
@@ -18,7 +18,7 @@ class Loggger():
         "info":1,
         "warning":2,
         "error":3,
-        "critical":4
+        "raffle":4
         }
         self.current_level = self.level[config["Log"]["LOG_LEVEL"]]
         # 统计日志行数
@@ -60,11 +60,11 @@ class Loggger():
             f.write(data+"\n")
         self.clean_log()
 
-    def critical(self,data,level=4):
+    def raffle(self,data,level=4):
         if self.current_level > level:
             return
-        data = f"{self.timestamp()} - CRITICAL: {data}"
-        print("\033[35;1m"+data+"\033[0m")
+        data = f"{self.timestamp()} - RAFFLE: {data}"
+        print("\033[36;1m"+data+"\033[0m")
         with open(self.filename,"a",encoding="utf-8") as f:
             f.write(data+"\n")
         self.clean_log()

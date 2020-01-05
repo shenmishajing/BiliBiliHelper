@@ -1,5 +1,5 @@
 # BiliBiliHelper Python Version
-# Copy right (c) 2019 TheWanderingCoel
+# Copy right (c) 2019-2020 TheWanderingCoel
 # 该代码实现了领取每日任务的功能
 # 代码根据metowolf大佬的PHP版本进行改写
 # PHP代码地址:https://github.com/metowolf/BilibiliHelper/blob/0.9x/src/plugins/Task.php
@@ -11,7 +11,7 @@ if platform.system() == "Windows":
 else:
     from Unix_Log import Log
 from Curl import Curl
-from config import *
+from Config import *
 from Base import std235959
 
 class Task():
@@ -67,11 +67,13 @@ class Task():
         payload = {}
         data = Curl().request_json("GET",url,headers=config["pcheaders"],params=payload)
 
-        if data["code"] != 0:
-            Log.error("「每日签到」失败")
-        else:
-            Log.info("「每日签到」成功")
+        if data["code"] == 0:
+            Log.info("「每日签到」成功，您已连续签到 %s 天，获得 %s，%s"%(data["data"]["hadSignDays"], data["data"]["text"], data["data"]["specialText"]))
             self.done.append("sign_info")
+        elif data["code"] == 1011040:
+            Log.warning("「每日签到」今日已签到过")
+        else:
+            Log.error("「每日签到」失败")
 
 
     def double_watch_info(self,value):
@@ -85,7 +87,7 @@ class Task():
         info = value["data"]["double_watch_info"]
 
         if info["status"] == 2:
-            Log.info("「双端观看直播」奖励已经领取")
+            Log.warning("「双端观看直播」奖励已经领取过")
             self.done.append("double_watch_info")
             return
 

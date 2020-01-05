@@ -1,5 +1,5 @@
 # BiliBiliHelper Python Version
-# Copy right (c) 2019 TheWanderingCoel
+# Copy right (c) 2019-2020 TheWanderingCoel
 # 该代码实现了自动扭蛋功能
 # 代码根据metowolf大佬的PHP版本进行改写
 # PHP代码地址:https://github.com/metowolf/BilibiliHelper/blob/0.9x/src/plugins/Capsule.php
@@ -11,7 +11,7 @@ if platform.system() == "Windows":
 else:
     from Unix_Log import Log
 from Curl import Curl
-from config import *
+from Config import *
 
 class Capsule():
 
@@ -26,7 +26,12 @@ class Capsule():
         
         count = self.info()
         while (count > 0):
-            count -= self.open(1)
+            if count >= 100:
+                count -= self.open(100)
+            elif count >= 10:
+                count -= self.open(10)
+            elif count > 0:
+                count -= self.open(1)
         
         self.lock = int(time.time()) + 86400
     
@@ -63,4 +68,4 @@ class Capsule():
         if len(awards) != 0:
             Log.info("扭蛋成功,获得 %s 个 %s"%(awards["num"],awards["name"]))
 
-        return True
+        return num
