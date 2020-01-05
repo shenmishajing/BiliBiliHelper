@@ -8,14 +8,14 @@
 [2]: https://codebeat.co/projects/github-com-thewanderingcoel-bilibilihelper-master "Codebeat"
 [3]: https://img.shields.io/github/downloads/TheWanderingCoel/BiliBiliHelper/total.svg "All releases badge"
 [4]: https://github.com/TheWanderingCoel/BiliBiliHelper/releases/ "All releases number"
-[5]: https://img.shields.io/badge/version-0.0.4-green.svg?longCache=true
+[5]: https://img.shields.io/badge/version-v0.0.5-green.svg?longCache=true
 [6]: https://github.com/TheWanderingCoel/BiliBiliHelper
 [7]: https://img.shields.io/badge/license-GPL%20V3-blue.svg?longCache=true
 [8]: https://github.com/TheWanderingCoel/BiliBiliHelper/blob/master/LICENSE
 
 | OS | Windows | macOS | Linux |
 | --- | --- | --- | --- |
-| Build Status | ![Build Status Windows](http://badges.herokuapp.com/travis.org/TheWanderingCoel/BiliBiliHelper?style=flat-square&env=BADGE=windows&label=Windows&branch=master) | ![Build Status macOS](http://badges.herokuapp.com/travis.org/TheWanderingCoel/BiliBiliHelper?style=flat-square&env=BADGE=osx&label=macOS&branch=master) | ![Build Status Linux](http://badges.herokuapp.com/travis.org/TheWanderingCoel/BiliBiliHelper?style=flat-square&env=BADGE=linux&label=Linux&branch=master) |
+| Build Status | [![Build Status Windows](http://badges.herokuapp.com/travis.com/TheWanderingCoel/BiliBiliHelper?style=flat-square&env=BADGE=windows&label=Windows&branch=master)](https://travis-ci.com/TheWanderingCoel/BiliBiliHelper) | [![Build Status macOS](http://badges.herokuapp.com/travis.com/TheWanderingCoel/BiliBiliHelper?style=flat-square&env=BADGE=osx&label=macOS&branch=master)](https://travis-ci.com/TheWanderingCoel/BiliBiliHelper) | [![Build Status Linux](http://badges.herokuapp.com/travis.com/TheWanderingCoel/BiliBiliHelper?style=flat-square&env=BADGE=linux&label=Linux&branch=master)](https://travis-ci.com/TheWanderingCoel/BiliBiliHelper) |
 
 # BiliBiliHelper
 B 站直播实用脚本Python版本
