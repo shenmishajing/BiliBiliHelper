@@ -105,7 +105,9 @@ Auth.work()
 
 if config["Function"]["RAFFLE_HANDLER"] != "False":
     loop.run_until_complete(asyncio.wait(daily_tasks+server_tasks+danmu_tasks+other_tasks))
-
+else:
+    loop.run_until_complete(asyncio.wait(daily_tasks))
+    
 api_thread.join()
 console_thread.join()
 

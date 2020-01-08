@@ -1,4 +1,4 @@
-# .gitignore_global
+# .gitignore
 ####################################
 ######## OS generated files ########
 ####################################
@@ -12,8 +12,8 @@ Icon?
 ehthumbs.db
 Thumbs.db
 *.pyc
-BiliBiliHelper.log
-Account.conf
+*.log
+Conf/Account.conf
 ####################################
 ############# packages #############
 ####################################

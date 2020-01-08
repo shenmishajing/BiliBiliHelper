@@ -77,6 +77,8 @@ class GiftSend:
         self.ruid = data["data"]["uid"]
         self.roomid = data["data"]["room_id"]
 
+        return True
+
     async def send(self,value):
         url = "https://api.live.bilibili.com/gift/v2/live/bag_send"
         csrf = account["Token"]["CSRF"]

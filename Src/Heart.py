@@ -16,21 +16,22 @@ from Config import *
 
 class Heart:
     
+    def __init__(self):
+        self.roomId = config["Live"]["ROOM_ID"]
+
     async def work(self):
-        if self.lock > int(time.time()):
-            return
         
-        roomId = config["Live"]["ROOM_ID"]
+        while 1:
 
-        await self.web(roomId)
-        await self.mobile(roomId)
+            await self.web(self.roomId)
+            await self.mobile(self.roomId)
 
-        await asyncio.sleep(300)
+            await asyncio.sleep(300)
     
     async def web(self,roomId):
         url = "https://api.live.bilibili.com/User/userOnlineHeart"
         payload = {
-            "room_id":roomId,
+            "room_id":self.roomId,
             "csrf_token":account["Token"]["CSRF"],
             "csrf":account["Token"]["CSRF"]
         }
@@ -45,7 +46,7 @@ class Heart:
     async def mobile(self,roomId):
         url = "https://api.live.bilibili.com/mobile/userOnlineHeart"
         payload = {
-            "room_id":roomId,
+            "room_id":self.roomId,
             "csrf_token":account["Token"]["CSRF"],
             "csrf":account["Token"]["CSRF"]
         }
