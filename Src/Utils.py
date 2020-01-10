@@ -115,8 +115,10 @@ class Utils:
             print("等级榜:"+str(user_level_rank))
 
     @staticmethod
-    async def fetch_bag_list(verbose=False,bagid=None,show=True):
+    async def fetch_bag_list(verbose=False, bagid=None, show=True, raw=False):
         data = await BasicRequest.req_fetch_bag_list()
+        if raw:
+            return data
         gift_list = []
         if show:
             print("查询可用礼物...")

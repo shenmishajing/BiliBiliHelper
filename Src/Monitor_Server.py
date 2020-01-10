@@ -137,7 +137,7 @@ class MonitorServer:
             if config["Raffle_Handler"]["STORM"] != "False":
                 Log.raffle("舰长监控检测到 %s 的 %s"%(room_id,raffle_name))
                 Raffle_Handler.RaffleHandler.push2queue((room_id,),StormRaffleHandler.check)
-                Statistics.add2pushed_raffles(raffle_name)
+                Statistics.add2pushed_raffles(raffle_name, 1)
 
     async def run_forever(self):
         while True:

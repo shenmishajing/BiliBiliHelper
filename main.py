@@ -29,11 +29,13 @@ from configcheck import ConfigCheck
 from API import API
 from Monitor_Server import MonitorServer
 from Version import version
+from CaseJudger import CaseJudger
 
 # 初始化所有class
 API = API()
 Auth = Auth()
 Capsule = Capsule()
+CaseJudger = CaseJudger()
 Coin2Silver = Coin2Silver()
 DailyBag = DailyBag()
 GiftSend = GiftSend()
@@ -77,6 +79,7 @@ Statistics(len(area_ids))
 
 daily_tasks = [
     Capsule.work(),
+    CaseJudger.work(),
     Coin2Silver.work(),
     DailyBag.work(),
     GiftSend.work(),
