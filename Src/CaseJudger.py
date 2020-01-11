@@ -56,6 +56,7 @@ class CaseJudger:
             return False
         else:
             self.caseId = data["data"]["id"]
+            Log.info("本次获取到的案件ID为 %s"%self.caseId)
             return True
     
     async def jury_case(self):
@@ -64,16 +65,20 @@ class CaseJudger:
             "jsonp": "jsonp",
             "cid": self.caseId
         }
-        data = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
-        self.voteRule = data["data"]["voteRule"]
-        self.voteBreak = data["data"]["voteBreak"]
-        self.voteDelete = data["data"]["voteDelete"]
+        data = await AsyncioCurl().request_json("GET", url, params=payload, headers=config["pcheaders"])
+        try:
+            self.voteRule = data["data"]["voteRule"]
+            self.voteBreak = data["data"]["voteBreak"]
+            self.voteDelete = data["data"]["voteDelete"]
+            Log.info("获取到案件ID为 %s 的投票率: %s 票否决, %s 票建议封禁, %s 票建议删除"%(self.caseId, self.voteRule, self.voteBreak,self.voteDelete))
+        except:
+            Log.error("获取案件投票信息失败")
 
     async def vote_case(self):
         url = "https://api.bilibili.com/x/credit/jury/vote"
         payload = {
             "jsonp": "jsonp",
-            "cid": self.case_id,
+            "cid": self.caseId,
             "vote": self.vote,
             "content": "",
             "likes": "",
@@ -81,5 +86,8 @@ class CaseJudger:
             "attr": 0,
             "csrf": account["Token"]["CSRF"]
         }
-        data = await AsyncioCurl.request_json("POST", url, data=payload, headers=config["pcheaders"])
-        Log.info("对 %s 案件采取 %s 操作"%(case_id, self.level.get(vote)))
+        data = await AsyncioCurl().request_json("POST", url, data=payload, headers=config["pcheaders"])
+        if data["code"] == 0:
+            Log.info("对 %s 案件采取 %s 操作 成功"%(self.caseId, self.level.get(self.vote)))
+        else:
+            Log.warning("对 %s 案件采取 %s 操作 失败"%(self.caseId, self.level.get(self.vote)))

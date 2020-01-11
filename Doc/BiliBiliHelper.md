@@ -2,7 +2,7 @@
 
 ## [Function] 功能区域
 ``CAPSULE`` 扭蛋功能,**True**开启**False**关闭  
-``CASEJUDGER`` 风纪委员仲裁,**True*8开启**False**关闭
+``CASEJUDGER`` 风纪委员仲裁,**True*开启**False**关闭 **为了维护风纪委员社区的公平性，请慎重使用此功能**  
 ``COIN2SILVER`` 硬币换银瓜子,**True**开启**False**关闭  
 ``GIFTSEND`` 自动送出礼物,**True**开启**False**关闭  
 ``GROUP`` 应援团签到功能,**True**开启**False**关闭  

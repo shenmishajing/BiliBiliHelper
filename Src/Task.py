@@ -69,6 +69,7 @@ class Task:
             self.done.append("sign_info")
         elif data["code"] == 1011040:
             Log.warning("「每日签到」今日已签到过")
+            self.done.append("sign_info")
         else:
             Log.error("「每日签到」失败")
 
