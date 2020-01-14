@@ -1,5 +1,5 @@
-import time
 import platform
+
 if platform.system() == "Windows":
     from Windows_Log import Log
 else:
@@ -11,10 +11,11 @@ from AsyncioCurl import AsyncioCurl
 from BasicRequest import BasicRequest
 from Raffle_Handler import RaffleHandler
 
+
 class StormRaffleHandler:
 
     @staticmethod
-    async def check(room_id,raffle_id=None):
+    async def check(room_id, raffle_id=None):
         if not await Utils.is_normal_room(room_id):
             return
         if raffle_id is not None:
@@ -29,14 +30,14 @@ class StormRaffleHandler:
             raffle_id = data["id"]
             if not Statistics.is_raffleid_duplicate(raffle_id):
                 raffle_name = "二十倍节奏风暴" if num == 20 else "节奏风暴"
-                Log.raffle("本次获取到 %s 的抽奖id为 %s"%(raffle_name, raffle_id))
-                list_available_raffleid.append((raffle_id,0))
+                Log.raffle("本次获取到 %s 的抽奖id为 %s" % (raffle_name, raffle_id))
+                list_available_raffleid.append((raffle_id, 0))
                 Statistics.add2raffle_ids(raffle_id)
-            for raffle_id,time_wanted in list_available_raffleid:
-                Timer.add2list_jobs(StormRaffleHandler.join,time_wanted,(room_id,raffle_id))
-    
+            for raffle_id, time_wanted in list_available_raffleid:
+                Timer.add2list_jobs(StormRaffleHandler.join, time_wanted, (room_id, raffle_id))
+
     @staticmethod
-    async def join(room_id,raffle_id):
+    async def join(room_id, raffle_id):
         await BasicRequest.enter_room(room_id)
         data = await BasicRequest.storm_req_join(raffle_id)
         Statistics.add2joined_raffles("节奏风暴(合计)")
@@ -44,5 +45,5 @@ class StormRaffleHandler:
             data = data["data"]
             gift_name = data["gift_name"]
             gift_num = data["gift_num"]
-            Log.raffle("房间 %s 节奏风暴抽奖结果: %s X %s"%(room_id,gift_name,gift_num))
-            Statistics.add2results(gift_name,int(gift_num))
+            Log.raffle("房间 %s 节奏风暴抽奖结果: %s X %s" % (room_id, gift_name, gift_num))
+            Statistics.add2results(gift_name, int(gift_num))

@@ -1,6 +1,7 @@
 import asyncio
 import aiohttp
 import platform
+
 if platform.system() == "Windows":
     from Windows_Log import Log
 else:
@@ -12,11 +13,13 @@ from aiosocksy.connector import ProxyConnector, ProxyClientRequest
 
 sem = asyncio.Semaphore(3)
 
+
 class AsyncioCurl:
 
     def __init__(self):
         self.connector = ProxyConnector()
-        self.session = aiohttp.ClientSession(connector=self.connector,request_class=ProxyClientRequest, timeout=aiohttp.ClientTimeout(total=4))
+        self.session = aiohttp.ClientSession(connector=self.connector, request_class=ProxyClientRequest,
+                                             timeout=aiohttp.ClientTimeout(total=4))
         self.proxies = None
         if config["Proxy"]["PROXY_TYPE"] != "None":
             self.proxies = {
@@ -36,10 +39,10 @@ class AsyncioCurl:
             Log.error('api提示没有登录')
             Log.error(json_body)
             return json_body
-        
+
         return json_body
 
-# method 类似于aiohttp里面的对应method，目前只支持GET、POST
+    # method 类似于aiohttp里面的对应method，目前只支持GET、POST
     async def request_json(self,
                            method,
                            url,
@@ -54,7 +57,8 @@ class AsyncioCurl:
                 if i >= 10:
                     Log.warning(url)
                 try:
-                    async with self.session.request(method, url, headers=headers, data=data, params=params, proxy=self.proxies) as rsp:
+                    async with self.session.request(method, url, headers=headers, data=data, params=params,
+                                                    proxy=self.proxies) as rsp:
                         if rsp.status == 200:
                             json_body = await self.__get_json_body(
                                 rsp)
@@ -62,7 +66,7 @@ class AsyncioCurl:
                                 await self.session.close()
                                 return json_body
                         elif rsp.status == 403:
-                            Log.warning("%s 403频繁,休眠240s"%url)
+                            Log.warning("%s 403频繁,休眠240s" % url)
                             await asyncio.sleep(240)
                         elif rsp.status == 404:
                             return None

@@ -4,9 +4,9 @@
 # 代码根据metowolf大佬的PHP版本进行改写
 # PHP代码地址:https://github.com/metowolf/BilibiliHelper/blob/0.9x/src/plugins/Task.php
 
-import time
 import asyncio
 import platform
+
 if platform.system() == "Windows":
     from Windows_Log import Log
 else:
@@ -15,15 +15,16 @@ from AsyncioCurl import AsyncioCurl
 from Config import *
 from Base import std235959ptm
 
+
 class Task:
 
     def __init__(self):
         self.done = []
-    
+
     async def work(self):
         if config["Function"]["TASK"] == "False":
             return
-        
+
         while 1:
             Log.info("检查每日任务")
             data = await self.check()
@@ -46,14 +47,14 @@ class Task:
 
         return data
 
-    async def sign_info(self,value):
+    async def sign_info(self, value):
         if len(value["data"]["sign_info"]) == 0:
             return
         if "sign_info" in self.done:
             return
-        
+
         Log.info("检查任务「每日签到」")
-        
+
         info = value["data"]["sign_info"]
 
         if info["status"] == 1:
@@ -65,7 +66,8 @@ class Task:
         data = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
 
         if data["code"] == 0:
-            Log.info("「每日签到」成功，您已连续签到 %s 天，获得 %s，%s"%(data["data"]["hadSignDays"], data["data"]["text"], data["data"]["specialText"]))
+            Log.info("「每日签到」成功，您已连续签到 %s 天，获得%s，%s" % (
+            data["data"]["hadSignDays"], data["data"]["text"], data["data"]["specialText"]))
             self.done.append("sign_info")
         elif data["code"] == 1011040:
             Log.warning("「每日签到」今日已签到过")
@@ -73,13 +75,12 @@ class Task:
         else:
             Log.error("「每日签到」失败")
 
-
-    async def double_watch_info(self,value):
+    async def double_watch_info(self, value):
         if len(value["data"]["double_watch_info"]) == 0:
             return
         if "double_watch_info" in self.done:
             return
-        
+
         Log.info("检查任务「双端观看直播」")
 
         info = value["data"]["double_watch_info"]
@@ -92,15 +93,15 @@ class Task:
         if info["mobile_watch"] != 1 or info["web_watch"] != 1:
             Log.warning("「双端观看直播」未完成，请等待")
             return
-        
+
         url = "https://api.live.bilibili.com/activity/v1/task/receive_award"
         payload = {
-            "task_id":"double_watch_task",
-            "csrf_token":account["Token"]["CSRF"],
-            "csrf":account["Token"]["CSRF"]
+            "task_id": "double_watch_task",
+            "csrf_token": account["Token"]["CSRF"],
+            "csrf": account["Token"]["CSRF"]
         }
         data = await AsyncioCurl().request_json("POST", url, headers=config["pcheaders"], data=payload)
-        
+
         if data["code"] != 0:
             Log.error("「双端观看直播」奖励领取失败")
         else:

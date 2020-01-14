@@ -4,9 +4,9 @@
 # 代码根据metowolf大佬的PHP版本进行改写
 # PHP代码地址:https://github.com/metowolf/BilibiliHelper/blob/0.9x/src/plugins/Capsule.php
 
-import time
 import asyncio
 import platform
+
 if platform.system() == "Windows":
     from Windows_Log import Log
 else:
@@ -15,12 +15,13 @@ from AsyncioCurl import AsyncioCurl
 from Base import std235959ptm
 from Config import *
 
-class Capsule():
+
+class Capsule:
 
     async def work(self):
         if config["Function"]["CAPSULE"] == "False":
             return
-        
+
         while 1:
             count = await self.info()
             while (count > 0):
@@ -30,9 +31,9 @@ class Capsule():
                     count -= await self.open(10)
                 elif count > 0:
                     count -= await self.open(1)
-        
+
             await asyncio.sleep(std235959ptm())
-    
+
     async def info(self):
         url = "https://api.live.bilibili.com/xlive/web-ucenter/v1/capsule/get_detail"
         data = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
@@ -41,19 +42,19 @@ class Capsule():
             Log.warning("扭蛋币余额查询异常")
             return 0
 
-        Log.info("当前还有 %s 枚扭蛋币"%data["data"]["normal"]["coin"])
-        
+        Log.info("当前还有 %s 枚扭蛋币" % data["data"]["normal"]["coin"])
+
         return data["data"]["normal"]["coin"]
 
-    async def open(self,num):
+    async def open(self, num):
         url = "https://api.live.bilibili.com/xlive/web-ucenter/v1/capsule/open_capsule"
         csrf = account["Token"]["CSRF"]
 
         payload = {
-            "type":"normal",
-            "count":num,
-            "csrf_token":csrf,
-            "csrf":csrf
+            "type": "normal",
+            "count": num,
+            "csrf_token": csrf,
+            "csrf": csrf
         }
         data = await AsyncioCurl().request_json("POST", url, headers=config["pcheaders"], data=payload)
 
@@ -61,8 +62,8 @@ class Capsule():
             Log.warning("扭蛋失败,请稍后重试")
             return 0
 
-        awards=data["data"]["awards"][0]
+        awards = data["data"]["awards"][0]
         if len(awards) != 0:
-            Log.info("扭蛋成功,获得 %s 个 %s"%(awards["num"],awards["name"]))
+            Log.info("扭蛋成功,获得 %s 个 %s" % (awards["num"], awards["name"]))
 
         return num

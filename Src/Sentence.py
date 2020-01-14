@@ -6,6 +6,7 @@
 
 import random
 
+
 class Sentence:
     def get_sentence(self):
         sentence = [

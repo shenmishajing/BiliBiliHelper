@@ -1,8 +1,9 @@
 import asyncio
 
+
 class RaffleHandler:
     instance = None
-    
+
     # 单例模式
     def __new__(cls, *args, **kw):
         if not cls.instance:
@@ -24,12 +25,12 @@ class RaffleHandler:
                 i = list(i)
                 i[0] = list(i[0])
                 for j in range(len(i[0])):
-                    if isinstance(i[0][j],tuple):
+                    if isinstance(i[0][j], tuple):
                         i[0][j] = await i[0][j][1](*(i[0][j][0]))
-                
+
                 task = asyncio.ensure_future(i[1](*i[0]))
                 tasklist.append(task)
-    
+
     @staticmethod
-    def push2queue(value,func):
-        RaffleHandler.instance.queue.put_nowait((value,func))
+    def push2queue(value, func):
+        RaffleHandler.instance.queue.put_nowait((value, func))

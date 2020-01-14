@@ -6,6 +6,7 @@ import os
 import tailer
 import logging
 import platform
+
 if platform.system() == "Windows":
     from Windows_Log import Log
 else:
@@ -16,40 +17,41 @@ from Sentence import Sentence
 from Version import version
 from APIUtils import APIUtils
 
+
 class API:
 
     def __init__(self):
         self.APIUtils = APIUtils()
 
     def get_log(self):
-        for line in tailer.follow(open(os.getcwd()+"/Log/BiliBiliHelper.log")):
+        for line in tailer.follow(open(os.getcwd() + "/Log/BiliBiliHelper.log")):
             data = {
                 "message": line
             }
             yield str(data) + "\n"
-    
+
     def work(self):
 
         app = Flask(__name__)
 
         logging.getLogger('werkzeug').disabled = True
         os.environ['WERKZEUG_RUN_MAIN'] = 'true'
-        
-        @app.route("/",methods=["GET"])
+
+        @app.route("/", methods=["GET"])
         def hello():
             data = {
                 "hello": "BiliBiliHelper"
             }
             return jsonify(data)
-        
-        @app.route("/version",methods=["GET"])
+
+        @app.route("/version", methods=["GET"])
         def version():
             data = {
                 "version": version
             }
             return jsonify(data)
-        
-        @app.route("/sentence",methods=["GET"])
+
+        @app.route("/sentence", methods=["GET"])
         def sentence():
             data = {
                 "sentence": Sentence().get_sentence()
@@ -63,14 +65,14 @@ class API:
         @app.route("/logs", methods=["GET", "DELETE"])
         def logs():
             APIUtils.handle_route_logs()
-        
+
         @app.route("/gift", methods=["GET", "POST"])
         def gifts():
             APIUtils.handle_route_gift()
 
         app.logger.disabled = True
         # 从配置文件导入配置
-        app.config.from_pyfile(os.getcwd()+"/Conf/Flask.conf")
+        app.config.from_pyfile(os.getcwd() + "/Conf/Flask.conf")
         try:
             if config["API"]["ENABLE"] == "True":
                 Log.info("正在启动API服务...")

@@ -9,6 +9,7 @@ import asyncio
 import aiohttp
 import Raffle_Handler
 import platform
+
 if platform.system() == "Windows":
     from Windows_Log import Log
 else:
@@ -20,8 +21,9 @@ from Pk_Raffle_Handler import PkRaffleHandler
 from Guard_Raffle_Handler import GuardRaffleHandler
 from Storm_Raffle_Handler import StormRaffleHandler
 
+
 class MonitorServer:
-    def __init__(self,address,password,client_session=None):
+    def __init__(self, address, password, client_session=None):
         if client_session is None:
             self.client = aiohttp.ClientSession()
         else:
@@ -46,7 +48,7 @@ class MonitorServer:
             total_len, header_len, _, cmd, _ = struct.unpack('!IHHII', msg[:16])
             body = msg[header_len:total_len]
             msg = msg[total_len:]
-            messages.append( { 'cmd': cmd, 'body': body } )
+            messages.append({'cmd': cmd, 'body': body})
         return messages
 
     def prepare_message(self, cmd, msg=''):
@@ -75,18 +77,18 @@ class MonitorServer:
     async def open(self):
         try:
             url = f"ws://{self.address}"
-            self.ws = await asyncio.wait_for(self.client.ws_connect(url),timeout=3)
+            self.ws = await asyncio.wait_for(self.client.ws_connect(url), timeout=3)
             self.accepted = True
         except Exception as e:
             Log.error("无法连接到舰长监控服务器,请检查网络连接以及端口是否开放")
             return False
-        Log.info("舰长监控已成功连接到服务器: %s"%url)
+        Log.info("舰长监控已成功连接到服务器: %s" % url)
         return True
 
     async def read_bytes(self):
         bytes_data = None
         try:
-            msg = await asyncio.wait_for(self.ws.receive(),timeout=600)
+            msg = await asyncio.wait_for(self.ws.receive(), timeout=600)
             bytes_data = msg.data
         # 如果超时
         except asyncio.TimeoutError:
@@ -112,7 +114,7 @@ class MonitorServer:
         except:
             Log.error("无法关闭与舰长监控服务器的连接")
         if not self.ws.closed():
-            Log.error("舰长监控服务器状态 %s"%self.ws.closed)
+            Log.error("舰长监控服务器状态 %s" % self.ws.closed)
 
     def handle_message(self, data):
         cmd = data["type"]
@@ -122,21 +124,21 @@ class MonitorServer:
         # 大航海
         if cmd == "guard":
             if config["Raffle_Handler"]["GUARD"] != "False":
-                Log.raffle("舰长监控检测到 %s 的 %s"%(room_id,raffle_name))
-                Raffle_Handler.RaffleHandler.push2queue((room_id,),GuardRaffleHandler.check)
+                Log.raffle("舰长监控检测到 %s 的 %s" % (room_id, raffle_name))
+                Raffle_Handler.RaffleHandler.push2queue((room_id,), GuardRaffleHandler.check)
                 # 如果不是总督就设置为2(本房间)
                 broadcast_type = 0 if raffle_name == "总督" else 2
-                Statistics.add2pushed_raffles(raffle_name,broadcast_type)
+                Statistics.add2pushed_raffles(raffle_name, broadcast_type)
         # PK(WIP)
         elif cmd == "pk":
             if config["Raffle_Handler"]["PK"] != "False":
-                Log.raffle("舰长监控检测到 %s 的 %s"%(room_id,raffle_name))
-                Raffle_Handler.RaffleHandler.push2queue((room_id,raffle_name,),PkRaffleHandler.check)
+                Log.raffle("舰长监控检测到 %s 的 %s" % (room_id, raffle_name))
+                Raffle_Handler.RaffleHandler.push2queue((room_id, raffle_name,), PkRaffleHandler.check)
         # 节奏风暴
         elif cmd == "storm":
             if config["Raffle_Handler"]["STORM"] != "False":
-                Log.raffle("舰长监控检测到 %s 的 %s"%(room_id,raffle_name))
-                Raffle_Handler.RaffleHandler.push2queue((room_id,),StormRaffleHandler.check)
+                Log.raffle("舰长监控检测到 %s 的 %s" % (room_id, raffle_name))
+                Raffle_Handler.RaffleHandler.push2queue((room_id,), StormRaffleHandler.check)
                 Statistics.add2pushed_raffles(raffle_name, 1)
 
     async def run_forever(self):

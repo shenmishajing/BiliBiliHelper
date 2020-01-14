@@ -2,6 +2,7 @@ from flask import Flask, jsonify, stream_with_context, Response
 from Config import *
 from Utils import *
 
+
 class APIUtils:
 
     def get_configs(self):
@@ -51,7 +52,7 @@ class APIUtils:
 
         }
         return jsonify(data)
-    
+
     def reload_configs(self):
         try:
             account.reload()
@@ -59,7 +60,7 @@ class APIUtils:
             return jsonify({"status": 0, "message": "OK"})
         except Exception as e:
             return jsonify({"status": 500, "message": str(e)})
-        
+
     def delete_logs(self):
         try:
             Log.clean_log(http_delete=True)
@@ -79,7 +80,7 @@ class APIUtils:
     # /logs
     def handle_route_logs(self, request):
         if request.method == "GET":
-            return Response(stream_with_context(self.get_log()),content_type='application/json')
+            return Response(stream_with_context(self.get_log()), content_type='application/json')
         elif request.method == "DELETE":
             return self.delete_logs()
 
