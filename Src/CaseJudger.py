@@ -27,14 +27,16 @@ class CaseJudger:
     async def work(self):
         while 1:
             status = await self.get_case()
-            if not status:
+            if status == 25014:
                 await asyncio.sleep(std235959ptm())
-            else:
+            elif status == 0:
                 await self.jury_case()
                 self.determine_action()
                 await self.vote_case()
 
                 await asyncio.sleep(3)
+            else:
+                await asyncio.sleep(600)
 
     def determine_action(self):
         vote_status = [self.voteRule, self.voteBreak, self.voteDelete]
@@ -46,6 +48,10 @@ class CaseJudger:
         elif vote_max_index == 2:
             self.vote = 4
 
+    # 返回值
+    # 0 没有异常正常结束
+    # 1 出现异常退出
+    # 25014 今日任务已完成
     async def get_case(self):
         url = "https://api.bilibili.com/x/credit/jury/caseObtain"
         payload = {
@@ -55,13 +61,18 @@ class CaseJudger:
         data = await AsyncioCurl().request_json("POST", url, data=payload, headers=config["pcheaders"])
         if data["code"] == 25014:
             Log.warning("今日审核已满,明天再来看看吧~")
-            return False
+            return 25014
         elif data["code"] == 0:
-            self.caseId = data["data"]["id"]
+            try:
+                self.caseId = data["data"]["id"]
+            except:
+                Log.error("案件ID获取失败")
+                return 1
             Log.info("本次获取到的案件ID为 %s" % self.caseId)
-            return True
+            return 0
         else:
-            Log.error
+            Log.error("获取案件失败，等待600秒后重试")
+            return 1
 
     async def jury_case(self):
         url = "https://api.bilibili.com/x/credit/jury/juryCase"
@@ -75,7 +86,7 @@ class CaseJudger:
             self.voteBreak = data["data"]["voteBreak"]
             self.voteDelete = data["data"]["voteDelete"]
             Log.info("获取到案件ID为 %s 的投票率: %s 票否决, %s 票建议封禁, %s 票建议删除" % (
-            self.caseId, self.voteRule, self.voteBreak, self.voteDelete))
+                self.caseId, self.voteRule, self.voteBreak, self.voteDelete))
         except:
             Log.error("获取案件投票信息失败")
 

@@ -12,12 +12,14 @@ if platform.system() == "Windows":
 else:
     from Unix_Log import Log
 from AsyncioCurl import AsyncioCurl
+from Base import std235959ptm
 from Config import *
 
 
 class GiftSend:
 
     def __init__(self):
+        self.index = 0
         self.uid = 0
         self.ruid = 0
         self.roomid = 0
@@ -29,8 +31,11 @@ class GiftSend:
         while 1:
             if self.ruid == 0:
                 status = await self.getRoomInfo()
-                if not status:
+                if status == 1:
                     return
+                elif status == 25014:
+                    self.index = 0
+                    await asyncio.sleep(std235959ptm())
 
             url = "https://api.live.bilibili.com/gift/v2/gift/bag_list"
             data = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
@@ -47,6 +52,10 @@ class GiftSend:
 
             await asyncio.sleep(600)
 
+    # 返回值
+    # 0 没有异常正常结束
+    # 1 出现异常退出
+    # 25014 今日任务已完成
     async def getRoomInfo(self):
         Log.info("正在生成直播间信息...")
 
@@ -56,13 +65,23 @@ class GiftSend:
         if "code" in data and data["code"] != 0:
             Log.warning("获取账号信息失败!" + data["message"])
             Log.warning("清空礼物功能禁用!")
-            return False
+            return 1
+
+        status = await Utils.is_intimacy_full_today(config["GiftSend"]["ROOM_ID"])
+        if status:
+            Log.warning("当前房间勋章亲密度已满,尝试切换房间...")
+            if len(config["Live"]["ROOM_ID"].split(",")) <= self.index + 1:
+                Log.warning("无其他可用房间，休眠到明天...")
+                return 250014
+            else:
+                self.index += 1
+                Log.warning("礼物赠送房间更改为 %s" % config["GiftSend"]["ROOM_ID"].split(",")[self.index])
 
         self.uid = data["data"]["mid"]
 
         url = "https://api.live.bilibili.com/room/v1/Room/get_info"
         payload = {
-            "id": config["Live"]["ROOM_ID"]
+            "id": config["GiftSend"]["ROOM_ID"].split(",")[self.index]
         }
 
         data = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"], params=payload)
@@ -70,14 +89,14 @@ class GiftSend:
         if data["code"] != 0:
             Log.warning("获取主播房间号失败!" + data["message"])
             Log.warning("清空礼物功能禁用!")
-            return False
+            return 1
 
         Log.info("直播间信息生成完毕!")
 
         self.ruid = data["data"]["uid"]
         self.roomid = data["data"]["room_id"]
 
-        return True
+        return 0
 
     async def send(self, value):
         url = "https://api.live.bilibili.com/gift/v2/live/bag_send"

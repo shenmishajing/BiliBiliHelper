@@ -120,6 +120,3 @@ class Console(Cmd):
                 await i[1](*i[0])
         else:
             await i()
-    
-    
-    

@@ -24,7 +24,7 @@ class Capsule:
 
         while 1:
             count = await self.info()
-            while (count > 0):
+            while count > 0:
                 if count >= 100:
                     count -= await self.open(100)
                 elif count >= 10:

@@ -290,3 +290,11 @@ class Utils:
         if not data["code"]:
             for i in data["data"]["text"]:
                 print(i)
+
+    # 检查当前房间勋章亲密度今日是否已满
+    @staticmethod
+    async def is_intimacy_full_today(roomid):
+        data = await BasicRequest.req_fetch_medal()
+        for medal in data["data"]["fansMedalList"]:
+            if medal["roomid"] == roomid:
+                return medal["today_feed"] == medal["day_limit"]
