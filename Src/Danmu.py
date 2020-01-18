@@ -258,11 +258,6 @@ class DanmuRaffleHandler(BaseDanmu):
                     Raffle_Handler.RaffleHandler.push2queue((real_roomid,), StormRaffleHandler.check)
                     Statistics.add2pushed_raffles(raffle_name)
 
-        # 论缩进的重要性,缩进太多永远都是:
-        # 网络波动, X 号弹幕姬延迟3s后重启
-        # X 号弹幕姬异常或主动断开，正在处理剩余信息
-        # X 号弹幕姬退出，剩余任务处理完毕
-        # Debug 这个问题Debug了两天
         return True
 
     async def run_forever(self):

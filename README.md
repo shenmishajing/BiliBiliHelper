@@ -140,6 +140,7 @@ http://live.bilibili.com/23058
  - blivedm             https://github.com/yjqiang/blivedm
  - bilibili-live-tools https://github.com/yjqiang/bilibili-live-tools
  - bili2.0             https://github.com/yjqiang/bili2.0
+ - bilibili-raffle     https://github.com/Billyzou0741326/bilibili-raffle
  - bilibili-live-monitor-js https://github.com/Billyzou0741326/bilibili-live-monitor-js
 
 

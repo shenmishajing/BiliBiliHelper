@@ -31,7 +31,7 @@ class MonitorServer:
         self.ws = None
         self.address = address
         self.password = password
-        self.accpeed = False
+        self.accepted = False
 
     @property
     def handshake(self):
@@ -79,7 +79,7 @@ class MonitorServer:
             url = f"ws://{self.address}"
             self.ws = await asyncio.wait_for(self.client.ws_connect(url), timeout=3)
             self.accepted = True
-        except Exception as e:
+        except:
             Log.error("无法连接到舰长监控服务器,请检查网络连接以及端口是否开放")
             return False
         Log.info("舰长监控已成功连接到服务器: %s" % url)
@@ -87,16 +87,18 @@ class MonitorServer:
 
     async def read_bytes(self):
         bytes_data = None
-        try:
-            msg = await asyncio.wait_for(self.ws.receive(), timeout=600)
+
+        msg = await self.ws.receive()
+
+        # 来自 https://github.com/TheWanderingCoel/BiliBiliHelper/issues/5
+        if msg.type == aiohttp.WSMsgType.binary:
             bytes_data = msg.data
-        # 如果超时
-        except asyncio.TimeoutError:
-            Log.error("10分钟没有收到数据包,服务器已断线?")
-            return None
-        except:
+        elif msg.type == aiohttp.WSMsgType.text:
+            pass
+        elif msg.type == aiohttp.WSMsgType.closed:
+            Log.warning("与舰长监控服务器的连接已经断开")
+        elif msg.type == aiohttp.WSMsgType.error:
             Log.error("舰长监控服务器未知错误")
-            return None
 
         return bytes_data
 
@@ -140,12 +142,19 @@ class MonitorServer:
                 Log.raffle("舰长监控检测到 %s 的 %s" % (room_id, raffle_name))
                 Raffle_Handler.RaffleHandler.push2queue((room_id,), StormRaffleHandler.check)
                 Statistics.add2pushed_raffles(raffle_name, 1)
+        # 小电视类抽奖
+        # else:
+        #    if config["Raffle_Handler"]["TV"] != "False":
+        #        Log.raffle("舰长监控检测到 %s 的 %s" % (room_id, raffle_name))
+        #        Raffle_Handler.RaffleHandler.push2queue((room_id,), TvRaffleHandler.check)
+        #        Statistics.add2pushed_raffles(raffle_name)
+
 
     async def run_forever(self):
         while True:
             is_open = await self.open()
             if not is_open and not self.accepted:
-                continue
+                break
             self.task_main = asyncio.ensure_future(self.read_datas())
             tasks = [self.task_main]
             _, pengding = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)

@@ -17,7 +17,7 @@ class Statistics:
     def print_statistics():
         inst = Statistics.instance
         print("本次推送抽奖统计:")
-        for k,v in inst.pushed_raffles.items():
+        for k, v in inst.pushed_raffles.items():
             print(f"{v:^5.0f} X {k}")
 
         print()
@@ -29,9 +29,9 @@ class Statistics:
         print("本次抽奖结果统计：")
         for k, v in inst.raffle_results.items():
             print(f"{v:^5} X {k}")
-        
+
     @staticmethod
-    def add2pushed_raffles(raffle_name,broadcast_type=0,num=1):
+    def add2pushed_raffles(raffle_name, broadcast_type=0, num=1):
         inst = Statistics.instance
         # broadcast_type 广播类型 0 全区广播 1 分区广播 2 本房间
         if broadcast_type == 0:
@@ -40,12 +40,12 @@ class Statistics:
             inst.pushed_raffles[raffle_name] = inst.pushed_raffles.get(raffle_name, 0) + int(num)
 
     @staticmethod
-    def add2joined_raffles(raffle_name,num=1):
+    def add2joined_raffles(raffle_name, num=1):
         inst = Statistics.instance
         inst.joined_raffles[raffle_name] = inst.joined_raffles.get(raffle_name, 0) + int(num)
 
     @staticmethod
-    def add2results(result,num=1):
+    def add2results(result, num=1):
         inst = Statistics.instance
         inst.raffle_results[result] = inst.raffle_results.get(result, 0) + int(num)
 
