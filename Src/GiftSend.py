@@ -14,7 +14,7 @@ else:
 from AsyncioCurl import AsyncioCurl
 from Base import std235959ptm
 from Config import *
-
+from Utils import Utils
 
 class GiftSend:
 
@@ -26,6 +26,9 @@ class GiftSend:
 
     async def work(self):
         if config["Function"]["GIFTSEND"] == "False":
+            return
+        if config["GiftSend"]["ROOM_ID"] == "":
+            Log.warning("自动送礼模块房间号未配置,已停止...")
             return
 
         while 1:
@@ -67,12 +70,12 @@ class GiftSend:
             Log.warning("清空礼物功能禁用!")
             return 1
 
-        status = await Utils.is_intimacy_full_today(config["GiftSend"]["ROOM_ID"])
+        status = await Utils.is_intimacy_full_today(config["GiftSend"]["ROOM_ID"].split(",")[self.index])
         if status:
             Log.warning("当前房间勋章亲密度已满,尝试切换房间...")
-            if len(config["Live"]["ROOM_ID"].split(",")) <= self.index + 1:
+            if len(config["GiftSend"]["ROOM_ID"].split(",")) <= self.index + 1:
                 Log.warning("无其他可用房间，休眠到明天...")
-                return 250014
+                return 25014
             else:
                 self.index += 1
                 Log.warning("礼物赠送房间更改为 %s" % config["GiftSend"]["ROOM_ID"].split(",")[self.index])

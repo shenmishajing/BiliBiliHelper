@@ -296,5 +296,5 @@ class Utils:
     async def is_intimacy_full_today(roomid):
         data = await BasicRequest.req_fetch_medal()
         for medal in data["data"]["fansMedalList"]:
-            if medal["roomid"] == roomid:
-                return medal["today_feed"] == medal["day_limit"]
+            if medal["roomid"] == int(roomid):
+                return medal["today_intimacy"] == medal["day_limit"]
