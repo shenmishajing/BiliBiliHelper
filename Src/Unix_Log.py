@@ -4,7 +4,7 @@
 # 无奈ctypes的那个方法无法在Windows以外系统实现
 # 只能写了一个在Unix下实现的日志的模块
 
-import os
+import sys
 import time
 from Config import *
 
@@ -76,10 +76,10 @@ class Loggger:
     def clean_log(self, startup=False, http_delete=False):
         if (self.count > int(config["Log"]["LOG_LIMIT"]) and config["Log"]["AUTO_CLEAN"] == True) or (
                 startup == True or http_delete == True):
-            open(os.getcwd() + "/Log/BiliBiliHelper.log", 'w').close()
+            open(sys.path[0] + "/Log/BiliBiliHelper.log", 'w').close()
             self.count = 0
         else:
             self.count += 1
 
 
-Log = Loggger(os.getcwd() + "/Log/BiliBiliHelper.log")
+Log = Loggger(sys.path[0] + "/Log/BiliBiliHelper.log")

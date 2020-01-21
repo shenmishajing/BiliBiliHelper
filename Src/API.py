@@ -3,6 +3,7 @@
 # BiliBiliHelper API核心模块
 
 import os
+import sys
 import tailer
 import logging
 import platform
@@ -24,7 +25,7 @@ class API:
         self.APIUtils = APIUtils()
 
     def get_log(self):
-        for line in tailer.follow(open(os.getcwd() + "/Log/BiliBiliHelper.log")):
+        for line in tailer.follow(open(sys.path[0] + "/Log/BiliBiliHelper.log")):
             data = {
                 "message": line
             }
@@ -72,7 +73,7 @@ class API:
 
         app.logger.disabled = True
         # 从配置文件导入配置
-        app.config.from_pyfile(os.getcwd() + "/Conf/Flask.conf")
+        app.config.from_pyfile(sys.path[0] + "/Conf/Flask.conf")
         try:
             if config["API"]["ENABLE"] == "True":
                 Log.info("正在启动API服务...")

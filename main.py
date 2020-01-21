@@ -1,5 +1,6 @@
+#!/usr/local/bin/python3
 import sys
-sys.path.append("Src")
+sys.path.append(sys.path[0] + "/src")
 import asyncio
 import Console
 import threading
