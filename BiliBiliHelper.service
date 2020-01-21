@@ -1,0 +1,13 @@
+# /usr/lib/systemd/system/bilibili.service
+
+[Unit]
+Description=BiliBiliHelper Manager
+Documentation=https://github.com/TheWanderingCoel/BiliBiliHelper
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/python3 /root/BiliBiliHelper/main.py
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
