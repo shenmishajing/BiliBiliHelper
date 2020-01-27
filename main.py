@@ -2,6 +2,7 @@ import sys
 sys.path.append(sys.path[0] + "/Src")
 import asyncio
 import Console
+import optparse
 import threading
 import Danmu_Monitor
 from Raffle_Handler import RaffleHandler

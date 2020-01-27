@@ -48,12 +48,12 @@ class TvRaffleHandler:
     @staticmethod
     async def join(real_roomid, raffle_id, raffle_type, raffle_name):
         await BasicRequest.enter_room(real_roomid)
-        data2 = await BasicRequest.tv_req_join(real_roomid, raffle_id, raffle_type)
+        data = await BasicRequest.tv_req_join(real_roomid, raffle_id, raffle_type)
         Log.raffle("参与了房间 %s 的 %s 抽奖" % (real_roomid, raffle_name))
-        Log.raffle("%s 抽奖状态: %s" % (raffle_name, "OK" if data2["code"] == 0 else data2["msg"]))
+        Log.raffle("%s 抽奖状态: %s" % (raffle_name, "OK" if data["code"] == 0 else data["msg"]))
         Statistics.add2joined_raffles("小电视类(合计)")
 
-        code = data2["code"]
+        code = data["code"]
         # tasklist = []
         if not code:
             # await asyncio.sleep(random.randint(170,190))
@@ -61,12 +61,12 @@ class TvRaffleHandler:
             # tasklist.append(task)
             # await asyncio.wait(tasklist, return_when=asyncio.FIRST_COMPLETED)
             Log.raffle("房间 %s %s 抽奖结果: %s X %s" % (
-                real_roomid, raffle_name, data2["data"]["award_name"], data2["data"]["award_num"]))
-            Statistics.add2results(data2["data"]["award_name"], int(data2["data"]["award_num"]))
+                real_roomid, raffle_name, data["data"]["award_name"], data["data"]["award_num"]))
+            Statistics.add2results(data["data"]["award_name"], int(data["data"]["award_num"]))
         elif code == -500:
             Log.error("-500繁忙,稍后重试")
             return False
-        elif code == 400:
+        elif code == -403 or data["msg"] == "访问被拒绝":
             Log.error("当前账号正在小黑屋中")
             return False
 

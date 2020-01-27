@@ -6,3 +6,4 @@ configobj
 pyinstaller
 flask
 tailer
+python-telegram-bot

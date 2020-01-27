@@ -298,3 +298,12 @@ class Utils:
         for medal in data["data"]["fansMedalList"]:
             if medal["roomid"] == int(roomid):
                 return medal["today_intimacy"] == medal["day_limit"]
+
+    # 今日还剩多少亲密度可以赠送
+    @staticmethod
+    async def value_to_full_intimacy_today(roomid):
+        data = await BasicRequest.req_fetch_medal()
+        for medal in data["data"]["fansMedalList"]:
+            if medal["roomid"] == int(roomid):
+                return medal["day_limit"] - medal["today_intimacy"]
+        return None

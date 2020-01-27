@@ -31,6 +31,7 @@ class Capsule:
                     count -= await self.open(10)
                 elif count > 0:
                     count -= await self.open(1)
+                asyncio.sleep(3)
 
             await asyncio.sleep(std235959ptm())
 

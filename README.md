@@ -70,22 +70,38 @@ B 站直播实用脚本Python版本
 
 ## 使用指南
 
+### 一.源码运行
  1. 下载（克隆）项目代码，初始化项目
 ```
 $ git clone https://github.com/TheWanderingCoel/BiliBiliHelper.git
 $ cd BiliBiliHelper
 ```
- 2. 使用 pip 工具进行安装。**如果不了解 PIP 工具的使用，可以直接到 https://github.com/TheWanderingCoel/BiliBiliHelper/releases 下载编译好的程序，解压后跳到第三步。**
+ 2. 使用 pip 工具进行安装
 ```
 $ pip install -r requirements.txt
 ```
- 3. 按照[说明](https://github.com/TheWanderingCoel/BiliBiliHelper/blob/master/Doc/Config.md)修改配置文件 `BiliBiliHelper.conf`，只需填写帐号密码即可
- 4. 运行测试
+ 3. 按照[说明](https://github.com/TheWanderingCoel/BiliBiliHelper/blob/master/Doc/Account.md)修改配置文件 `Account.conf`，只需填写帐号密码即可
+ 4. 运行
 ```
 $ python main.py
 ```
 
-<p align="center"><img width="680px" src="https://s2.ax1x.com/2019/03/07/kxF8k4.png"></p>
+<p align="center"><img width="680px" src="https://i.imgur.com/1l9R9An.png"></p>
+
+### 二.二进制程序运行
+1.下载[编译好的程序](https://github.com/TheWanderingCoel/BiliBiliHelper/releases)  
+2.按照[说明](https://github.com/TheWanderingCoel/BiliBiliHelper/blob/master/Doc/Account.md)修改配置文件 `Account.conf`，只需填写帐号密码即可  
+3.双击**BiliBiliHelper.exe**(Windows)或者**BiliBiliHelper**(macOS,Linux)
+
+### 三.使用Docker运行
+
+1.在命令行里输入
+```
+docker run -it --rm -e BiliBili_USER=你的B站账户名 -e BILIBILI_PASSWORD=你的B站密码 thewanderingcoel/bilibilihelper
+
+-itd 后台运行
+```
+
 
 
 ## 部署指南
@@ -107,8 +123,8 @@ Documentation=https://github.com/TheWanderingCoel/BiliBiliHelper
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python /path/to/your/BiliBiliHelper/main.py
-Restart=always
+ExecStart=/usr/local/bin/python3 /root/BiliBiliHelper/main.py
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
