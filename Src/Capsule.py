@@ -26,12 +26,16 @@ class Capsule:
             count = await self.info()
             while count > 0:
                 if count >= 100:
-                    count -= await self.open(100)
+                    status = await self.open(100)
                 elif count >= 10:
-                    count -= await self.open(10)
+                    status = await self.open(10)
                 elif count > 0:
-                    count -= await self.open(1)
-                asyncio.sleep(3)
+                    status = await self.open(1)
+                if not status:
+                    await asyncio.sleep(600)
+                else:
+                    count = await self.info()
+                    await asyncio.sleep(3)
 
             await asyncio.sleep(std235959ptm())
 

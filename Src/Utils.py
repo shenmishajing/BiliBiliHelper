@@ -308,13 +308,6 @@ class Utils:
                 return medal["day_limit"] - medal["today_intimacy"]
         return None
 
-    # 是否已经关注用户，没有则关注
-    @staticmethod
-    async def should_follow_user(uid):
-        data = await BasicRequest.check_follow(uid)
-        if not data["mid"]:
-            await BasicRequest.follow_user(uid)
-
     @staticmethod
     def is_normal_anchor(name):
         blacklist_words = ["拉黑", "黑名单", "脸皮厚", "没有奖品", "无奖", "脸皮厚", "ceshi", "测试", "脚本", "抽奖号", "星段位",
@@ -326,3 +319,10 @@ class Utils:
             if word in name:
                 return False
         return True
+
+    @staticmethod
+    def have_win_award(users):
+        for user in users:
+            if user["uid"] == int(account["Token"]["UID"]):
+                return True
+        return False
