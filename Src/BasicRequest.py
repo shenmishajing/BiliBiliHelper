@@ -102,6 +102,29 @@ class BasicRequest:
         response = await AsyncioCurl().request_json("POST", url, headers=config["pcheaders"])
         return response
 
+    # 天选时刻请求
+    @staticmethod
+    async def anchor_req_chcek(real_roomid):
+        url = "https://api.live.bilibili.com/xlive/lottery-interface/v1/Anchor/Check"
+        payload = {
+            "roomid": real_roomid
+        }
+        response = await AsyncioCurl().request_json("GET", url, params=payload, headers=config["pcheaders"])
+        return response
+
+    @staticmethod
+    async def anchor_req_join(raffle_id):
+        url = "https://api.live.bilibili.com/xlive/lottery-interface/v1/Anchor/Join"
+        payload = {
+            "id": raffle_id,
+            "platform": "pc",
+            "csrf_token": account["Token"]["CSRF"],
+            "csrf": account["Token"]["CSRF"],
+            "visit_id": ""
+        }
+        response = await AsyncioCurl().request_json("POST", url, data=payload, headers=config["pcheaders"])
+        return response
+
     # Utils.py 请求
     @staticmethod
     async def init_room(roomid):

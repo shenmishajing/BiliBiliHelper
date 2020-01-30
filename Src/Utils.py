@@ -307,3 +307,22 @@ class Utils:
             if medal["roomid"] == int(roomid):
                 return medal["day_limit"] - medal["today_intimacy"]
         return None
+
+    # 是否已经关注用户，没有则关注
+    @staticmethod
+    async def should_follow_user(uid):
+        data = await BasicRequest.check_follow(uid)
+        if not data["mid"]:
+            await BasicRequest.follow_user(uid)
+
+    @staticmethod
+    def is_normal_anchor(name):
+        blacklist_words = ["拉黑", "黑名单", "脸皮厚", "没有奖品", "无奖", "脸皮厚", "ceshi", "测试", "脚本", "抽奖号", "星段位",
+                           "水晶", "万兴神剪手", "自付邮费", "test", "Test", "TEST", "加密", "QQ", "測試", "VX", "vx", "ce",
+                           "shi", "这是一个", "lalall", "第一波", "第二波", "第三波", "测试用", "抽奖标题", "策是", "房间抽奖",
+                           "CESHI", "ceshi", "奖品A", "奖品B", "奖品C", "硬币", "无奖品", "白名单", "我是抽奖", "0.1", "五毛二",
+                           "一分", "一毛", "0.52", "0.66", "0.01", "0.77", "0.16", "照片", "穷", "0.5", "0.88", "双排"]
+        for word in blacklist_words:
+            if word in name:
+                return False
+        return True

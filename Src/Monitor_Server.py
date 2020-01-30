@@ -20,7 +20,7 @@ from Tv_Raffle_Handler import TvRaffleHandler
 from Pk_Raffle_Handler import PkRaffleHandler
 from Guard_Raffle_Handler import GuardRaffleHandler
 from Storm_Raffle_Handler import StormRaffleHandler
-
+from Anchor_Raffle_Handler import AnchorRaffleHandler
 
 class MonitorServer:
     def __init__(self, address, password, client_session=None):
@@ -119,7 +119,7 @@ class MonitorServer:
             Log.error("舰长监控服务器状态 %s" % self.ws.closed)
 
     def handle_message(self, data):
-        cmd = data["type"]
+        cmd = data["category"]
         raffle_name = data["name"]
         room_id = data["roomid"]
 
@@ -142,6 +142,13 @@ class MonitorServer:
                 Log.raffle("舰长监控检测到 %s 的 %s" % (room_id, raffle_name))
                 Raffle_Handler.RaffleHandler.push2queue((room_id,), StormRaffleHandler.check)
                 Statistics.add2pushed_raffles(raffle_name, 1)
+        # 天选
+        elif cmd == "anchor":
+            if config["Raffle_Handler"]["ANCHOR"] != "False":
+                Log.raffle("舰长监控检测到 %s 的 天选时刻" % room_id)
+                Raffle_Handler.RaffleHandler.push2queue((data,), AnchorRaffleHandler.join)
+                Statistics.add2pushed_raffles("天选时刻", 1)
+
         # 小电视类抽奖
         # else:
         #    if config["Raffle_Handler"]["TV"] != "False":
