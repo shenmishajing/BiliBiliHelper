@@ -7,7 +7,6 @@ import json
 import struct
 import asyncio
 import aiohttp
-import Raffle_Handler
 import platform
 
 if platform.system() == "Windows":
@@ -16,6 +15,7 @@ else:
     from Unix_Log import Log
 from Config import *
 from Statistics import Statistics
+from Raffle_Handler import RaffleHandler
 from Tv_Raffle_Handler import TvRaffleHandler
 from Pk_Raffle_Handler import PkRaffleHandler
 from Guard_Raffle_Handler import GuardRaffleHandler
@@ -82,7 +82,7 @@ class MonitorServer:
         except:
             Log.error("无法连接到舰长监控服务器,请检查网络连接以及端口是否开放")
             return False
-        Log.info("舰长监控已成功连接到服务器: %s" % url)
+        Log.info("监控服务器已连接到: %s" % url)
         return True
 
     async def read_bytes(self):
@@ -97,8 +97,10 @@ class MonitorServer:
             pass
         elif msg.type == aiohttp.WSMsgType.closed:
             Log.warning("与舰长监控服务器的连接已经断开")
+            self.accepted = False
         elif msg.type == aiohttp.WSMsgType.error:
             Log.error("舰长监控服务器未知错误")
+            self.accepted = False
 
         return bytes_data
 
@@ -121,44 +123,48 @@ class MonitorServer:
     def handle_message(self, data):
         cmd = data["category"]
         raffle_name = data["name"]
+        raffle_id = data["id"]
         room_id = data["roomid"]
+        expireAt = data["expireAt"]
 
         # 大航海
         if cmd == "guard":
             if config["Raffle_Handler"]["GUARD"] != "False":
-                Log.raffle("舰长监控检测到 %s 的 %s" % (room_id, raffle_name))
-                Raffle_Handler.RaffleHandler.push2queue((room_id,), GuardRaffleHandler.check)
+                Log.raffle("监控服务器检测到 %s 的 %s" % (room_id, raffle_name))
+                RaffleHandler.push2queue((room_id,), GuardRaffleHandler.check)
                 # 如果不是总督就设置为2(本房间)
                 broadcast_type = 0 if raffle_name == "总督" else 2
                 Statistics.add2pushed_raffles(raffle_name, broadcast_type)
         # PK(WIP)
         elif cmd == "pk":
             if config["Raffle_Handler"]["PK"] != "False":
-                Log.raffle("舰长监控检测到 %s 的 %s" % (room_id, raffle_name))
-                Raffle_Handler.RaffleHandler.push2queue((room_id, raffle_name,), PkRaffleHandler.check)
+                Log.raffle("监控服务器检测到 %s 的 %s" % (room_id, raffle_name))
+                RaffleHandler.push2queue((room_id,), PkRaffleHandler.check)
+                Statistics.add2pushed_raffles(raffle_name, 1)
         # 节奏风暴
         elif cmd == "storm":
             if config["Raffle_Handler"]["STORM"] != "False":
-                Log.raffle("舰长监控检测到 %s 的 %s" % (room_id, raffle_name))
-                Raffle_Handler.RaffleHandler.push2queue((room_id,), StormRaffleHandler.check)
+                Log.raffle("监控服务器检测到 %s 的 %s" % (room_id, raffle_name))
+                RaffleHandler.push2queue((room_id,), StormRaffleHandler.check)
                 Statistics.add2pushed_raffles(raffle_name, 1)
         # 天选
         elif cmd == "anchor":
             if config["Raffle_Handler"]["ANCHOR"] != "False":
-                Log.raffle("舰长监控检测到 %s 的 天选时刻" % room_id)
-                Raffle_Handler.RaffleHandler.push2queue((data,), AnchorRaffleHandler.join)
+                Log.raffle("监控服务器检测到 %s 的 天选时刻, 奖品为: %s" % (room_id, raffle_name))
+                RaffleHandler.push2queue((room_id, raffle_name, raffle_id, expireAt), AnchorRaffleHandler.join)
                 Statistics.add2pushed_raffles("天选时刻", 1)
 
         # 小电视类抽奖
         # else:
         #    if config["Raffle_Handler"]["TV"] != "False":
-        #        Log.raffle("舰长监控检测到 %s 的 %s" % (room_id, raffle_name))
+        #        Log.raffle("监控服务器检测到 %s 的 %s" % (room_id, raffle_name))
         #        Raffle_Handler.RaffleHandler.push2queue((room_id,), TvRaffleHandler.check)
         #        Statistics.add2pushed_raffles(raffle_name)
 
 
     async def run_forever(self):
         while True:
+            Log.info("正在连接监控服务器...")
             is_open = await self.open()
             if not is_open and not self.accepted:
                 break

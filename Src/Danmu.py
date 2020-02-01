@@ -9,7 +9,6 @@ import json
 import struct  # struct模块来解决str和其他二进制数据类型的转换
 import asyncio
 import aiohttp
-import Raffle_Handler
 import platform
 
 if platform.system() == "Windows":
@@ -19,6 +18,7 @@ else:
 from Utils import Utils
 from Config import *
 from Statistics import Statistics
+from Raffle_Handler import RaffleHandler
 from Tv_Raffle_Handler import TvRaffleHandler
 from Guard_Raffle_Handler import GuardRaffleHandler
 from Storm_Raffle_Handler import StormRaffleHandler
@@ -237,7 +237,7 @@ class DanmuRaffleHandler(BaseDanmu):
                 broadcast = msg_common.split("广播")[0]
                 if config["Raffle_Handler"]["TV"] != "False":
                     Log.raffle("%s 号弹幕监控检测到 %s 的 %s 个 %s" % (self._area_id, real_roomid, raffle_num, raffle_name))
-                    Raffle_Handler.RaffleHandler.push2queue((real_roomid, raffle_name,), TvRaffleHandler.check)
+                    RaffleHandler.push2queue((real_roomid, raffle_name,), TvRaffleHandler.check)
                     # 如果不是全区就设置为1(分区)
                     broadcast_type = 0 if broadcast == '全区' else 1
                     Statistics.add2pushed_raffles(raffle_name, broadcast_type, raffle_num)
@@ -246,7 +246,7 @@ class DanmuRaffleHandler(BaseDanmu):
                 raffle_name = msg_common.split("开通了")[-1][:2]
                 if config["Raffle_Handler"]["GUARD"] != "False":
                     Log.raffle("%s 号弹幕监控检测到 %s 的 %s" % (self._area_id, real_roomid, raffle_name))
-                    Raffle_Handler.RaffleHandler.push2queue((real_roomid,), GuardRaffleHandler.check)
+                    RaffleHandler.push2queue((real_roomid,), GuardRaffleHandler.check)
                     # 如果不是总督就设置为2(本房间)
                     broadcast_type = 0 if raffle_name == "总督" else 2
                     Statistics.add2pushed_raffles(raffle_name, broadcast_type)
@@ -255,7 +255,7 @@ class DanmuRaffleHandler(BaseDanmu):
                 raffle_name = "二十倍节奏风暴"
                 if config["Raffle_Handler"]["STORM"] != "False":
                     Log.raffle("%s 号弹幕监控检测到 %s 的 %s" % (self._area_id, real_roomid, raffle_name))
-                    Raffle_Handler.RaffleHandler.push2queue((real_roomid,), StormRaffleHandler.check)
+                    RaffleHandler.push2queue((real_roomid,), StormRaffleHandler.check)
                     Statistics.add2pushed_raffles(raffle_name)
 
         return True

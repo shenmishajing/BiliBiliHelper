@@ -28,16 +28,16 @@ class AnchorRaffleHandler:
                 Log.raffle("%s 天选时刻抽奖结果: 没有中奖" % real_roomid)
 
     @staticmethod
-    async def join(data):
-        if not Utils.is_normal_room(data["roomid"]):
+    async def join(real_roomid, name, raffle_id, expireAt):
+        if not await Utils.is_normal_room(real_roomid):
             return
-        if not Utils.is_normal_anchor(data["name"]):
-            Log.error("检测到异常的天选时刻")
+        if not Utils.is_normal_anchor(name):
+            Log.error("检测到 %s 的异常天选时刻" % real_roomid)
             return
-        data = await BasicRequest.anchor_req_join(data["id"])
+        data = await BasicRequest.anchor_req_join(raffle_id)
         if not data["code"]:
-            Log.raffle("参与了 %s 的 天选时刻" % data["roomid"])
+            Log.raffle("参与了 %s 的 天选时刻" % real_roomid)
             Statistics.add2joined_raffles("天选时刻(合计)")
-            Timer.add2list_jobs(AnchorRaffleHandler.join, data["expireAt"], (data["roomid"]))
+            Timer.add2list_jobs(AnchorRaffleHandler.check, expireAt + 3, [real_roomid])
         else:
-            Log.error("%s 天选时刻错误: %s" % (data["roomid"], data["message"]))
+            Log.error("%s 天选时刻错误: %s" % (real_roomid, data["message"]))
