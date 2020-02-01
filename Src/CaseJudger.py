@@ -25,6 +25,9 @@ class CaseJudger:
         }
 
     async def work(self):
+        if config["Function"]["CASEJUDGER"] == "False":
+            return
+
         while 1:
             status = await self.get_case()
             if status == 25014:

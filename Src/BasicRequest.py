@@ -46,18 +46,18 @@ class BasicRequest:
 
     # PK类的请求
     @staticmethod
-    async def pk_req_check():
-        url = "https://api.live.bilibili.com/xlive/lottery-interface/v2/pk/check"
+    async def pk_req_check(real_roomid):
+        url = "https://api.live.bilibili.com/xlive/lottery-interface/v1/pk/check?roomid=%s" % real_roomid
         response = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
         return response
 
     @staticmethod
-    async def pk_req_join(real_roomid, PK_raffleId, raffle_type):
+    async def pk_req_join(real_roomid, PK_raffleId):
         url = "https://api.live.bilibili.com/xlive/lottery-interface/v2/pk/join"
         payload = {
             "id": PK_raffleId,
             "roomid": real_roomid,
-            "type": raffle_type,
+            "type": "pk",
             "csrf": account["Token"]["CSRF"],
             "csrf_token": account["Token"]["CSRF"]
         }
