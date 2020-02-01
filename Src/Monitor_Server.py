@@ -6,6 +6,8 @@
 import json
 import struct
 import asyncio
+import time
+
 import aiohttp
 import platform
 
@@ -31,6 +33,7 @@ class MonitorServer:
         self.ws = None
         self.address = address
         self.password = password
+        self.task_main = None
         self.accepted = False
 
     @property
@@ -117,7 +120,7 @@ class MonitorServer:
             await self.ws.close()
         except:
             Log.error("无法关闭与舰长监控服务器的连接")
-        if not self.ws.closed():
+        if not self.ws.closed:
             Log.error("舰长监控服务器状态 %s" % self.ws.closed)
 
     def handle_message(self, data):
@@ -163,14 +166,17 @@ class MonitorServer:
 
 
     async def run_forever(self):
+        time_now = 0
         while True:
+            if int(time.time()) - time_now <= 10:
+                await asyncio.sleep(10)
             Log.info("正在连接监控服务器...")
+            time_now = int(time.time())
             is_open = await self.open()
             if not is_open and not self.accepted:
                 break
             self.task_main = asyncio.ensure_future(self.read_datas())
             tasks = [self.task_main]
-            _, pengding = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
+            _, pending = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
             await self.close()
-            await asyncio.wait(pengding)
             Log.info("舰长监控退出，剩余任务处理完毕")
