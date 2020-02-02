@@ -22,8 +22,8 @@ class AnchorRaffleHandler:
         if not data["code"]:
             data = data["data"]
             if Utils.have_win_award(data["award_users"]):
-                Log.raffle("%s 天选时刻抽奖结果: %s" % (real_roomid, data["name"]))
-                Statistics.add2results(data["name"], 1)
+                Log.raffle("%s 天选时刻抽奖结果: %s" % (real_roomid, data["award_name"]))
+                Statistics.add2results(data["award_name"], 1)
             else:
                 Log.raffle("%s 天选时刻抽奖结果: 没有中奖" % real_roomid)
 
