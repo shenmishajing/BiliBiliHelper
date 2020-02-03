@@ -2,7 +2,6 @@ import sys
 sys.path.append(sys.path[0] + "/Src")
 import asyncio
 import Console
-import optparse
 import threading
 import Danmu_Monitor
 from Raffle_Handler import RaffleHandler
@@ -26,6 +25,7 @@ from Sentence import Sentence
 from Timer import Timer
 from Config import *
 from configcheck import ConfigCheck
+from optparse import OptionParser
 from API import API
 from Monitor_Server import MonitorServer
 from Version import version
@@ -46,6 +46,12 @@ SilverBox = SilverBox()
 Task = Task()
 rafflehandler = RaffleHandler()
 MonitorServer = MonitorServer(config["Server"]["ADDRESS"], config["Server"]["PASSWORD"])
+
+parser = OptionParser()
+parser.add_option("-d", "--disable-console",
+                  action="store_true", dest="disable_console", default=False,
+                  help="disable console")
+(options, args) = parser.parse_args()
 
 # 开启时清理日志
 Log.clean_log(startup=True)
@@ -100,8 +106,9 @@ other_tasks = [
 api_thread = threading.Thread(target=API.work)
 api_thread.start()
 
-console_thread = threading.Thread(target=console.cmdloop)
-console_thread.start()
+if not options.disable_console:
+    console_thread = threading.Thread(target=console.cmdloop)
+    console_thread.start()
 
 # 先登陆一次,防止速度太快导致抽奖模块出错
 Auth.work()
@@ -110,8 +117,10 @@ if config["Function"]["RAFFLE_HANDLER"] != "False":
     loop.run_until_complete(asyncio.wait(daily_tasks+server_tasks+danmu_tasks+other_tasks))
 else:
     loop.run_until_complete(asyncio.wait(daily_tasks))
-    
+
 api_thread.join()
-console_thread.join()
+
+if not options.disable_console:
+    console_thread.join()
 
 loop.close()

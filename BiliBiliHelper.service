@@ -1,4 +1,4 @@
-# /usr/lib/systemd/system/bilibili.service
+# /etc/systemd/system/BiliBiliHelper.service
 
 [Unit]
 Description=BiliBiliHelper Manager
@@ -6,7 +6,7 @@ Documentation=https://github.com/TheWanderingCoel/BiliBiliHelper
 After=network.target
 
 [Service]
-ExecStart=/usr/local/bin/python3 /root/BiliBiliHelper/main.py
+ExecStart=/usr/local/bin/python3 /root/BiliBiliHelper/main.py -d
 Restart=on-failure
 
 [Install]
