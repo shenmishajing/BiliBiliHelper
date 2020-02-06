@@ -1,6 +1,8 @@
+import os
 import sys
 sys.path.append(sys.path[0] + "/Src")
 import asyncio
+import signal
 import Console
 import threading
 import Danmu_Monitor
@@ -56,6 +58,9 @@ parser.add_option("-d", "--disable-console",
 # 开启时清理日志
 Log.clean_log(startup=True)
 
+def signal_handler(signal, frame):
+    os._exit(0)
+
 print("""\033[32;1m
  ______     __     __         __     ______     __     __         __     __  __     ______     __         ______   ______     ______    
 /\  == \   /\ \   /\ \       /\ \   /\  == \   /\ \   /\ \       /\ \   /\ \_\ \   /\  ___\   /\ \       /\  == \ /\  ___\   /\  == \   
@@ -74,6 +79,9 @@ if config["Other"]["SENTENCE"] != "False":
 
 # 检查Config
 ConfigCheck()
+
+# 注册信号
+signal.signal(signal.SIGINT, signal_handler)
 
 loop = asyncio.get_event_loop()
 
