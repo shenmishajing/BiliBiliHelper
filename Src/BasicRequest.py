@@ -138,7 +138,10 @@ class BasicRequest:
             return
         data = {
             "room_id": room_id,
-            "csrf_token": account["Token"]["CSRF"]
+            "platform": "pc",
+            "csrf_token": account["Token"]["CSRF"],
+            "csrf": account["Token"]["CSRF"],
+            "visit_id": ""
         }
         url = "https://api.live.bilibili.com/room/v1/Room/room_entry_action"
         response = await AsyncioCurl().request_json("POST", url, data=data, headers=config["pcheaders"])
@@ -158,7 +161,7 @@ class BasicRequest:
 
     @staticmethod
     async def req_fetch_user_info():
-        url = "https://api.live.bilibili.com/i/api/liveinfo"
+        url = "http://api.live.bilibili.com/live_user/v1/UserInfo/live_info"
         response = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
         return response
 
