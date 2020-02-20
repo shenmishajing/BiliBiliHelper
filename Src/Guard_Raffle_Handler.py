@@ -39,7 +39,7 @@ class GuardRaffleHandler:
 
             list_available_raffleid = []
 
-            for j in data["data"]:
+            for j in data["data"]["guard"]:
                 raffle_id = j["id"]
                 if not Statistics.is_raffleid_duplicate(raffle_id):
                     Log.raffle("本次获取到的 大航海 抽奖id为 %s" % raffle_id)
