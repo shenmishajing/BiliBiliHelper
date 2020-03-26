@@ -16,13 +16,14 @@ from AsyncioCurl import AsyncioCurl
 
 class BasicRequest:
 
-    # 小电视,DokiDoki,摩天大楼之类的请求
+    # Gift Guard TV类Check
     @staticmethod
-    async def tv_req_check(real_roomid):
-        url = "https://api.live.bilibili.com/xlive/lottery-interface/v3/smalltv/Check?roomid=%s" % real_roomid
-        response = await AsyncioCurl().request_json("GET", url)
+    async def gift_req_check(real_roomid):
+        url = "https://api.live.bilibili.com/xlive/lottery-interface/v1/lottery/Check?roomid=%s" % real_roomid
+        response = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
         return response
 
+    # 小电视,DokiDoki,摩天大楼之类的请求
     @staticmethod
     async def tv_req_join(real_roomid, TV_raffleid, raffle_type):
         url = "https://api.live.bilibili.com/xlive/lottery-interface/v5/smalltv/join"
@@ -46,12 +47,6 @@ class BasicRequest:
 
     # PK类的请求
     @staticmethod
-    async def pk_req_check(real_roomid):
-        url = "https://api.live.bilibili.com/xlive/lottery-interface/v1/pk/check?roomid=%s" % real_roomid
-        response = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
-        return response
-
-    @staticmethod
     async def pk_req_join(real_roomid, PK_raffleId):
         url = "https://api.live.bilibili.com/xlive/lottery-interface/v2/pk/join"
         payload = {
@@ -65,12 +60,6 @@ class BasicRequest:
         return response
 
     # 大航海请求
-    @staticmethod
-    async def guard_req_check(real_roomid):
-        url = "https://api.live.bilibili.com/xlive/lottery-interface/v1/lottery/Check?roomid=%s" % real_roomid
-        response = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
-        return response
-
     @staticmethod
     async def guard_req_join(real_roomid, raffle_id):
         url = "https://api.live.bilibili.com/xlive/lottery-interface/v3/guard/join"

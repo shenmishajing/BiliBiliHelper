@@ -22,18 +22,23 @@ class PkRaffleHandler:
     async def check(real_roomid):
         if not await Utils.is_normal_room(real_roomid):
             return
-        data = await BasicRequest.pk_req_check(real_roomid)
+        data = await BasicRequest.gift_req_check(real_roomid)
 
         list_available_raffleid = []
 
-        checklen = data["data"]
+        checklen = data["data"]["pk"]
         try:
+            if len(checklen) == 0:
+                Log.error("检测到无效的大乱斗抽奖")
+                return
+
             for j in checklen:
                 raffle_id = j["id"]
                 Log.raffle("本次获取到的 大乱斗 抽奖id为 %s" % raffle_id)
                 list_available_raffleid.append(raffle_id)
         except:
             Log.error("检测到无效的大乱斗抽奖")
+            return
 
         tasklist = []
         for raffle_id in list_available_raffleid:

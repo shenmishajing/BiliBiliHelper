@@ -25,8 +25,8 @@ class TvRaffleHandler:
     async def check(real_roomid, raffle_name):
         if not await Utils.is_normal_room(real_roomid):
             return
-        data = await BasicRequest.tv_req_check(real_roomid)
-        checklen = data["data"]["list"]
+        data = await BasicRequest.gift_req_check(real_roomid)
+        checklen = data["data"]["gift"]
         list_available_raffleid = []
         try:
             for j in checklen:
@@ -40,6 +40,7 @@ class TvRaffleHandler:
                     Statistics.add2raffle_ids(raffle_id)
         except:
             Log.error("检测到无效的小电视类抽奖")
+            return
         # 暂时没啥用
         # num_aviable = len(list_available_raffleid)
         for raffle_id, raffle_type, time_wanted in list_available_raffleid:
