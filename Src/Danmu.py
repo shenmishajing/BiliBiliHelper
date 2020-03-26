@@ -234,13 +234,13 @@ class DanmuRaffleHandler(BaseDanmu):
                 else:
                     raffle_num = 1
                     raffle_name = str_gift
-                broadcast = msg_common.split("广播")[0]
+                broadcast = ''  # This method is abandoned
                 if config["Raffle_Handler"]["TV"] != "False":
                     Log.raffle("%s 号弹幕监控检测到 %s 的 %s 个 %s" % (self._area_id, real_roomid, raffle_num, raffle_name))
                     RaffleHandler.push2queue((real_roomid, raffle_name,), TvRaffleHandler.check)
                     # 如果不是全区就设置为1(分区)
                     broadcast_type = 0 if broadcast == '全区' else 1
-                    Statistics.add2pushed_raffles(raffle_name, broadcast_type, raffle_num)
+                    Statistics.add2pushed_raffles('小电视类', broadcast_type, raffle_num)
             # 大航海
             elif msg_type == 3:
                 raffle_name = msg_common.split("开通了")[-1][:2]
