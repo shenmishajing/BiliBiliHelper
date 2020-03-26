@@ -73,7 +73,7 @@ class BasicRequest:
 
     @staticmethod
     async def guard_req_join(real_roomid, raffle_id):
-        url = "https://api.live.bilibili.com/lottery/v3/Lottery/join"
+        url = "https://api.live.bilibili.com/xlive/lottery-interface/v3/guard/join"
         payload = {
             "roomid": real_roomid,
             "id": raffle_id,
