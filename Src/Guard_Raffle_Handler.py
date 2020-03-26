@@ -63,10 +63,8 @@ class GuardRaffleHandler:
         data = await BasicRequest.guard_req_join(real_roomid, raffle_id)
         Log.raffle("参与了房间 %s 的大航海抽奖" % (real_roomid))
         if not data["code"]:
-            for award in data["data"]["award_list"]:
-                result = re.search("(^获得|^)(.*)<%(\+|X)(\d*)%>", award['name'])
-                Statistics.add2results(result.group(2), result.group(4))
-            Log.raffle("房间 %s 大航海抽奖结果: %s" % (real_roomid, data["data"]["message"]))
+            Statistics.add2results(data["data"]["award_name"], data["data"]["award_num"])
+            Log.raffle("房间 %s 大航海抽奖结果: %s" % (real_roomid, data["message"]))
             Statistics.add2joined_raffles("大航海(合计)")
         else:
             Log.info(data)
