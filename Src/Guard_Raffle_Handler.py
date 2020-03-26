@@ -29,8 +29,8 @@ class GuardRaffleHandler:
             data = {"data": [{"id": raffle_id, "time": 65}]}
         else:
             for i in range(10):
-                data = await BasicRequest.guard_req_check(real_roomid)
-                if data["data"]:
+                data = await BasicRequest.gift_req_check(real_roomid)
+                if data["data"]["guard"]:
                     break
                 await asyncio.sleep(1)
             else:
