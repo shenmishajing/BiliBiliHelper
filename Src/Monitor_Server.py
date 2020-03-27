@@ -156,13 +156,12 @@ class MonitorServer:
                 Log.raffle("监控服务器检测到 %s 的 天选时刻, 奖品为: %s" % (room_id, raffle_name))
                 RaffleHandler.push2queue((room_id, raffle_name, raffle_id, expireAt), AnchorRaffleHandler.join)
                 Statistics.add2pushed_raffles("天选时刻", 1)
-
         # 小电视类抽奖
-        # else:
-        #    if config["Raffle_Handler"]["TV"] != "False":
-        #        Log.raffle("监控服务器检测到 %s 的 %s" % (room_id, raffle_name))
-        #        Raffle_Handler.RaffleHandler.push2queue((room_id,), TvRaffleHandler.check)
-        #        Statistics.add2pushed_raffles(raffle_name)
+        else:
+            if config["Raffle_Handler"]["TV"] != "False":
+                Log.raffle("监控服务器检测到 %s 的 %s" % (room_id, raffle_name))
+                Raffle_Handler.RaffleHandler.push2queue((room_id,), TvRaffleHandler.check)
+                Statistics.add2pushed_raffles(raffle_name)
 
 
     async def run_forever(self):

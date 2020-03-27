@@ -72,7 +72,7 @@ print("""\033[32;1m
 if config["Other"]["INFO_MESSAGE"] != "False":
     Log.info("BiliBiliHelper Python " + version)
 
-Log.info("Powered By TheWanderingCoel with love❤️")
+Log.info("Powered By TheWanderingCoel, kotoriのねこ and 洛水.山岭居室️")
 
 if config["Other"]["SENTENCE"] != "False":
     Log.info(Sentence().get_sentence())
@@ -122,7 +122,10 @@ if not options.disable_console:
 Auth.work()
 
 if config["Function"]["RAFFLE_HANDLER"] != "False":
-    loop.run_until_complete(asyncio.wait(daily_tasks+server_tasks+danmu_tasks+other_tasks))
+    if config["Server"]["PERFER_SERVER"] != "False":
+        loop.run_until_complete(asyncio.wait(daily_tasks+server_tasks+other_tasks))
+    else:
+        loop.run_until_complete(asyncio.wait(daily_tasks+danmu_tasks+other_tasks))
 else:
     loop.run_until_complete(asyncio.wait(daily_tasks))
 
