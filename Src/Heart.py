@@ -12,6 +12,8 @@ if platform.system() == "Windows":
 else:
     from Unix_Log import Log
 from AsyncioCurl import AsyncioCurl
+from BasicRequest import BasicRequest
+from Curl import Curl
 from Config import *
 
 
@@ -43,13 +45,11 @@ class Heart:
             Log.info("向直播间 %s 发送心跳包 (WEB)" % roomId)
 
     async def mobile(self, roomId):
-        url = "https://api.live.bilibili.com/mobile/userOnlineHeart"
+        url = "https://api.live.bilibili.com/heartbeat/v1/OnLine/mobileOnline"
         payload = {
             "room_id": self.roomId,
-            "csrf_token": account["Token"]["CSRF"],
-            "csrf": account["Token"]["CSRF"]
         }
-        data = await AsyncioCurl().request_json("POST", url, headers=config["pcheaders"], data=payload)
+        data = Curl().request_json("POST", url, headers=config["pcheaders"], data=payload)
 
         if data["code"] != 0:
             Log.warning("直播间 %s 心跳异常 (APP)" % roomId)
