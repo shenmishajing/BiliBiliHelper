@@ -12,6 +12,7 @@ else:
 from Config import *
 from Base import get_default, msign
 from AsyncioCurl import AsyncioCurl
+from Curl import Curl
 
 
 class BasicRequest:
@@ -134,6 +135,25 @@ class BasicRequest:
         }
         url = "https://api.live.bilibili.com/room/v1/Room/room_entry_action"
         response = await AsyncioCurl().request_json("POST", url, data=data, headers=config["pcheaders"])
+        return response
+
+    # Required for double_watch_task completion
+    @staticmethod
+    async def web_get_info_by_room(roomid=164725):
+        url = "http://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByUser?room_id=%s" % roomid
+        response = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
+        return response
+
+    @staticmethod
+    def app_get_info_by_room(roomid=164725):
+        url = "http://api.live.bilibili.com/xlive/app-room/v1/index/getInfoByUser"
+        params = {
+            "room_id": roomid,
+        }
+        headers = {
+            "User-Agent": "Mozilla/5.0 BiliDroid/5.51.1 (bbcallen@gmail.com)"
+        }
+        response = Curl().request_json("GET", url, headers=headers, params=params)
         return response
 
     @staticmethod

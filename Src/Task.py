@@ -12,6 +12,7 @@ if platform.system() == "Windows":
 else:
     from Unix_Log import Log
 from AsyncioCurl import AsyncioCurl
+from BasicRequest import BasicRequest
 from Config import *
 from Base import std235959ptm
 
@@ -27,6 +28,9 @@ class Task:
 
         while 1:
             Log.info("检查每日任务")
+
+            await self.web_info()
+            await self.app_info()
             data = await self.check()
 
             await self.double_watch_info(data)
@@ -74,6 +78,22 @@ class Task:
             self.done.append("sign_info")
         else:
             Log.error("「每日签到」失败")
+
+    async def web_info(self):
+        try:
+            response = await BasicRequest.web_get_info_by_room()
+            if response["code"] != 0:
+                Log.warning(f"web getInfoByRoom 返回错误: {response.get('message') or response.get('msg')}")
+        except Exception as exc:
+            Log.error(f"{exc}")
+
+    async def app_info(self):
+        try:
+            response = BasicRequest.app_get_info_by_room()
+            if response["code"] != 0:
+                Log.warning(f"app getInfoByRoom 返回错误: {response.get('message') or response.get('msg')}")
+        except Exception as exc:
+            Log.error(f"{exc}")
 
     async def double_watch_info(self, value):
         if len(value["data"]["double_watch_info"]) == 0:
