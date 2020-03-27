@@ -33,7 +33,7 @@ class Coin2Silver:
             "csrf_token": account["Token"]["CSRF"]
         }
 
-        data = await AsyncioCurl().request_json("POST", url, headers=config["pcheaders"], data=payload, sign=False)
+        data = await AsyncioCurl().request_json("POST", url, headers=config["pcheaders"], data=payload)
 
         if data["code"] != 0:
             Log.warning(data["message"])
