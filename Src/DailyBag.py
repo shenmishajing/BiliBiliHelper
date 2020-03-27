@@ -28,7 +28,7 @@ class DailyBag():
 
             await self.mobile()
 
-            if len(self.done >= 2):
+            if len(self.done) >= 2:
                 self.done = []
                 await asyncio.sleep(std235959ptm())
             else:
