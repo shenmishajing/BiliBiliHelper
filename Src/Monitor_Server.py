@@ -160,7 +160,7 @@ class MonitorServer:
         elif cmd == "gift":
             if config["Raffle_Handler"]["TV"] != "False":
                 Log.raffle("监控服务器检测到 %s 的 %s" % (room_id, raffle_name))
-                RaffleHandler.push2queue((room_id,), TvRaffleHandler.check)
+                RaffleHandler.push2queue((room_id, raffle_name,), TvRaffleHandler.check)
                 Statistics.add2pushed_raffles(raffle_name)
 
 
