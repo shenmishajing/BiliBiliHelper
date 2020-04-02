@@ -32,6 +32,8 @@ from API import API
 from Monitor_Server import MonitorServer
 from Version import version
 from CaseJudger import CaseJudger
+from MainDailyTask import MainDailyTask
+from MatchTask import MatchTask
 
 # 初始化所有class
 API = API()
@@ -47,6 +49,8 @@ Silver2Coin = Silver2Coin()
 SilverBox = SilverBox()
 Task = Task()
 rafflehandler = RaffleHandler()
+MainDailyTask = MainDailyTask()
+MatchTask = MatchTask()
 MonitorServer = MonitorServer(config["Server"]["ADDRESS"], config["Server"]["PASSWORD"])
 
 parser = OptionParser()
@@ -101,7 +105,9 @@ daily_tasks = [
     Heart.work(),
     Silver2Coin.work(),
     SilverBox.work(),
-    Task.work()
+    Task.work(),
+    MainDailyTask.work(),
+    MatchTask.work()
 ]
 server_tasks = [
     MonitorServer.run_forever()
