@@ -50,6 +50,10 @@ class GiftSend:
                 for each in data["data"]["list"]:
                     if each["expire_at"] >= data["data"]["time"] and each["expire_at"] <= data["data"]["time"] + int(
                             config["GiftSend"]["TIME"]):
+                        status = await Utils.is_intimacy_full_today(self.roomid)
+                        if status:
+                            Log.warning("当前房间勋章亲密度已满,正在退出任务...")
+                            break
                         await self.send(each)
                         await asyncio.sleep(3)
 
