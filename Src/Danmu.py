@@ -6,6 +6,7 @@
 
 import time
 import json
+import zlib
 import struct  # struct模块来解决str和其他二进制数据类型的转换
 import asyncio
 import aiohttp
@@ -121,6 +122,14 @@ class BaseDanmu:
                 # ||header_l...header_r|body_l...body_r||next_data_l...
                 tuple_header = self.structer.unpack_from(datas[data_l:])
                 len_data, len_header, ver, opt, seq = tuple_header
+
+                if ver == 2 and opt == 5:
+                    start = data_l + len_header
+                    end = data_l + len_data
+                    self.read_datas_compressed(datas[start:end])
+                    data_l += len_data
+                    continue
+
                 body_l = data_l + len_header
                 next_data_l = data_l + len_data
                 body = datas[body_l:next_data_l]
@@ -140,6 +149,25 @@ class BaseDanmu:
                     Log.warning(datas[data_l:next_data_l])
 
                 data_l = next_data_l
+
+    def read_datas_compressed(self, d):
+        d = zlib.decompress(d)
+        len_ = 0
+        max_ = len(d)
+        while len_ < max_:
+            len_data, len_header, ver, opt, seq = self.structer.unpack_from(d[len_:16+len_])
+
+            start = len_ + len_header
+            end = len_ + len_data
+            len_ += len_data
+
+            if opt == 3 or opt == 8:
+                pass
+            elif opt == 5:
+                if not self.handle_danmu(d[start:end]):
+                    return
+            else:
+                Log.warning(d[start:end])
 
     async def close(self):
         # 尝试关闭连接
