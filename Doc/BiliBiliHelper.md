@@ -2,14 +2,16 @@
 
 ## [Function] 功能区域
 ``CAPSULE`` 扭蛋功能,**True**开启**False**关闭  
-``CASEJUDGER`` 风纪委员仲裁,**True*开启**False**关闭 **为了维护风纪委员社区的公平性，请慎重使用此功能**  
+``CASEJUDGER`` 风纪委员仲裁,**True**开启**False**关闭 **为了维护风纪委员社区的公平性，请慎重使用此功能**  
 ``COIN2SILVER`` 硬币换银瓜子,**True**开启**False**关闭  
 ``GIFTSEND`` 自动送出礼物,**True**开启**False**关闭  
 ``GROUP`` 应援团签到功能,**True**开启**False**关闭  
 ``SILVER2COIN`` 银瓜子兑换硬币功能,**True**开启**False**关闭  
 ``SILVERBOX`` 自动领取银瓜子宝箱,**True**开启**False**关闭  
 ``TASK`` 自动领取每日任务,**True**开启**False**关闭  
-``RAFFLE_HANDLER`` 小电视之类抽奖,**True**开启**False**关闭  
+``RAFFLE_HANDLER``小电视之类抽奖,**True**开启**False**关闭  
+``MainDailyTask``主站日常任务,**True**开启**False**关闭  
+``MatchTask``赛事相关任务,**True**开启**False**关闭  
 
 ## [Coin2Silver] 硬币兑换银瓜子设置区域
 ``COIN`` 每天需要兑换多少枚硬币为银瓜子(数字)
@@ -26,6 +28,16 @@
 ``PK`` 是否参与PK抽奖,**True**开启**False**关闭  
 ``GUARD`` 是否参与大航海抽奖,**True**开启**False**关闭  
 ``STORM`` 是否参与节奏风暴抽奖,**True**开启**False**关闭  
+
+## [MainDailyTask] 主站日常任务区域
+``ROOM_ID`` up主id号,用于要观看投币分享的up主,用,分隔   
+``Watch`` 观看任务开关,**1**开启**0**关闭  
+``Coin`` 投币开关,**1**开启**0**关闭  
+``Share`` 分享开关,**1**开启**0**关闭  
+
+## [MatchTask] 赛事相关区域
+`` OpenCapsule``赛事抽奖开关,**True**开启**False**关闭  
+``Message``发送的弹幕
 
 ## [Log] 日志设置区域
 ``LOG_LEVEL`` 日志等级
