@@ -26,7 +26,7 @@ class MainDailyTask:
             
             #必须有房间号才能运行
             if config["MainDailyTask"]["ROOM_ID"] == "":
-                Log.warning("主站任务模块房间号未配置,已停止...")
+                Log.warning("主站任务模块up主号未配置,已停止...")
             else:
                 await self.watch()
                 await self.coin()
