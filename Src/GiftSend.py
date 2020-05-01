@@ -1,11 +1,10 @@
 # BiliBiliHelper Python Version
 # Copy right (c) 2019-2020 TheWanderingCoel
-# 该代码实现了自动送出即将过期礼物的功能
-# 代码根据metowolf大佬的PHP版本进行改写
-# PHP代码地址:https://github.com/metowolf/BilibiliHelper/blob/0.9x/src/plugins/GiftSend.php
+# 该代码实现了定时自动送出过期礼物的功能
 
 import asyncio
 import platform
+import time
 
 if platform.system() == "Windows":
     from Windows_Log import Log
@@ -23,41 +22,60 @@ class GiftSend:
         self.uid = 0
         self.ruid = 0
         self.roomid = 0
+        self.today = 0
 
     async def work(self):
+
         if config["Function"]["GIFTSEND"] == "False":
             return
         if config["GiftSend"]["ROOM_ID"] == "":
             Log.warning("自动送礼模块房间号未配置,已停止...")
             return
+        if int(config["GiftSend"]["TIME"]) >= 24:
+            Log.warning("定时送礼时间配置错误,已停止...")
+            return
 
         while 1:
-            if self.ruid == 0:
+            #到时间才送礼物
+            localtime = time.localtime(time.time())
+            if (localtime.tm_mday != self.today and localtime.tm_hour == int(config["GiftSend"]["TIME"])) or int(config["GiftSend"]["TIME"]) == -1 :
                 status = await self.getRoomInfo()
-                if status == 1:
+                if status == 0:
+                    Log.info("开始执行自动送礼物...")
+                    url = "https://api.live.bilibili.com/gift/v2/gift/bag_list"
+                    data = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
+                    if data["code"] != 0:
+                        Log.warning("背包查看失败!" + data["message"])
+                    if len(data["data"]["list"]) != 0:
+                        for each in data["data"]["list"]:
+                            IfExpired = each["expire_at"] >= data["data"]["time"] and each["expire_at"] <= data["data"]["time"] + int(config["GiftSend"]["GIFTTiME"])
+                            if IfExpired == True or int(config["GiftSend"]["GIFTTiME"]) == -1:
+                                NeedGift = await Utils.value_to_full_intimacy_today(self.roomid)
+                                SendGift = each
+                                #1个亿元相当于10个单位的亲密度，所以要除掉一些
+                                if each["gift_name"] == "亿元":
+                                    #向下取整
+                                    NeedGift = int ( NeedGift / 10 )
+                                    SendGift["gift_num"] = NeedGift
+                                #判断需要的礼物是否过多，避免浪费
+                                if each["gift_num"] >= NeedGift:
+                                    SendGift["gift_num"] = NeedGift
+                                await self.send(SendGift)
+                                await asyncio.sleep(9)
+                                status = await Utils.is_intimacy_full_today(self.roomid)
+                                if status:
+                                    Log.warning("当前房间勋章亲密度已满,正在退出任务...")
+                                    break
+                    else:
+                        Log.info("背包清空完毕，退出任务...")
+                        self.today = localtime.tm_mday
+                elif status == 1:
+                    Log.warning("清空礼物功能禁用!")
                     return
                 elif status == 25014:
                     self.index = 0
                     await asyncio.sleep(std235959ptm())
-
-            url = "https://api.live.bilibili.com/gift/v2/gift/bag_list"
-            data = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
-
-            if data["code"] != 0:
-                Log.warning("背包查看失败!" + data["message"])
-
-            if len(data["data"]["list"]) != 0:
-                for each in data["data"]["list"]:
-                    if each["expire_at"] >= data["data"]["time"] and each["expire_at"] <= data["data"]["time"] + int(
-                            config["GiftSend"]["TIME"]):
-                        status = await Utils.is_intimacy_full_today(self.roomid)
-                        if status:
-                            Log.warning("当前房间勋章亲密度已满,正在退出任务...")
-                            break
-                        await self.send(each)
-                        await asyncio.sleep(3)
-
-            await asyncio.sleep(600)
+            await asyncio.sleep(300)
 
     # 返回值
     # 0 没有异常正常结束
@@ -71,18 +89,21 @@ class GiftSend:
 
         if "code" in data and data["code"] != 0:
             Log.warning("获取账号信息失败!" + data["message"])
-            Log.warning("清空礼物功能禁用!")
             return 1
 
-        status = await Utils.is_intimacy_full_today(config["GiftSend"]["ROOM_ID"].split(",")[self.index])
-        if status:
-            Log.warning("当前房间勋章亲密度已满,尝试切换房间...")
-            if len(config["GiftSend"]["ROOM_ID"].split(",")) <= self.index + 1:
-                Log.warning("无其他可用房间，休眠到明天...")
-                return 25014
+        while 1:
+            # 房间轮询
+            status = await Utils.is_intimacy_full_today(config["GiftSend"]["ROOM_ID"].split(",")[self.index])
+            if status:
+                Log.warning("当前房间 %s 勋章亲密度已满,尝试切换房间..." % config["GiftSend"]["ROOM_ID"].split(",")[self.index])
+                if len(config["GiftSend"]["ROOM_ID"].split(",")) <= self.index + 1:
+                    Log.warning("无其他可用房间，休眠到明天...")
+                    return 25014
+                else:
+                    self.index += 1
             else:
-                self.index += 1
                 Log.warning("礼物赠送房间更改为 %s" % config["GiftSend"]["ROOM_ID"].split(",")[self.index])
+                break
 
         self.uid = data["data"]["mid"]
 
@@ -95,7 +116,6 @@ class GiftSend:
 
         if data["code"] != 0:
             Log.warning("获取主播房间号失败!" + data["message"])
-            Log.warning("清空礼物功能禁用!")
             return 1
 
         Log.info("直播间信息生成完毕!")

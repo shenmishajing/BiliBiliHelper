@@ -173,9 +173,14 @@ class MonitorServer:
             time_now = int(time.time())
             is_open = await self.open()
             if not is_open and not self.accepted:
-                break
-            self.task_main = asyncio.ensure_future(self.read_datas())
-            tasks = [self.task_main]
-            _, pending = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
-            await self.close()
-            Log.info("舰长监控退出，剩余任务处理完毕")
+                if config["Server"]["RECONNECT"] == "True":
+                    Log.warning("舰长监控无法连接，60后自动重连")
+                    await asyncio.sleep(60)
+                else:
+                    break
+            else:
+                self.task_main = asyncio.ensure_future(self.read_datas())
+                tasks = [self.task_main]
+                await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
+                await self.close()
+                Log.info("舰长监控退出，剩余任务处理完毕")
