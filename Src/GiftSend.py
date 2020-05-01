@@ -50,17 +50,17 @@ class GiftSend:
                         for each in data["data"]["list"]:
                             IfExpired = each["expire_at"] >= data["data"]["time"] and each["expire_at"] <= data["data"]["time"] + int(config["GiftSend"]["GIFTTiME"])
                             if IfExpired == True or int(config["GiftSend"]["GIFTTiME"]) == -1:
-                                NeedGife = await Utils.value_to_full_intimacy_today(self.roomid)
-                                SendGife = each
+                                NeedGift = await Utils.value_to_full_intimacy_today(self.roomid)
+                                SendGift = each
                                 #1个亿元相当于10个单位的亲密度，所以要除掉一些
                                 if each["gift_name"] == "亿元":
                                     #向下取整
-                                    NeedGife = int ( NeedGife / 10 )
-                                    SendGife["gift_num"] = NeedGife
+                                    NeedGift = int ( NeedGift / 10 )
+                                    SendGift["gift_num"] = NeedGift
                                 #判断需要的礼物是否过多，避免浪费
-                                if each["gift_num"] >= NeedGife:
-                                    SendGife["gift_num"] = NeedGife
-                                await self.send(SendGife)
+                                if each["gift_num"] >= NeedGift:
+                                    SendGift["gift_num"] = NeedGift
+                                await self.send(SendGift)
                                 await asyncio.sleep(9)
                                 status = await Utils.is_intimacy_full_today(self.roomid)
                                 if status:
