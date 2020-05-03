@@ -46,6 +46,8 @@ class MatchTask:
 
             Log.info("今日全部赛事任务完成")
 
+            await asyncio.sleep(3)
+
             if config["MatchTask"]["OpenCapsule"] == "True":
                 await self.LPLOpenCapsule()
 
@@ -53,7 +55,7 @@ class MatchTask:
                 
                 await self.KPLOpenCapsule()
 
-            await asyncio.sleep(2*360)
+            await asyncio.sleep(3600)
 
     async def LPLOpenCapsule(self):
 
@@ -165,7 +167,7 @@ class MatchTask:
    
     async def KPLTask(self):
         data = await self.GetSignTask_Request(27)
-        if data["data"]["status"] == 3:
+        if data["data"]["status"] == 3 or data["data"]["status"] == 1:
             Log.info("开始执行KPL赛事签到")
         elif data["data"]["status"] == 6:
             Log.info("今日KPL赛事已经签到")
@@ -177,7 +179,7 @@ class MatchTask:
         if(data["code"] == 0):
             if data["data"]["status"] == 1:
                 for awards in data["data"]["awards"]:
-                     Log.raffle("LPL签到获得: %s X %s" % (awards["title"], awards["num"]))
+                     Log.raffle("KPL签到获得: %s X %s" % (awards["title"], awards["num"]))
             else:
                  Log.error("签到错误 %s" % (data["message"]))
         else:
@@ -185,10 +187,10 @@ class MatchTask:
 
     async def LPLTask(self):
         data = await self.GetSignTask_Request(25)
-        if data["data"]["status"] == 3:
+        if data["data"]["status"] == 3 or data["data"]["status"] == 1:
             Log.info("开始执行OWL赛事签到")
-        if data["data"]["status"] == 6:
-            Log.info("今日LPL赛事已经签到")
+        elif data["data"]["status"] == 6:
+            Log.info("今日OWL赛事已经签到")
             return
         else:
             return    
@@ -205,9 +207,9 @@ class MatchTask:
     
     async def LPLShare(self):
         data = await self.GetShareTask_Request(25)
-        if data["data"]["status"] == 3:
+        if data["data"]["status"] == 3 or data["data"]["status"] == 1:
             Log.info("开始执行LPL赛事分享")
-        if data["data"]["status"] == 6: 
+        elif data["data"]["status"] == 6: 
             Log.info("今日LPL赛事已经分享")
             return
         else:
@@ -224,9 +226,9 @@ class MatchTask:
 
     async def OWLTask(self):
         data = await self.GetSignTask_Request(26)
-        if data["data"]["status"] == 3:
+        if data["data"]["status"] == 3 or data["data"]["status"] == 1:
             Log.info("开始执行OWL赛事签到")
-        if data["data"]["status"] == 6: 
+        elif data["data"]["status"] == 6: 
             Log.info("OWL赛事已经签到")
             return
         else:
@@ -244,10 +246,10 @@ class MatchTask:
 
     async def OWLShare(self):
         data = await self.GetShareTask_Request(26)
-        if data["data"]["status"] == 3:
+        if data["data"]["status"] == 3 or data["data"]["status"] == 1:
             Log.info("开始执行OWL赛事分享")
         elif data["data"]["status"] == 6: 
-            Log.info("OWL赛事已经分享")
+            Log.info("今日OWL赛事已经分享")
             return
         else:
             return
