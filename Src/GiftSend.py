@@ -23,6 +23,7 @@ class GiftSend:
         self.ruid = 0
         self.roomid = 0
         self.today = 0
+        self.mode = 0
 
     async def work(self):
 
@@ -31,51 +32,85 @@ class GiftSend:
         if config["GiftSend"]["ROOM_ID"] == "":
             Log.warning("自动送礼模块房间号未配置,已停止...")
             return
-        if int(config["GiftSend"]["TIME"]) >= 24:
+
+        if float(config["GiftSend"]["TIME"]) >= 0 and float(config["GiftSend"]["TIME"]) < 24:
+            # 定时送礼模式
+            self.mode = 1
+        elif float(config["GiftSend"]["TIME"]) < 0:
+            # 循环送礼模式
+            self.mode = 2
+        else:
+            # 一脸懵逼模式
             Log.warning("定时送礼时间配置错误,已停止...")
             return
 
         while 1:
-            #到时间才送礼物
             localtime = time.localtime(time.time())
-            if (localtime.tm_mday != self.today and localtime.tm_hour == int(config["GiftSend"]["TIME"])) or int(config["GiftSend"]["TIME"]) == -1 :
-                status = await self.getRoomInfo()
-                if status == 0:
-                    Log.info("开始执行自动送礼物...")
-                    url = "https://api.live.bilibili.com/gift/v2/gift/bag_list"
-                    data = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
-                    if data["code"] != 0:
-                        Log.warning("背包查看失败!" + data["message"])
-                    if len(data["data"]["list"]) != 0:
-                        for each in data["data"]["list"]:
-                            IfExpired = each["expire_at"] >= data["data"]["time"] and each["expire_at"] <= data["data"]["time"] + int(config["GiftSend"]["GIFTTiME"])
-                            if IfExpired == True or int(config["GiftSend"]["GIFTTiME"]) == -1:
-                                NeedGift = await Utils.value_to_full_intimacy_today(self.roomid)
-                                SendGift = each
-                                #1个亿元相当于10个单位的亲密度，所以要除掉一些
-                                if each["gift_name"] == "亿元":
-                                    #向下取整
-                                    NeedGift = int ( NeedGift / 10 )
-                                    SendGift["gift_num"] = NeedGift
-                                #判断需要的礼物是否过多，避免浪费
-                                if each["gift_num"] >= NeedGift:
-                                    SendGift["gift_num"] = NeedGift
-                                await self.send(SendGift)
-                                await asyncio.sleep(9)
-                                status = await Utils.is_intimacy_full_today(self.roomid)
-                                if status:
-                                    Log.warning("当前房间勋章亲密度已满,正在退出任务...")
-                                    break
-                    else:
-                        Log.info("背包清空完毕，退出任务...")
+            if self.mode == 1:
+                if (localtime.tm_mday != self.today and localtime.tm_hour == int(config["GiftSend"]["TIME"])):
+                    status = await self.SendGift()
+                    if status == 2 or status == 25014:
                         self.today = localtime.tm_mday
+                        # 如果定时送礼有勋章没有填完，得清空轮询，防止第二天轮到的并不是第一个勋章
+                        self.index = 0
+                        Log.info("本次定时送礼完成，睡眠到明天")
+                        await asyncio.sleep(std235959ptm())
+                    elif status == 1:
+                        return
+                await asyncio.sleep(60)
+
+            elif self.mode == 2:
+                # 判断是否已经到另一天
+                if localtime.tm_mday != self.today:
+                    self.today = localtime.tm_mday
+                    self.index = 0 # 如果到了清空轮询，防止还是原来的勋章
+                status = await self.SendGift()
+                if status == 0 or status == 25014:
+                    SleepTime = int(-float(config["GiftSend"]["TIME"])*3600)
+                    Log.info("本次循环送礼完成，睡眠时间 %s s" % SleepTime)
+                    await asyncio.sleep(SleepTime)
                 elif status == 1:
-                    Log.warning("清空礼物功能禁用!")
                     return
-                elif status == 25014:
-                    self.index = 0
-                    await asyncio.sleep(std235959ptm())
-            await asyncio.sleep(300)
+
+    # 返回值
+    # 0 没有异常正常结束
+    # 1 出现异常退出
+    # 2 背包清空完毕
+    # 25014 今日任务已完成
+    async def SendGift(self):
+        status = await self.getRoomInfo()
+        if status == 0:
+            Log.info("开始执行自动送礼物...")
+            url = "https://api.live.bilibili.com/gift/v2/gift/bag_list"
+            data = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
+            if data["code"] != 0:
+                Log.warning("背包查看失败!" + data["message"])
+            if len(data["data"]["list"]) != 0:
+                for each in data["data"]["list"]:
+                    IfExpired = each["expire_at"] >= data["data"]["time"] and each["expire_at"] <= data["data"]["time"] + int(config["GiftSend"]["GIFTTiME"])
+                    if IfExpired == True or int(config["GiftSend"]["GIFTTiME"]) == -1:
+                        NeedGift = await Utils.value_to_full_intimacy_today(self.roomid)
+                        SendGift = each
+                        # 1个亿元相当于10个单位的亲密度，所以要除掉一些
+                        if each["gift_name"] == "亿元":
+                            # 向下取整
+                            NeedGift = int ( NeedGift / 10 )
+                            SendGift["gift_num"] = NeedGift
+                        # 判断需要的礼物是否过多，避免浪费
+                        if each["gift_num"] >= NeedGift:
+                            SendGift["gift_num"] = NeedGift
+                        await self.send(SendGift)
+                        await asyncio.sleep(6)
+                        status = await Utils.is_intimacy_full_today(self.roomid)
+                        if status:
+                            Log.warning("当前房间勋章亲密度已满,正在退出任务...")
+                            return 0
+            else:
+                Log.info("背包清空完毕，退出任务...")
+                return 2
+        elif status == 1:
+            Log.warning("清空礼物功能禁用!")
+        return status
 
     # 返回值
     # 0 没有异常正常结束
