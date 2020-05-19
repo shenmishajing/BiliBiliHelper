@@ -65,7 +65,13 @@ class GiftSend:
                     self.today = localtime.tm_mday
                     self.index = 0 # 如果到了清空轮询，防止还是原来的勋章
                 status = await self.SendGift()
-                if status == 0 or status == 25014:
+                if  status == 25014:
+                    self.today = localtime.tm_mday
+                    # 如果定时送礼有勋章没有填完，得清空轮询，防止第二天轮到的并不是第一个勋章
+                    self.index = 0
+                    Log.info("本次循环送礼完成，睡眠到明天")
+                    await asyncio.sleep(std235959ptm())
+                elif status == 0  or status == 2:
                     SleepTime = int(-float(config["GiftSend"]["TIME"])*3600)
                     Log.info("本次循环送礼完成，睡眠时间 %s s" % SleepTime)
                     await asyncio.sleep(SleepTime)

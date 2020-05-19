@@ -36,7 +36,6 @@ class CaseJudger:
                 await self.jury_case()
                 self.determine_action()
                 await self.vote_case()
-
                 await asyncio.sleep(3)
             else:
                 await asyncio.sleep(600)
@@ -44,7 +43,9 @@ class CaseJudger:
     def determine_action(self):
         vote_status = [self.voteRule, self.voteBreak, self.voteDelete]
         vote_max_index = vote_status.index(max(vote_status))
-        if vote_max_index == 0:
+        if self.voteRule  == self.voteBreak and self.voteDelete == self.voteRule:
+            self.vote = 4
+        elif vote_max_index == 0:
             self.vote = 2
         elif vote_max_index == 1:
             self.vote = 1
