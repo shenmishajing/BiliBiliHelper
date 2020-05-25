@@ -35,7 +35,8 @@ class APIUtils:
             },
             "Other": {
                 "info_message": config["Other"]["INFO_MESSAGE"],
-                "sentence": config["Other"]["SENTENCE"]
+                "sentence": config["Other"]["SENTENCE"],
+                "cancel_command": config["Other"]["CANCEL_COMMAND"]
             },
             "Proxy": {
                 "proxy_type": config["Proxy"]["PROXY_TYPE"],

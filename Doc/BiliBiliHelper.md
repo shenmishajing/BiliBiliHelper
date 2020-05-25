@@ -51,6 +51,7 @@
 ## [Other] 其他设置区域
 ``INFO_MESSAGE`` 欢迎信息,**True**开启**False**关闭  
 ``SENTENCE`` 名句,强烈推荐开启,**True**开启**False**关闭  
+``CANCEL_COMMAND`` 控制台中取消当前操作的指令，若与想发送的弹幕冲突可以设为其他值，建议不超过6个字符
 
 ## [Proxy] 代理设置区域
 ``PROXY_TYPE`` 代理类型,支持None,Http和Socks5  
