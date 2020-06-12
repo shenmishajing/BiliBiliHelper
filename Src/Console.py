@@ -46,6 +46,7 @@ class Console(Cmd):
         print("|１０当前拥有的扭蛋币　　　　　|")
         print("|１１开扭蛋币　　　　　　　　　|")
         print("|１２退出软件　　　　　　　　　|")
+        print("|注：执行时输入%s可取消命令|" % (config["Other"]["CANCEL_COMMAND"].center(6)))
         print(" ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣ ")
 
         
@@ -72,12 +73,21 @@ class Console(Cmd):
         
     def do_6(self, line):
         msg = input("请输入要发送的信息:")
+        if msg == config["Other"]["CANCEL_COMMAND"]:
+            print("操作取消")
+            return
         roomid = input("请输入要发送的房间号:")
+        if roomid == config["Other"]["CANCEL_COMMAND"]:
+            print("操作取消")
+            return
         real_roomid = fetch_real_roomid(roomid)
         self.append2list_console([[msg, real_roomid], Utils.send_danmu])
         
     def do_7(self, line):
         roomid = input("请输入要转化的房间号:")
+        if roomid == config["Other"]["CANCEL_COMMAND"]:
+            print("操作取消")
+            return
         if not roomid:
             roomid = config["Live"]["ROOM_ID"]
         self.append2list_console([[roomid], Utils.check_room])
@@ -85,13 +95,26 @@ class Console(Cmd):
     def do_8(self, line):
         self.append2list_console([[True], Utils.fetch_bag_list])
         bagid = input("请输入要发送的礼物编号:")
-        giftnum = int(input("请输入要发送的礼物数目:"))
+        if bagid == config["Other"]["CANCEL_COMMAND"]:
+            print("操作取消")
+            return
+        giftnum = input("请输入要发送的礼物数目:")
+        if giftnum == config["Other"]["CANCEL_COMMAND"]:
+            print("操作取消")
+            return
+        giftnum = int(giftnum)
         roomid = input("请输入要发送的房间号:")
+        if roomid == config["Other"]["CANCEL_COMMAND"]:
+            print("操作取消")
+            return
         real_roomid = fetch_real_roomid(roomid)
         self.append2list_console([[real_roomid, giftnum, bagid], Utils.send_gift])
             
     def do_9(self, line):
         roomid = input("请输入roomid:")
+        if roomid == config["Other"]["CANCEL_COMMAND"]:
+            print("操作取消")
+            return
         real_roomid = fetch_real_roomid(roomid)
         self.append2list_console([[real_roomid], Utils.fetch_liveuser_info])
     
@@ -100,6 +123,9 @@ class Console(Cmd):
         
     def do_11(self, line):
         count = input("请输入要开的扭蛋数目(1或10或100):")
+        if count == config["Other"]["CANCEL_COMMAND"]:
+            print("操作取消")
+            return
         self.append2list_console([[count], Utils.open_capsule])
     
     def do_12(self, line):
