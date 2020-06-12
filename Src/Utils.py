@@ -108,7 +108,7 @@ class Utils:
             print("成就值:" + str(achieve))
             print("等级值:" + str(user_level) + "———>" + str(user_next_level))
             print("经验值:" + str(user_intimacy))
-            print("剩余值:" + str(user_next_intimacy - user_next_intimacy))
+            print("剩余值:" + str(user_next_intimacy - user_intimacy))
             arrow = int(user_intimacy * 30 / user_next_intimacy)
             line = 30 - arrow
             percent = user_intimacy / user_next_intimacy * 100.0
