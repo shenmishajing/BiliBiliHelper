@@ -2,6 +2,7 @@ import asyncio
 import platform
 import random
 import time
+import copy
 
 if platform.system() == "Windows":
     from Windows_Log import Log
@@ -29,7 +30,7 @@ class MainDailyTask:
                 Log.warning("主站任务模块up主号未配置,已停止...")
             else:
                 await self.coin()
-                await self.share()
+                # await self.share()
                 await self.watch()
             await asyncio.sleep(std235959ptm())
 
@@ -79,12 +80,7 @@ class MainDailyTask:
         #             Log.error("签到错误 %s" % (data["message"]))
         else:
             need_watch = MainDailyTask_Watch
-        if need_watch > 0:
-            check_reward_data = await self.Reward_Request()
-            if check_reward_data["data"]["watch"] == True:
-                Log.info("本次观看任务完成")
-                return
-        else:
+        if need_watch < 0:
             need_watch = -need_watch
         while var < need_watch:
             var = var + 1
@@ -125,6 +121,39 @@ class MainDailyTask:
                 "play_type": 1}
 
             data = await AsyncioCurl().request_json("POST", url, headers = config["pcheaders"], data = payload)
+
+            # 看完了给点个赞
+            url = "https://api.bilibili.com/x/web-interface/archive/like"
+            payload = {
+                "aid": need_vilst["aid"],
+                "like": 1,
+                "csrf": account["Token"]["CSRF"],
+                "bvid": need_vilst["bvid"]
+            }
+            data = await AsyncioCurl().request_json("POST", url, headers = config["pcheaders"], data = payload)
+
+            # 分享一下
+            url = "https://api.bilibili.com/x/web-interface/share/add"
+
+            payload = {
+                "aid": need_vilst["aid"],
+                "jsonp": "jsonp",
+                "csrf": account["Token"]["CSRF"]}
+
+            data = await AsyncioCurl().request_json("POST", url, headers = config["pcheaders"], data = payload)
+
+            # 再收藏一下
+            url = "https://api.bilibili.com/medialist/gateway/coll/resource/deal"
+            payload = {
+                "rid": need_vilst["aid"],
+                "type": 2,
+                "csrf": account["Token"]["CSRF"],
+                "add_media_ids": config["MainDailyTask"]["FAVORITE_ID"],
+                "del_media_ids": ""
+            }
+            headers = copy.deepcopy(config["pcheaders"])
+            headers["Referer"] = "https://www.bilibili.com/av%s" % need_vilst["aid"]
+            data = await AsyncioCurl().request_json("POST", url, headers = headers, data = payload)
 
             if (data["code"] == 0):
                 sleep_time = random.randint(60, 300)
@@ -210,12 +239,7 @@ class MainDailyTask:
             return
         else:
             need_Share = MainDailyTask_Share
-        if need_Share > 0:
-            check_reward_data = await self.Reward_Request()
-            if check_reward_data["data"]["share"] == True:
-                Log.info("本次观看任务完成")
-                return
-        else:
+        if need_Share < 0:
             need_Share = -need_Share
         while var < need_Share:
             var = var + 1
