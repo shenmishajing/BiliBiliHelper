@@ -148,7 +148,10 @@ class MainDailyTask:
                 Log.info('投币任务获取经验已经达到最大值,投币任务完成,退出投币任务')
                 return
 
-            if check_reward_data["data"]["coins"] <= need_coin * 10 or add_coin <= need_coin:
+            if add_coin < check_reward_data["data"]["coins"] / 10:
+                add_coin = check_reward_data["data"]["coins"] // 10
+
+            if check_reward_data["data"]["coins"] >= need_coin * 10 or add_coin >= need_coin:
                 # 有时候有延迟自己开了一个add_coin变量
                 Log.info('今日设置的投币任务完成,退出投币任务')
                 return
