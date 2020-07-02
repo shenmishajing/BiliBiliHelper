@@ -7,9 +7,10 @@ ENV BILIBILI_USER="" \
 
 WORKDIR /app
 
-RUN apk add --no-cache git python-dev py-pip build-base
+RUN apk add --no-cache git python-dev py-pip build-base && \
+    git clone https://github.com/TheWanderingCoel/BiliBiliHelper.git /app
 
-CMD git clone https://github.com/shenmishajing/BiliBiliHelper.git /app && \
+CMD git pull && \
     pip install -r requirements.txt && \
     sed -i ''"$(cat Conf/Account.conf -n | grep "BILIBILI_USER =" | awk '{print $1}')"'c '"$(echo "BILIBILI_USER = ${BILIBILI_USER}")"'' Conf/Account.conf && \
     sed -i ''"$(cat Conf/Account.conf -n | grep "BILIBILI_PASSWORD =" | awk '{print $1}')"'c '"$(echo "BILIBILI_PASSWORD = ${BILIBILI_PASSWORD}")"'' Conf/Account.conf && \
