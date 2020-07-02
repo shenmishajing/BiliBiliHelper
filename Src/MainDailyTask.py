@@ -128,6 +128,7 @@ class MainDailyTask:
 
             if (data["code"] == 0):
                 Log.info('视频观看成功')
+                await asyncio.sleep(random.randint(60, 300))
             else:
                 Log.error("签到错误 %s" % (data["message"]))
 
@@ -190,6 +191,7 @@ class MainDailyTask:
             if (data["code"] == 0):
                 Log.info('视频投币成功')
                 add_coin = add_coin + 1
+                await asyncio.sleep(random.randint(60, 300))
             else:
                 Log.error("投币错误 %s" % (data["message"]))
 
@@ -241,6 +243,7 @@ class MainDailyTask:
 
             if (data["code"] == 0):
                 Log.info('视频分享成功')
+                await asyncio.sleep(random.randint(60, 300))
             else:
                 Log.error("分享错误 %s" % (data["message"]))
 
