@@ -11,9 +11,10 @@ if platform.system() == "Windows":
 else:
     from Unix_Log import Log
 from AsyncioCurl import AsyncioCurl
-from Base import std235959ptm
+from Base import std235959ptm, std235959
 from Config import *
 from Utils import Utils
+
 
 class GiftSend:
 
@@ -63,16 +64,16 @@ class GiftSend:
                 # 判断是否已经到另一天
                 if localtime.tm_mday != self.today:
                     self.today = localtime.tm_mday
-                    self.index = 0 # 如果到了清空轮询，防止还是原来的勋章
+                    self.index = 0  # 如果到了清空轮询，防止还是原来的勋章
                 status = await self.SendGift()
-                if  status == 25014:
+                if status == 25014:
                     self.today = localtime.tm_mday
                     # 如果定时送礼有勋章没有填完，得清空轮询，防止第二天轮到的并不是第一个勋章
                     self.index = 0
                     Log.info("本次循环送礼完成，睡眠到明天")
                     await asyncio.sleep(std235959ptm())
-                elif status == 0  or status == 2:
-                    SleepTime = int(-float(config["GiftSend"]["TIME"])*3600)
+                elif status == 0 or status == 2:
+                    SleepTime = int(-float(config["GiftSend"]["TIME"]) * 3600)
                     Log.info("本次循环送礼完成，睡眠时间 %s s" % SleepTime)
                     await asyncio.sleep(SleepTime)
                 elif status == 1:
@@ -85,22 +86,26 @@ class GiftSend:
     # 25014 今日任务已完成
     async def SendGift(self):
         status = await self.getRoomInfo()
-        if status == 0:
+        send = True
+        while status == 0 and send:
+            send = False
             Log.info("开始执行自动送礼物...")
             url = "https://api.live.bilibili.com/gift/v2/gift/bag_list"
-            data = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
+            data = await AsyncioCurl().request_json("GET", url, headers = config["pcheaders"])
             if data["code"] != 0:
                 Log.warning("背包查看失败!" + data["message"])
             if len(data["data"]["list"]) != 0:
                 for each in data["data"]["list"]:
-                    IfExpired = each["expire_at"] >= data["data"]["time"] and each["expire_at"] <= data["data"]["time"] + int(config["GiftSend"]["GIFTTiME"])
+                    IfExpired = each["expire_at"] >= data["data"]["time"] and each["expire_at"] <= data["data"][
+                        "time"] + int(config["GiftSend"]["GIFTTiME"])
                     if IfExpired == True or int(config["GiftSend"]["GIFTTiME"]) == -1:
+                        send = True
                         NeedGift = await Utils.value_to_full_intimacy_today(self.roomid)
                         SendGift = each
                         # 1个亿元相当于10个单位的亲密度，所以要除掉一些
                         if each["gift_name"] == "亿元":
                             # 向下取整
-                            NeedGift = int ( NeedGift / 10 )
+                            NeedGift = int(NeedGift / 10)
                             SendGift["gift_num"] = NeedGift
                         # 判断需要的礼物是否过多，避免浪费
                         if each["gift_num"] >= NeedGift:
@@ -109,12 +114,13 @@ class GiftSend:
                         await asyncio.sleep(6)
                         status = await Utils.is_intimacy_full_today(self.roomid)
                         if status:
-                            Log.warning("当前房间勋章亲密度已满,正在退出任务...")
-                            return 0
-            else:
+                            Log.info("当前房间勋章亲密度已满")
+                            break
+            if not send:
                 Log.info("背包清空完毕，退出任务...")
                 return 2
-        elif status == 1:
+            status = await self.getRoomInfo()
+        if status == 1:
             Log.warning("清空礼物功能禁用!")
         return status
 
@@ -126,34 +132,33 @@ class GiftSend:
         Log.info("正在生成直播间信息...")
 
         url = "https://api.bilibili.com/x/member/web/account"
-        data = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
+        data = await AsyncioCurl().request_json("GET", url, headers = config["pcheaders"])
 
         if "code" in data and data["code"] != 0:
             Log.warning("获取账号信息失败!" + data["message"])
             return 1
-
-        while 1:
+        medal_list = config["GiftSend"]["ROOM_ID"].split(",") + [medal[0] for medal in await Utils.fetch_medal(False)]
+        while True:
             # 房间轮询
-            status = await Utils.is_intimacy_full_today(config["GiftSend"]["ROOM_ID"].split(",")[self.index])
+            status = await Utils.is_intimacy_full_today(medal_list[self.index])
             if status:
-                Log.warning("当前房间 %s 勋章亲密度已满,尝试切换房间..." % config["GiftSend"]["ROOM_ID"].split(",")[self.index])
-                if len(config["GiftSend"]["ROOM_ID"].split(",")) <= self.index + 1:
+                Log.warning("当前房间 %s 勋章亲密度已满,尝试切换房间..." % medal_list[self.index])
+                if len(medal_list) <= self.index + 1:
                     Log.warning("无其他可用房间，休眠到明天...")
                     return 25014
                 else:
                     self.index += 1
             else:
-                Log.warning("礼物赠送房间更改为 %s" % config["GiftSend"]["ROOM_ID"].split(",")[self.index])
+                Log.warning("礼物赠送房间更改为 %s" % medal_list[self.index])
                 break
 
         self.uid = data["data"]["mid"]
 
         url = "https://api.live.bilibili.com/room/v1/Room/get_info"
         payload = {
-            "id": config["GiftSend"]["ROOM_ID"].split(",")[self.index]
+            "id": medal_list[self.index]
         }
-
-        data = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"], params=payload)
+        data = await AsyncioCurl().request_json("GET", url, headers = config["pcheaders"], params = payload)
 
         if data["code"] != 0:
             Log.warning("获取主播房间号失败!" + data["message"])
@@ -183,7 +188,7 @@ class GiftSend:
             "csrf_token": csrf,
             "csrf": csrf
         }
-        data = await AsyncioCurl().request_json("POST", url, headers=config["pcheaders"], data=payload)
+        data = await AsyncioCurl().request_json("POST", url, headers = config["pcheaders"], data = payload)
 
         if data["code"] != 0:
             Log.warning("送礼失败!" + data["message"])
