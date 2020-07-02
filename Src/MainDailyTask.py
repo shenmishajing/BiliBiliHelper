@@ -29,8 +29,8 @@ class MainDailyTask:
             if config["MainDailyTask"]["ROOM_ID"] == "":
                 Log.warning("主站任务模块up主号未配置,已停止...")
             else:
+                await self.share()
                 await self.coin()
-                # await self.share()
                 await self.watch()
             await asyncio.sleep(std235959ptm())
 
@@ -122,6 +122,11 @@ class MainDailyTask:
 
             data = await AsyncioCurl().request_json("POST", url, headers = config["pcheaders"], data = payload)
 
+            if (data["code"] == 0):
+                Log.info('视频观看成功')
+            else:
+                Log.error("出现错误 %s" % (data["message"]))
+
             # 看完了给点个赞
             url = "https://api.bilibili.com/x/web-interface/archive/like"
             payload = {
@@ -132,6 +137,11 @@ class MainDailyTask:
             }
             data = await AsyncioCurl().request_json("POST", url, headers = config["pcheaders"], data = payload)
 
+            if (data["code"] == 0):
+                Log.info('视频点赞成功')
+            else:
+                Log.error("出现错误 %s" % (data["message"]))
+
             # 分享一下
             url = "https://api.bilibili.com/x/web-interface/share/add"
 
@@ -141,6 +151,11 @@ class MainDailyTask:
                 "csrf": account["Token"]["CSRF"]}
 
             data = await AsyncioCurl().request_json("POST", url, headers = config["pcheaders"], data = payload)
+
+            if (data["code"] == 0):
+                Log.info('视频分享成功')
+            else:
+                Log.error("出现错误 %s" % (data["message"]))
 
             # 再收藏一下
             url = "https://api.bilibili.com/medialist/gateway/coll/resource/deal"
@@ -157,10 +172,10 @@ class MainDailyTask:
 
             if (data["code"] == 0):
                 sleep_time = random.randint(60, 300)
-                Log.info('视频观看成功，休眠 %d s' % sleep_time)
+                Log.info('视频收藏成功，休眠 %d s' % sleep_time)
                 await asyncio.sleep(sleep_time)
             else:
-                Log.error("签到错误 %s" % (data["message"]))
+                Log.error("出现错误 %s" % (data["message"]))
 
     async def coin(self):
         var = 0
@@ -174,7 +189,7 @@ class MainDailyTask:
             var = var + 1
 
             check_reward_data = await self.Reward_Request()
-
+            Log.info("第一次检查今日已投币： {}".format(check_reward_data["data"]["coins"]))
             if check_reward_data["data"]["coins"] >= 50:
                 Log.info('投币任务获取经验已经达到最大值,投币任务完成,退出投币任务')
                 return
@@ -207,6 +222,12 @@ class MainDailyTask:
             Log.info("视频BV号  %s" % (need_vilst["bvid"]))
             Log.info("视频AV号  %s" % (need_vilst["aid"]))
 
+            check_reward_data = await self.Reward_Request()
+            Log.info("第二次检查今日已投币： {}".format(check_reward_data["data"]["coins"]))
+            if check_reward_data["data"]["coins"] >= 50:
+                Log.info('投币任务获取经验已经达到最大值,投币任务完成,退出投币任务')
+                return
+
             url = "https://api.bilibili.com/x/web-interface/coin/add"
 
             payload = {
@@ -218,9 +239,9 @@ class MainDailyTask:
             data = await AsyncioCurl().request_json("POST", url, headers = config["pcheaders"], data = payload)
 
             if (data["code"] == 0):
-                sleep_time = random.randint(60, 300)
-                Log.info('视频投币成功，休眠 %d s' % sleep_time)
                 add_coin = add_coin + 1
+                sleep_time = random.randint(60, 300)
+                Log.info('投币成功，休眠 %d s' % sleep_time)
                 await asyncio.sleep(sleep_time)
             else:
                 Log.error("投币错误 %s" % (data["message"]))
@@ -244,7 +265,7 @@ class MainDailyTask:
         while var < need_Share:
             var = var + 1
             Log.info("本次分享视频为第 %s 次" % (var))
-            Room_Id = random.choice(config["MainDailyTask"]["ROOM_ID"].split(","))
+            Room_Id = random.choice(config["MainDailyTask"]["SHARE_ID"].split(","))
             Log.info("本次分享选择UP的ID为 %s" % (Room_Id))
             url = "https://api.bilibili.com/x/space/arc/search?ps=100&pn=1&mid=" + str(Room_Id)
             data = await AsyncioCurl().request_json("GET", url)
