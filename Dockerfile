@@ -7,7 +7,7 @@ ENV BILIBILI_USER="" \
 
 WORKDIR /app
 
-RUN apk add --no-cache git python-dev py-pip build-base && \
+RUN apk add --no-cache git python3-dev py-pip build-base && \
     git clone https://github.com/TheWanderingCoel/BiliBiliHelper.git /app
 
 CMD git pull && \
