@@ -2,15 +2,12 @@ FROM python:3.6-alpine
 
 MAINTAINER shenmishajing <shenmishajing@gmail.com>
 
-ENV BILIBILI_USER="" \
-    BILIBILI_PASSWORD=""
+ENV TZ=Asia/Shanghai
 
 WORKDIR /app
 
-RUN apk add --no-cache git python3-dev py-pip build-base
-RUN git clone https://github.com/TheWanderingCoel/BiliBiliHelper.git /app
-RUN pip install -r requirements.txt
+RUN apk add --no-cache tzdata libressl-dev libffi-dev build-base git python3-dev py-pip
+RUN git clone https://github.com/shenmishajing/BiliBiliHelper.git /app
+RUN pip install --no-cache-dir -r requirements.txt
 
-CMD sed -i ''"$(cat Conf/Account.conf -n | grep "BILIBILI_USER =" | awk '{print $1}')"'c '"$(echo "BILIBILI_USER = ${BILIBILI_USER}")"'' Conf/Account.conf && \
-    sed -i ''"$(cat Conf/Account.conf -n | grep "BILIBILI_PASSWORD =" | awk '{print $1}')"'c '"$(echo "BILIBILI_PASSWORD = ${BILIBILI_PASSWORD}")"'' Conf/Account.conf && \
-    python ./main.py
+ENTRYPOINT python ./main.py -d
