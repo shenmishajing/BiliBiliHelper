@@ -3,6 +3,7 @@ FROM python:3.6-alpine
 MAINTAINER shenmishajing <shenmishajing@gmail.com>
 
 ENV TZ=Asia/Shanghai
+ENV PYTHONUNBUFFERED=0
 
 WORKDIR /app
 
