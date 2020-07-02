@@ -127,8 +127,9 @@ class MainDailyTask:
             data = await AsyncioCurl().request_json("POST", url, headers = config["pcheaders"], data = payload)
 
             if (data["code"] == 0):
-                Log.info('视频观看成功')
-                await asyncio.sleep(random.randint(60, 300))
+                sleep_time = random.randint(60, 300)
+                Log.info('视频观看成功，休眠 %d s' % sleep_time)
+                await asyncio.sleep(sleep_time)
             else:
                 Log.error("签到错误 %s" % (data["message"]))
 
@@ -183,15 +184,15 @@ class MainDailyTask:
                 "aid": need_vilst["aid"],
                 "multiply": 1,
                 "select_like": 1,
-                "cross_domain": "true",
                 "csrf": account["Token"]["CSRF"]}
 
             data = await AsyncioCurl().request_json("POST", url, headers = config["pcheaders"], data = payload)
 
             if (data["code"] == 0):
-                Log.info('视频投币成功')
+                sleep_time = random.randint(60, 300)
+                Log.info('视频投币成功，休眠 %d s' % sleep_time)
                 add_coin = add_coin + 1
-                await asyncio.sleep(random.randint(60, 300))
+                await asyncio.sleep(sleep_time)
             else:
                 Log.error("投币错误 %s" % (data["message"]))
 
@@ -242,8 +243,9 @@ class MainDailyTask:
             data = await AsyncioCurl().request_json("POST", url, headers = config["pcheaders"], data = payload)
 
             if (data["code"] == 0):
-                Log.info('视频分享成功')
-                await asyncio.sleep(random.randint(60, 300))
+                sleep_time = random.randint(60, 300)
+                Log.info('视频分享成功，休眠 %d s' % sleep_time)
+                await asyncio.sleep(sleep_time)
             else:
                 Log.error("分享错误 %s" % (data["message"]))
 
