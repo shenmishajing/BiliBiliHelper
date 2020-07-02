@@ -4,7 +4,7 @@ services:
   bilibili:
     container_name: bilibili
     restart: unless-stopped
-    image: shenmishajing/bilibili-live-tools
+    image: shenmishajing/BiliBiliHelper
     volumes:
       - ./Conf/Account.conf:/app/Conf/Account.conf
       - ./Conf/BiliBiliHelper.conf:/app/Conf/BiliBiliHelper.conf
