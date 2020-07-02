@@ -28,6 +28,5 @@ Thumbs.db
 ############# projects #############
 ####################################
 .idea
-Log/*.log
 Conf/Account.conf
 Conf/BiliBiliHelper.conf
