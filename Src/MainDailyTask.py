@@ -44,6 +44,10 @@ class MainDailyTask:
         if need_watch < 0:
             need_watch = -need_watch
         while var < need_watch:
+            check_reward_data = await self.Reward_Request()
+            if check_reward_data["data"]["watch"]:
+                Log.info('观看任务获取经验已经完成，退出观看任务')
+                return
             var = var + 1
             Log.info("本次观看视频为第 %s 次" % (var))
             Room_Id = random.choice(config["MainDailyTask"]["ROOM_ID"].split(","))
@@ -82,59 +86,14 @@ class MainDailyTask:
                 "play_type": 1}
 
             data = await AsyncioCurl().request_json("POST", url, headers = config["pcheaders"], data = payload)
+            if data["code"] == 0:
+                if var < need_watch:
+                    sleep_time = random.randint(60, 300)
+                    Log.info('视频观看成功，休眠 %d s' % sleep_time)
+                    await asyncio.sleep(sleep_time)
+                else:
+                    Log.info('视频观看任务完成，退出任务')
 
-            if (data["code"] == 0):
-                Log.info('视频观看成功')
-            else:
-                Log.error("出现错误 %s" % (data["message"]))
-
-            # 看完了给点个赞
-            url = "https://api.bilibili.com/x/web-interface/archive/like"
-            payload = {
-                "aid": need_vilst["aid"],
-                "like": 1,
-                "csrf": account["Token"]["CSRF"],
-                "bvid": need_vilst["bvid"]
-            }
-            data = await AsyncioCurl().request_json("POST", url, headers = config["pcheaders"], data = payload)
-
-            if (data["code"] == 0):
-                Log.info('视频点赞成功')
-            else:
-                Log.error("出现错误 %s" % (data["message"]))
-
-            # 分享一下
-            url = "https://api.bilibili.com/x/web-interface/share/add"
-
-            payload = {
-                "aid": need_vilst["aid"],
-                "jsonp": "jsonp",
-                "csrf": account["Token"]["CSRF"]}
-
-            data = await AsyncioCurl().request_json("POST", url, headers = config["pcheaders"], data = payload)
-
-            if (data["code"] == 0):
-                Log.info('视频分享成功')
-            else:
-                Log.error("出现错误 %s" % (data["message"]))
-
-            # 再收藏一下
-            url = "https://api.bilibili.com/medialist/gateway/coll/resource/deal"
-            payload = {
-                "rid": need_vilst["aid"],
-                "type": 2,
-                "csrf": account["Token"]["CSRF"],
-                "add_media_ids": config["MainDailyTask"]["FAVORITE_ID"],
-                "del_media_ids": ""
-            }
-            headers = copy.deepcopy(config["pcheaders"])
-            headers["Referer"] = "https://www.bilibili.com/av%s" % need_vilst["aid"]
-            data = await AsyncioCurl().request_json("POST", url, headers = headers, data = payload)
-
-            if (data["code"] == 0):
-                sleep_time = random.randint(60, 300)
-                Log.info('视频收藏成功，休眠 %d s' % sleep_time)
-                await asyncio.sleep(sleep_time)
             else:
                 Log.error("出现错误 %s" % (data["message"]))
 
@@ -145,7 +104,10 @@ class MainDailyTask:
         if MainDailyTask_Coin == 0:
             return
         else:
-            need_coin = MainDailyTask_Coin
+            if MainDailyTask_Coin < 5:
+                need_coin = MainDailyTask_Coin
+            else:
+                need_coin = 5
         while var <= 5:
             var = var + 1
 
@@ -189,6 +151,9 @@ class MainDailyTask:
                 Log.info('投币任务获取经验已经达到最大值,投币任务完成,退出投币任务')
                 return
 
+            if add_coin < check_reward_data["data"]["coins"] / 10:
+                add_coin = check_reward_data["data"]["coins"] // 10
+
             url = "https://api.bilibili.com/x/web-interface/coin/add"
 
             payload = {
@@ -199,11 +164,14 @@ class MainDailyTask:
 
             data = await AsyncioCurl().request_json("POST", url, headers = config["pcheaders"], data = payload)
 
-            if (data["code"] == 0):
+            if data["code"] == 0:
                 add_coin = add_coin + 1
-                sleep_time = random.randint(60, 300)
-                Log.info('投币成功，休眠 %d s' % sleep_time)
-                await asyncio.sleep(sleep_time)
+                if add_coin < need_coin:
+                    sleep_time = random.randint(60, 300)
+                    Log.info('投币成功，休眠 %d s' % sleep_time)
+                    await asyncio.sleep(sleep_time)
+                else:
+                    Log.info('投币任务完成，退出任务')
             else:
                 Log.error("投币错误 %s" % (data["message"]))
 
@@ -224,6 +192,10 @@ class MainDailyTask:
         if need_Share < 0:
             need_Share = -need_Share
         while var < need_Share:
+            check_reward_data = await self.Reward_Request()
+            if check_reward_data["data"]["share"]:
+                Log.info('分享任务获取经验已经完成，退出分享任务')
+                return
             var = var + 1
             Log.info("本次分享视频为第 %s 次" % (var))
             Room_Id = random.choice(config["MainDailyTask"]["SHARE_ID"].split(","))
@@ -248,10 +220,13 @@ class MainDailyTask:
 
             data = await AsyncioCurl().request_json("POST", url, headers = config["pcheaders"], data = payload)
 
-            if (data["code"] == 0):
-                sleep_time = random.randint(60, 300)
-                Log.info('视频分享成功，休眠 %d s' % sleep_time)
-                await asyncio.sleep(sleep_time)
+            if data["code"] == 0:
+                if var <need_Share:
+                    sleep_time = random.randint(60, 300)
+                    Log.info('视频分享成功，休眠 %d s' % sleep_time)
+                    await asyncio.sleep(sleep_time)
+                else:
+                    Log.info('视频分享任务完成，退出任务')
             else:
                 Log.error("分享错误 %s" % (data["message"]))
 

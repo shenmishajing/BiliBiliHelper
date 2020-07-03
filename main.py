@@ -114,8 +114,8 @@ daily_tasks = [
     SilverBox.work(),
     Task.work(),
     MainDailyTask.work(),
-    WatchVideoTask.work(),
-    MatchTask.work()
+    MatchTask.work(),
+    WatchVideoTask.work()
 ]
 server_tasks = [
     MonitorServer.run_forever()
