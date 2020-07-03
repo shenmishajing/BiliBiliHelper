@@ -33,8 +33,7 @@ class WatchVideoTask:
 
     async def watch(self):
         var = 0
-        end = False
-        while not end:
+        while True:
             var += 1
             Log.info("本次观看视频为第 %s 次" % (var))
             Room_Id = random.choice(config["WatchVideoTask"]["ROOM_ID"].split(","))
@@ -80,9 +79,6 @@ class WatchVideoTask:
                 headers["Referer"] = "https://www.bilibili.com/%s" % need_vilst["bvid"]
 
                 for i in range(video_duration // 15):
-                    if end or time.time() >= std235959() - 59:
-                        end = True
-                        break
                     payload['played_time'] = payload['real_played_time'] = payload['real_time'] = i * 15
                     data = await AsyncioCurl().request_json("POST", url, headers = headers, data = payload)
                     await asyncio.sleep(15)
