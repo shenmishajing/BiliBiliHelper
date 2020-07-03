@@ -139,7 +139,11 @@ class GiftSend:
         if "code" in data and data["code"] != 0:
             Log.warning("获取账号信息失败!" + data["message"])
             return 1
-        medal_list = config["GiftSend"]["ROOM_ID"].split(",") + [medal[0] for medal in await Utils.fetch_medal(False)]
+        if isinstance(config["GiftSend"]["ROOM_ID"], list):
+            medal_list = config["GiftSend"]["ROOM_ID"]
+        else:
+            medal_list = config["GiftSend"]["ROOM_ID"].split(", ")
+        medal_list += [medal[0] for medal in await Utils.fetch_medal(False)]
         while True:
             # 房间轮询
             status = await Utils.is_intimacy_full_today(medal_list[self.index])
