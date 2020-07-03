@@ -36,6 +36,7 @@ class Auth:
         self.lock = int(time.time()) + 3600
 
     def loginPassword(self):
+        Log.info("密码登录")
         data = self.getPublicKey()
 
         user = account["Account"]["BILIBILI_USER"]
@@ -54,6 +55,8 @@ class Auth:
                 Log.warning("更换令牌失败")
                 Log.info("使用账号密码方式登陆")
                 self.loginPassword()
+        else:
+            Log.info("令牌未过期")
 
     def checkCookie(self):
         url = "https://api.live.bilibili.com/User/getUserInfo"
@@ -66,6 +69,8 @@ class Auth:
             Log.error("检测到 Cookie 过期")
             Log.info("正在重新登陆")
             self.loginPassword()
+        else:
+            Log.info("Cookie 未过期")
 
     def checkToken(self):
         url = "https://passport.bilibili.com/api/v2/oauth2/info"

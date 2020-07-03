@@ -18,8 +18,8 @@ class AsyncioCurl:
 
     def __init__(self):
         self.connector = ProxyConnector()
-        self.session = aiohttp.ClientSession(connector=self.connector, request_class=ProxyClientRequest,
-                                             timeout=aiohttp.ClientTimeout(total=4))
+        self.session = aiohttp.ClientSession(connector = self.connector, request_class = ProxyClientRequest,
+                                             timeout = aiohttp.ClientTimeout(total = 4))
         self.proxies = None
         if config["Proxy"]["PROXY_TYPE"] != "None":
             self.proxies = {
@@ -28,7 +28,7 @@ class AsyncioCurl:
             }
 
     async def __get_json_body(self, rsp):
-        json_body = await rsp.json(content_type=None)
+        json_body = await rsp.json(content_type = None)
         # 之后考虑加入expected_code、循环code、登录code来约束这个判定
         code = json_body['code']
         if code == 1024:
@@ -46,10 +46,10 @@ class AsyncioCurl:
     async def request_json(self,
                            method,
                            url,
-                           headers=None,
-                           data=None,
-                           params=None,
-                           is_none_allowed=False):
+                           headers = None,
+                           data = None,
+                           params = None,
+                           is_none_allowed = False):
         async with sem:
             i = 0
             while True:
@@ -57,8 +57,8 @@ class AsyncioCurl:
                 if i >= 10:
                     Log.warning(url)
                 try:
-                    async with self.session.request(method, url, headers=headers, data=data, params=params,
-                                                    proxy=self.proxies) as rsp:
+                    async with self.session.request(method, url, headers = headers, data = data, params = params,
+                                                    proxy = self.proxies) as rsp:
                         if rsp.status == 200:
                             json_body = await self.__get_json_body(
                                 rsp)

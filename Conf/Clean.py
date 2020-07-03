@@ -8,21 +8,21 @@ import optparse
 from configobj import ConfigObj
 
 parser = optparse.OptionParser()
-parser.add_option("-t", "--token-only", action="store_true", dest="clean_token", help="Clean Token Only")
-(options,args)=parser.parse_args()
+parser.add_option("-t", "--token-only", action = "store_true", dest = "clean_token", help = "Clean Token Only")
+(options, args) = parser.parse_args()
 
-account = ConfigObj(sys.path[0]+"/Account.conf", encoding="UTF8")
-config = ConfigObj(sys.path[0]+"/BiliBiliHelper.conf", encoding="UTF8")
+account = ConfigObj(sys.path[0] + "/Account.conf", encoding = "UTF8")
+config = ConfigObj(sys.path[0] + "/BiliBiliHelper.conf", encoding = "UTF8")
 
-if options.clean_token != True:
+if not options.clean_token:
     account["Account"]["BILIBILI_USER"] = ""
     account["Account"]["BILIBILI_PASSWORD"] = ""
+    config["Live"]["ROOM_ID"] = ""
 account["Token"]["ACCESS_TOKEN"] = ""
 account["Token"]["REFRESH_TOKEN"] = ""
 account["Token"]["CSRF"] = ""
 account["Token"]["UID"] = ""
 account["Token"]["COOKIE"] = ""
-config["Live"]["ROOM_ID"] = ""
 config["pcheaders"]["cookie"] = ""
 account.write()
 config.write()

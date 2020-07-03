@@ -75,6 +75,8 @@ class GiftSend:
                 elif status == 0 or status == 2:
                     SleepTime = int(-float(config["GiftSend"]["TIME"]) * 3600)
                     Log.info("本次循环送礼完成，睡眠时间 %s s" % SleepTime)
+                    # 如果定时送礼有勋章没有填完，得清空轮询，防止第二天轮到的并不是第一个勋章
+                    self.index = 0
                     await asyncio.sleep(SleepTime)
                 elif status == 1:
                     return

@@ -1,5 +1,7 @@
 import os
 import sys
+import time
+
 sys.path.append(sys.path[0] + "/Src")
 import asyncio
 import signal
@@ -8,6 +10,7 @@ import threading
 import Danmu_Monitor
 from Raffle_Handler import RaffleHandler
 import platform
+
 if platform.system() == "Windows":
     from Windows_Log import Log
 else:
@@ -33,6 +36,7 @@ from Monitor_Server import MonitorServer
 from Version import version
 from CaseJudger import CaseJudger
 from MainDailyTask import MainDailyTask
+from WatchVideoTask import WatchVideoTask
 from MatchTask import MatchTask
 
 # 初始化所有class
@@ -50,20 +54,23 @@ SilverBox = SilverBox()
 Task = Task()
 rafflehandler = RaffleHandler()
 MainDailyTask = MainDailyTask()
+WatchVideoTask = WatchVideoTask()
 MatchTask = MatchTask()
 MonitorServer = MonitorServer(config["Server"]["ADDRESS"], config["Server"]["PASSWORD"])
 
 parser = OptionParser()
 parser.add_option("-d", "--disable-console",
-                  action="store_true", dest="disable_console", default=False,
-                  help="disable console")
+                  action = "store_true", dest = "disable_console", default = False,
+                  help = "disable console")
 (options, args) = parser.parse_args()
 
 # 开启时清理日志
-Log.clean_log(startup=True)
+Log.clean_log(startup = True)
+
 
 def signal_handler(signal, frame):
     os._exit(0)
+
 
 print("""\033[32;1m
  ______     __     __         __     ______     __     __         __     __  __     ______     __         ______   ______     ______    
@@ -92,7 +99,7 @@ loop = asyncio.get_event_loop()
 timer = Timer(loop)
 console = Console.Console(loop)
 
-area_ids = [1,2,3,4,5,6,]
+area_ids = [1, 2, 3, 4, 5, 6, ]
 Statistics(len(area_ids))
 
 daily_tasks = [
@@ -107,6 +114,7 @@ daily_tasks = [
     SilverBox.work(),
     Task.work(),
     MainDailyTask.work(),
+    WatchVideoTask.work(),
     MatchTask.work()
 ]
 server_tasks = [
@@ -117,11 +125,11 @@ other_tasks = [
     rafflehandler.run()
 ]
 
-api_thread = threading.Thread(target=API.work)
+api_thread = threading.Thread(target = API.work)
 api_thread.start()
 
 if not options.disable_console:
-    console_thread = threading.Thread(target=console.cmdloop)
+    console_thread = threading.Thread(target = console.cmdloop)
     console_thread.start()
 
 # 先登陆一次,防止速度太快导致抽奖模块出错
@@ -129,9 +137,9 @@ Auth.work()
 
 if config["Function"]["RAFFLE_HANDLER"] != "False":
     if config["Server"]["PERFER_SERVER"] != "False":
-        loop.run_until_complete(asyncio.wait(daily_tasks+server_tasks+other_tasks))
+        loop.run_until_complete(asyncio.wait(daily_tasks + server_tasks + other_tasks))
     else:
-        loop.run_until_complete(asyncio.wait(daily_tasks+danmu_tasks+other_tasks))
+        loop.run_until_complete(asyncio.wait(daily_tasks + danmu_tasks + other_tasks))
 else:
     loop.run_until_complete(asyncio.wait(daily_tasks))
 
