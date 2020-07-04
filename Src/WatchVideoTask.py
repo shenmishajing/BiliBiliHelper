@@ -16,8 +16,34 @@ from Config import *
 
 
 class WatchVideoTask:
-    def __init__(self):
-        self.ok = 0
+    instance = None
+
+    # 单例模式
+    def __new__(cls, *args, **kw):
+        if not cls.instance:
+            cls.instance = super(WatchVideoTask, cls).__new__(cls, *args, **kw)
+            cls.instance.need_vlist = {}
+        return cls.instance
+
+    async def get_need_vlist(self, Room_Id):
+        if Room_Id in self.need_vlist:
+            today = self.need_vlist[Room_Id]['today']
+        else:
+            today = None
+        localtime = time.localtime(time.time())
+        if today is None or localtime.tm_mday != today:
+            Log.info(f"更新 up 主{Room_Id}的视频列表")
+            need_vlist = []
+            url = "https://api.bilibili.com/x/space/arc/search?ps=100&pn=1&mid=" + str(Room_Id)
+            data = await AsyncioCurl().request_json("GET", url)
+            pages = int(math.ceil(data["data"]["page"]["count"] / 100))
+            for i in range(pages):
+                url = f"https://api.bilibili.com/x/space/arc/search?ps=100&pn={i + 1}&mid={Room_Id}"
+                data = await AsyncioCurl().request_json("GET", url)
+                need_vlist.extend(data["data"]["list"]["vlist"])
+            self.need_vlist[Room_Id] = {'need_vlist': need_vlist, 'today': localtime.tm_mday}
+        else:
+            Log.info(f"up 主{Room_Id}仍使用视频列表缓存")
 
     async def work(self):
         if config["Function"]["WatchVideoTask"] == "False":
@@ -44,15 +70,8 @@ class WatchVideoTask:
             else:
                 Room_Id = random.choice(config["WatchVideoTask"]["ROOM_ID"].split(","))
             Log.info("本次观看选择UP的ID为 %s" % (Room_Id))
-            need_vilst = []
-            url = "https://api.bilibili.com/x/space/arc/search?ps=100&pn=1&mid=" + str(Room_Id)
-            data = await AsyncioCurl().request_json("GET", url)
-            pages = int(math.ceil(data["data"]["page"]["count"] / 100))
-            for i in range(pages):
-                url = f"https://api.bilibili.com/x/space/arc/search?ps=100&pn={i + 1}&mid={Room_Id}"
-                data = await AsyncioCurl().request_json("GET", url)
-                need_vilst.extend(data["data"]["list"]["vlist"])
-            need_vilst = random.choice(need_vilst)
+            await self.get_need_vlist(Room_Id)
+            need_vilst = random.choice(self.need_vlist[Room_Id]['need_vlist'])
 
             Log.info("本次观看的视频信息如下")
             Log.info("标题  %s" % (need_vilst["title"]))

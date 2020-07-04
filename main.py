@@ -54,6 +54,7 @@ SilverBox = SilverBox()
 Task = Task()
 rafflehandler = RaffleHandler()
 MainDailyTask = MainDailyTask()
+WatchVideoTask = WatchVideoTask()
 MatchTask = MatchTask()
 MonitorServer = MonitorServer(config["Server"]["ADDRESS"], config["Server"]["PASSWORD"])
 
@@ -118,7 +119,7 @@ daily_tasks = [
 
 if config["Function"]["WatchVideoTask"]:
     for i in range(int(config["WatchVideoTask"]["TIMES"])):
-        daily_tasks.append(WatchVideoTask().work())
+        daily_tasks.append(WatchVideoTask.work())
 
 server_tasks = [
     MonitorServer.run_forever()
