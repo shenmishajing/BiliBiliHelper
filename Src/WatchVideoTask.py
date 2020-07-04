@@ -47,11 +47,11 @@ class WatchVideoTask:
             need_vilst = []
             url = "https://api.bilibili.com/x/space/arc/search?ps=100&pn=1&mid=" + str(Room_Id)
             data = await AsyncioCurl().request_json("GET", url)
-            pages = int(math.ceil(data["data"]["page"]["count"] // 100))
+            pages = int(math.ceil(data["data"]["page"]["count"] / 100))
             for i in range(pages):
                 url = f"https://api.bilibili.com/x/space/arc/search?ps=100&pn={i + 1}&mid={Room_Id}"
                 data = await AsyncioCurl().request_json("GET", url)
-                need_vilst.append(data["data"]["list"]["vlist"])
+                need_vilst.extend(data["data"]["list"]["vlist"])
             need_vilst = random.choice(need_vilst)
 
             Log.info("本次观看的视频信息如下")
@@ -90,12 +90,16 @@ class WatchVideoTask:
                 headers = copy.deepcopy(config["pcheaders"])
                 headers["Referer"] = "https://www.bilibili.com/%s" % need_vilst["bvid"]
 
-                for i in range(video_duration // 15):
+                for i in range(video_duration // 15 + 1):
                     payload['played_time'] = payload['real_played_time'] = payload['real_time'] = i * 15
-                    data = await AsyncioCurl().request_json("POST", url, headers = headers, data = payload)
-                    await asyncio.sleep(15)
-                payload['played_time'] = payload['real_played_time'] = payload['real_time'] = video_duration
-                data = await AsyncioCurl().request_json("POST", url, headers = headers, data = payload)
+                    await AsyncioCurl().request_json("POST", url, headers = headers, data = payload)
+                    if i < video_duration // 15:
+                        await asyncio.sleep(15)
+                    else:
+                        await asyncio.sleep(video_duration - i * 15)
+                        if i * 15 < video_duration:
+                            payload['played_time'] = payload['real_played_time'] = payload['real_time'] = video_duration
+                            await AsyncioCurl().request_json("POST", url, headers = headers, data = payload)
 
             # 看完了给点个赞
             url = "https://api.bilibili.com/x/web-interface/archive/like"
