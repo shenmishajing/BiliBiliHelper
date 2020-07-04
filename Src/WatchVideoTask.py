@@ -2,6 +2,7 @@ import asyncio
 import platform
 import random
 import time
+import math
 import copy
 
 if platform.system() == "Windows":
@@ -28,7 +29,7 @@ class WatchVideoTask:
         if config["WatchVideoTask"]["ROOM_ID"] == "":
             Log.warning("观看视频模块up主号未配置,已停止...")
         else:
-            sleep_time = random.randint(0, 300)
+            sleep_time = random.randint(0, 15)
             Log.info('观看视频前，休眠 %d s，与其他观看任务错时起动' % sleep_time)
             await asyncio.sleep(sleep_time)
             await self.watch()
@@ -38,11 +39,20 @@ class WatchVideoTask:
         while True:
             var += 1
             Log.info("本次观看视频为第 %s 次" % (var))
-            Room_Id = random.choice(config["WatchVideoTask"]["ROOM_ID"].split(","))
+            if isinstance(config["WatchVideoTask"]["ROOM_ID"], list):
+                Room_Id = random.choice(config["WatchVideoTask"]["ROOM_ID"])
+            else:
+                Room_Id = random.choice(config["WatchVideoTask"]["ROOM_ID"].split(","))
             Log.info("本次观看选择UP的ID为 %s" % (Room_Id))
+            need_vilst = []
             url = "https://api.bilibili.com/x/space/arc/search?ps=100&pn=1&mid=" + str(Room_Id)
             data = await AsyncioCurl().request_json("GET", url)
-            need_vilst = random.choice(data["data"]["list"]["vlist"])
+            pages = int(math.ceil(data["data"]["page"]["count"] // 100))
+            for i in range(pages):
+                url = f"https://api.bilibili.com/x/space/arc/search?ps=100&pn={i + 1}&mid={Room_Id}"
+                data = await AsyncioCurl().request_json("GET", url)
+                need_vilst.append(data["data"]["list"]["vlist"])
+            need_vilst = random.choice(need_vilst)
 
             Log.info("本次观看的视频信息如下")
             Log.info("标题  %s" % (need_vilst["title"]))
