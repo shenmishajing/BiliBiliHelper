@@ -35,7 +35,6 @@ class PkRaffleHandler:
 
             for j in checklen:
                 raffle_id = j["id"]
-                Log.raffle("本次获取到的 %s 房间 大乱斗 抽奖id为 %s" % (real_roomid, raffle_id))
                 list_available_raffleid.append(raffle_id)
         except:
             Log.error("检测到无效的大乱斗抽奖")

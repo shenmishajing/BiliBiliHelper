@@ -50,7 +50,7 @@ class GuardRaffle:
             return
         for i in range(0, len(data)):
             GuardId = data[i]['Id']
-            if GuardId not in self.had_gotted_guard and GuardId != 0:
+            if GuardId not in self.had_gotted_guard and GuardId != 0 and data[i]['EndTime'] > time.time():
                 self.had_gotted_guard[GuardId] = data[i]['EndTime']
                 OriginRoomId = data[i]['RoomId']
                 await self.guard_join(OriginRoomId, GuardId)
@@ -80,7 +80,7 @@ class GuardRaffle:
             Log.error(f"访问被拒绝：{data['message']}")
             print(data)
         elif data['code'] == 400 and (data['msg'] == "你已经领取过啦" or data['msg'] == "已经过期啦,下次早点吧"):
-            # Log.raffle(f"房间 {OriginRoomId} 编号 {GuardId} 的上船奖励已领过")
+            # Log.raffle(f"房间 {OriginRoomId} 编号 {GuardId} 的上船奖励{data['msg']}")
             pass
         else:
             Log.raffle(f"房间 {OriginRoomId} 编号 {GuardId}  的上船奖励领取出错: {data}")
@@ -92,11 +92,13 @@ class GuardRaffle:
         Log.info("开启舰长抽奖")
         while True:
             try:
-                if time.time() - self.last_clear_time > 600:
+                if time.time() - self.last_clear_time > 300:
+                    Log.info("清理过期抽奖 ID 缓存")
                     await self.clear_had_gotted_guard()
+                    self.last_clear_time = time.time()
                 await self.guard_lottery()
                 if self.award:
-                    raffle_str = f'本次周期抽奖获得：'
+                    raffle_str = f'本次抽奖周期获得：'
                     for award_name in self.award:
                         raffle_str += award_name + 'X{}'.format(self.award[award_name])
                     Log.raffle(raffle_str)

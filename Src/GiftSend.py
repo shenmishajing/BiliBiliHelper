@@ -25,6 +25,7 @@ class GiftSend:
         self.roomid = 0
         self.today = 0
         self.mode = 0
+        self.gift = {}
 
     async def work(self):
 
@@ -72,7 +73,7 @@ class GiftSend:
                     self.index = 0
                     Log.info("本次循环送礼完成，睡眠到明天")
                     await asyncio.sleep(std235959ptm())
-                elif status == 0 or status == 2:
+                elif status == 0:
                     SleepTime = int(-float(config["GiftSend"]["TIME"]) * 3600)
                     Log.info("本次循环送礼完成，睡眠时间 %s s" % SleepTime)
                     # 如果定时送礼有勋章没有填完，得清空轮询，防止第二天轮到的并不是第一个勋章
@@ -87,11 +88,12 @@ class GiftSend:
     # 2 背包清空完毕
     # 25014 今日任务已完成
     async def SendGift(self):
+        Log.info("开始执行自动送礼物...")
+        self.gift = {}
         status = await self.getRoomInfo()
         send = True
         while status == 0 and send:
             send = False
-            Log.info("开始执行自动送礼物...")
             url = "https://api.live.bilibili.com/gift/v2/gift/bag_list"
             data = await AsyncioCurl().request_json("GET", url, headers = config["pcheaders"])
             if data["code"] != 0:
@@ -116,12 +118,15 @@ class GiftSend:
                         await asyncio.sleep(6)
                         status = await Utils.is_intimacy_full_today(self.roomid)
                         if status:
-                            Log.info("当前房间勋章亲密度已满")
                             break
             if not send:
-                Log.info("背包清空完毕，退出任务...")
-                return 2
+                break
             status = await self.getRoomInfo()
+        if self.gift:
+            Log.info("本次送礼物周期：")
+            for key, gift in self.gift.items():
+                for name, num in gift.items():
+                    Log.info("向 %s 投喂了 %s 个 %s" % (key, num, name))
         if status == 1:
             Log.warning("清空礼物功能禁用!")
         return status
@@ -131,7 +136,6 @@ class GiftSend:
     # 1 出现异常退出
     # 25014 今日任务已完成
     async def getRoomInfo(self):
-        Log.info("正在生成直播间信息...")
 
         url = "https://api.bilibili.com/x/member/web/account"
         data = await AsyncioCurl().request_json("GET", url, headers = config["pcheaders"])
@@ -148,14 +152,12 @@ class GiftSend:
             # 房间轮询
             status = await Utils.is_intimacy_full_today(medal_list[self.index])
             if status:
-                Log.warning("当前房间 %s 勋章亲密度已满,尝试切换房间..." % medal_list[self.index])
                 if len(medal_list) <= self.index + 1:
                     Log.warning("无其他可用房间，休眠到明天...")
                     return 25014
                 else:
                     self.index += 1
             else:
-                Log.warning("礼物赠送房间更改为 %s" % medal_list[self.index])
                 break
 
         self.uid = data["data"]["mid"]
@@ -169,8 +171,6 @@ class GiftSend:
         if data["code"] != 0:
             Log.warning("获取主播房间号失败!" + data["message"])
             return 1
-
-        Log.info("直播间信息生成完毕!")
 
         self.ruid = data["data"]["uid"]
         self.roomid = data["data"]["room_id"]
@@ -198,5 +198,9 @@ class GiftSend:
 
         if data["code"] != 0:
             Log.warning("送礼失败!" + data["message"])
+        if self.roomid not in self.gift:
+            self.gift[self.roomid] = {}
+        if value["gift_name"] not in self.gift[self.roomid]:
+            self.gift[self.roomid][value["gift_name"]] = value["gift_num"]
         else:
-            Log.info("成功向 %s 投喂了 %s 个 %s" % (payload["biz_id"], value["gift_num"], value["gift_name"]))
+            self.gift[self.roomid][value["gift_name"]] += value["gift_num"]
