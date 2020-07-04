@@ -30,15 +30,16 @@ class AsyncioCurl:
     async def __get_json_body(self, rsp):
         json_body = await rsp.json(content_type = None)
         # 之后考虑加入expected_code、循环code、登录code来约束这个判定
-        code = json_body['code']
-        if code == 1024:
-            Log.error('b站炸了，暂停所有请求1.5s后重试，请耐心等待')
-            await asyncio.sleep(1.5)
-            return None
-        elif code == 3 or code == -401 or code == 1003 or code == -101 or code == 401:
-            Log.error('api提示没有登录')
-            Log.error(json_body)
-            return json_body
+        if 'code' in json_body:
+            code = json_body['code']
+            if code == 1024:
+                Log.error('b站炸了，暂停所有请求1.5s后重试，请耐心等待')
+                await asyncio.sleep(1.5)
+                return None
+            elif code == 3 or code == -401 or code == 1003 or code == -101 or code == 401:
+                Log.error('api提示没有登录')
+                Log.error(json_body)
+                return json_body
 
         return json_body
 

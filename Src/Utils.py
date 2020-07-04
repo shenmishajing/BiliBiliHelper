@@ -36,11 +36,11 @@ class Utils:
                 return False
             # 否则
             else:
-                Log.raffle("抽奖脚本检测到房间 %s 为正常房间" % roomid)
+                # Log.raffle("抽奖脚本检测到房间 %s 为正常房间" % roomid)
                 return True
 
     @staticmethod
-    async def get_room_by_area(area_id, room_id=None):
+    async def get_room_by_area(area_id, room_id = None):
 
         if room_id is not None and room_id:
             if await Utils.is_ok_as_monitor(room_id, area_id):
@@ -117,7 +117,7 @@ class Utils:
             print("等级榜:" + str(user_level_rank))
 
     @staticmethod
-    async def fetch_bag_list(verbose=False, bagid=None, show=True, raw=False):
+    async def fetch_bag_list(verbose = False, bagid = None, show = True, raw = False):
         data = await BasicRequest.req_fetch_bag_list()
         if raw:
             return data
@@ -181,7 +181,7 @@ class Utils:
             print("每日签到未完成")
 
     @staticmethod
-    async def fetch_medal(show=True, list_wanted_mendal=None):
+    async def fetch_medal(show = True, list_wanted_mendal = None):
         printlist = []
         list_medal = []
         if show:
@@ -213,7 +213,7 @@ class Utils:
                         list_return_medal.append(i[:3])
                         break
         else:
-            list_return_medal = [i[:3] for i in sorted(list_medal, key=itemgetter(3), reverse=True)]
+            list_return_medal = [i[:3] for i in sorted(list_medal, key = itemgetter(3), reverse = True)]
         return list_return_medal
 
     @staticmethod
@@ -241,7 +241,7 @@ class Utils:
             print(data["msg"])
 
     @staticmethod
-    async def send_gift(roomid, num_wanted, bagid, giftid=None):
+    async def send_gift(roomid, num_wanted, bagid, giftid = None):
         if giftid is None:
             giftid, num_owned = await Utils.fetch_bag_list(False, bagid)
             num_wanted = min(num_owned, num_wanted)

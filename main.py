@@ -38,6 +38,7 @@ from CaseJudger import CaseJudger
 from MainDailyTask import MainDailyTask
 from WatchVideoTask import WatchVideoTask
 from MatchTask import MatchTask
+from GuardRaffle import GuardRaffle
 
 # 初始化所有class
 API = API()
@@ -56,6 +57,7 @@ rafflehandler = RaffleHandler()
 MainDailyTask = MainDailyTask()
 WatchVideoTask = WatchVideoTask()
 MatchTask = MatchTask()
+GuardRaffle = GuardRaffle()
 MonitorServer = MonitorServer(config["Server"]["ADDRESS"], config["Server"]["PASSWORD"])
 
 parser = OptionParser()
@@ -114,7 +116,8 @@ daily_tasks = [
     SilverBox.work(),
     Task.work(),
     MainDailyTask.work(),
-    MatchTask.work()
+    MatchTask.work(),
+    GuardRaffle.work()
 ]
 
 if config["Function"]["WatchVideoTask"]:

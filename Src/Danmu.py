@@ -28,7 +28,7 @@ from Storm_Raffle_Handler import StormRaffleHandler
 class BaseDanmu:
     structer = struct.Struct("!I2H2I")
 
-    def __init__(self, room_id, area_id, client_session=None):
+    def __init__(self, room_id, area_id, client_session = None):
         if client_session is None:
             self.client = aiohttp.ClientSession()
         else:
@@ -39,7 +39,7 @@ class BaseDanmu:
         # 建立连接过程中难以处理重设置房间问题
         self.lock_for_reseting_roomid_manually = asyncio.Lock()
         self.task_main = None
-        self.bytes_heartbeat = self.wrap_str(opt=2, body="")
+        self.bytes_heartbeat = self.wrap_str(opt = 2, body = "")
 
     # 装饰器
     @property
@@ -50,9 +50,9 @@ class BaseDanmu:
     def room_id(self, room_id):
         self._room_id = room_id
         str_conn_room = f'{{"uid":0,"roomid":{room_id},"protover":1,"platform":"web","clientver":"1.3.3"}}'
-        self.bytes_conn_room = self.wrap_str(opt=7, body=str_conn_room)
+        self.bytes_conn_room = self.wrap_str(opt = 7, body = str_conn_room)
 
-    def wrap_str(self, opt, body, len_header=16, ver=1, seq=1):
+    def wrap_str(self, opt, body, len_header = 16, ver = 1, seq = 1):
         remain_data = body.encode("utf-8")
         len_data = len(remain_data) + len_header
         header = self.structer.pack(len_data, len_header, ver, opt, seq)
@@ -76,7 +76,7 @@ class BaseDanmu:
         bytes_data = None
         # 尝试接受bytes
         try:
-            msg = await asyncio.wait_for(self.ws.receive(), timeout=35.0)
+            msg = await asyncio.wait_for(self.ws.receive(), timeout = 35.0)
             bytes_data = msg.data
         # 如果超时
         except asyncio.TimeoutError:
@@ -92,7 +92,7 @@ class BaseDanmu:
     async def open(self):
         try:
             url = "wss://broadcastlv.chat.bilibili.com:443/sub"
-            self.ws = await asyncio.wait_for(self.client.ws_connect(url), timeout=3)
+            self.ws = await asyncio.wait_for(self.client.ws_connect(url), timeout = 3)
         except:
             Log.error("无法连接到B站弹幕姬服务器,请检查您的网络连接")
             return False
@@ -155,7 +155,7 @@ class BaseDanmu:
         len_ = 0
         max_ = len(d)
         while len_ < max_:
-            len_data, len_header, ver, opt, seq = self.structer.unpack_from(d[len_:16+len_])
+            len_data, len_header, ver, opt, seq = self.structer.unpack_from(d[len_:16 + len_])
 
             start = len_ + len_header
             end = len_ + len_data
@@ -197,7 +197,7 @@ class BaseDanmu:
             self.task_main = asyncio.ensure_future(self.read_datas())
             task_heartbeat = asyncio.ensure_future(self.heart_beat())
             tasks = [self.task_main, task_heartbeat]
-            _, pending = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
+            _, pending = await asyncio.wait(tasks, return_when = asyncio.FIRST_COMPLETED)
             Log.warning("%s 号弹幕姬异常或主动断开，正在处理剩余信息" % self._area_id)
             if not task_heartbeat.done():
                 task_heartbeat.cancel()
@@ -264,7 +264,7 @@ class DanmuRaffleHandler(BaseDanmu):
                     raffle_name = str_gift
                 broadcast = ''  # This method is abandoned
                 if config["Raffle_Handler"]["TV"] != "False":
-                    Log.raffle("%s 号弹幕监控检测到 %s 的 %s 个 %s" % (self._area_id, real_roomid, raffle_num, raffle_name))
+                    # Log.raffle("%s 号弹幕监控检测到 %s 的 %s 个 %s" % (self._area_id, real_roomid, raffle_num, raffle_name))
                     RaffleHandler.push2queue((real_roomid, raffle_name,), TvRaffleHandler.check)
                     # 如果不是全区就设置为1(分区)
                     broadcast_type = 0 if broadcast == '全区' else 1
@@ -273,7 +273,7 @@ class DanmuRaffleHandler(BaseDanmu):
             elif msg_type == 3:
                 raffle_name = msg_common.split("开通了")[-1][:2]
                 if config["Raffle_Handler"]["GUARD"] != "False":
-                    Log.raffle("%s 号弹幕监控检测到 %s 的 %s" % (self._area_id, real_roomid, raffle_name))
+                    # Log.raffle("%s 号弹幕监控检测到 %s 的 %s" % (self._area_id, real_roomid, raffle_name))
                     RaffleHandler.push2queue((real_roomid,), GuardRaffleHandler.check)
                     # 如果不是总督就设置为2(本房间)
                     broadcast_type = 0 if raffle_name == "总督" else 2
@@ -282,7 +282,7 @@ class DanmuRaffleHandler(BaseDanmu):
             elif msg_type == 6:
                 raffle_name = "二十倍节奏风暴"
                 if config["Raffle_Handler"]["STORM"] != "False":
-                    Log.raffle("%s 号弹幕监控检测到 %s 的 %s" % (self._area_id, real_roomid, raffle_name))
+                    # Log.raffle("%s 号弹幕监控检测到 %s 的 %s" % (self._area_id, real_roomid, raffle_name))
                     RaffleHandler.push2queue((real_roomid,), StormRaffleHandler.check)
                     Statistics.add2pushed_raffles(raffle_name)
 
@@ -305,7 +305,7 @@ class DanmuRaffleHandler(BaseDanmu):
             task_heartbeat = asyncio.ensure_future(self.heart_beat())
             task_checkarea = asyncio.ensure_future(self.check_area())
             tasks = [self.task_main, task_heartbeat, task_checkarea]
-            _, pending = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
+            _, pending = await asyncio.wait(tasks, return_when = asyncio.FIRST_COMPLETED)
             Log.warning("%s 号弹幕姬异常或主动断开，正在处理剩余信息" % self._area_id)
             if not task_heartbeat.done():
                 task_heartbeat.cancel()

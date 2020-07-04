@@ -16,6 +16,7 @@ from Statistics import Statistics
 from BasicRequest import BasicRequest
 from Raffle_Handler import RaffleHandler
 
+
 class PkRaffleHandler:
 
     @staticmethod
@@ -34,7 +35,7 @@ class PkRaffleHandler:
 
             for j in checklen:
                 raffle_id = j["id"]
-                Log.raffle("本次获取到的 大乱斗 抽奖id为 %s" % raffle_id)
+                Log.raffle("本次获取到的 %s 房间 大乱斗 抽奖id为 %s" % (real_roomid, raffle_id))
                 list_available_raffleid.append(raffle_id)
         except:
             Log.error("检测到无效的大乱斗抽奖")
@@ -50,7 +51,6 @@ class PkRaffleHandler:
                 Log.error("繁忙提示,稍后重新尝试")
                 RaffleHandler.push2queue((real_roomid,), PkRaffleHandler.check)
 
-
     @staticmethod
     async def join(real_roomid, raffle_id):
         await BasicRequest.enter_room(real_roomid)
@@ -61,7 +61,7 @@ class PkRaffleHandler:
         code = data["code"]
         if not code:
             Log.raffle("房间 %s 大乱斗 抽奖结果: %s" % (
-            real_roomid, data["data"]["award_text"]))
+                real_roomid, data["data"]["award_text"]))
             Statistics.add2results(data["data"]["award_text"][0:2], int(data["data"]["award_num"]))
         elif code == -500:
             Log.error("-500繁忙,稍后重试")

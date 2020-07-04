@@ -22,7 +22,7 @@ from Raffle_Handler import RaffleHandler
 class GuardRaffleHandler:
 
     @staticmethod
-    async def check(real_roomid, raffle_id=None):
+    async def check(real_roomid, raffle_id = None):
         if not await Utils.is_normal_room(real_roomid):
             return
         if raffle_id is not None:
@@ -42,7 +42,7 @@ class GuardRaffleHandler:
             for j in data["data"]["guard"]:
                 raffle_id = j["id"]
                 if not Statistics.is_raffleid_duplicate(raffle_id):
-                    Log.raffle("本次获取到的 大航海 抽奖id为 %s" % raffle_id)
+                    Log.raffle("本次获取到的 %s 房间 大航海 抽奖id为 %s" % (real_roomid, raffle_id))
                     list_available_raffleid.append(raffle_id)
                     Statistics.add2raffle_ids(raffle_id)
 

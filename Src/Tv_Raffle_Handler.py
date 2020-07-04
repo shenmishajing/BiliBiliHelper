@@ -35,7 +35,7 @@ class TvRaffleHandler:
                 time_wanted = j["time_wait"] + int(time.time())
 
                 if not Statistics.is_raffleid_duplicate(raffle_id):
-                    Log.raffle("本次获取到 %s 的抽奖id为: %s" % (raffle_name, raffle_id))
+                    Log.raffle("本次获取到 %s 房间 %s 的抽奖id为: %s" % (real_roomid, raffle_name, raffle_id))
                     list_available_raffleid.append((raffle_id, raffle_type, time_wanted))
                     Statistics.add2raffle_ids(raffle_id)
         except:
