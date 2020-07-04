@@ -93,14 +93,12 @@ class GuardRaffle:
                     await self.clear_had_gotted_guard()
                 await self.guard_lottery()
                 if self.award:
-                    raffle_str = f'本次抽奖获得：'
+                    raffle_str = f'本次周期抽奖获得：'
                     for award_name in self.award:
                         raffle_str += award_name + 'X{}'.format(self.award[award_name])
+                    raffle_str += '，休息 30 s'
+                    Log.raffle(raffle_str)
                     self.award = {}
-                else:
-                    raffle_str = '本次抽奖未获得礼物'
-                raffle_str += '，休息 30 s'
-                Log.raffle(raffle_str)
                 await asyncio.sleep(30)
             except Exception as e:
                 await asyncio.sleep(10)
