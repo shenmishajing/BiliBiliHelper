@@ -49,8 +49,6 @@ class TvRaffleHandler:
     @staticmethod
     async def join(real_roomid, raffle_id, raffle_type, raffle_name):
         data = await BasicRequest.tv_req_join(real_roomid, raffle_id, raffle_type)
-        Log.raffle("参与了房间 %s 的 %s 抽奖" % (real_roomid, raffle_name))
-        Log.raffle("%s 抽奖状态: %s" % (raffle_name, "OK" if data["code"] == 0 else data["msg"]))
         Statistics.add2joined_raffles("小电视类(合计)")
 
         code = data["code"]

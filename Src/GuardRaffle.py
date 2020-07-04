@@ -24,9 +24,12 @@ class GuardRaffle:
         self.last_clear_time = time.time()
 
     async def clear_had_gotted_guard(self):
+        key_list = []
         for key in self.had_gotted_guard:
             if self.had_gotted_guard[key] < time.time():
-                del self.had_gotted_guard[key]
+                key_list.append(key)
+        for key in key_list:
+            self.had_gotted_guard.pop(key, None)
 
     async def guard_list(self):
         url = "http://118.25.108.153:8080/guard"

@@ -55,7 +55,6 @@ class PkRaffleHandler:
     async def join(real_roomid, raffle_id):
         await BasicRequest.enter_room(real_roomid)
         data = await BasicRequest.pk_req_join(real_roomid, raffle_id)
-        Log.raffle("参与了房间 %s 的 大乱斗 抽奖" % real_roomid)
         Statistics.add2joined_raffles("PK类(合计)")
 
         code = data["code"]

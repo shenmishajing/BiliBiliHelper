@@ -64,20 +64,15 @@ class WatchVideoTask:
         var = 0
         while True:
             var += 1
-            Log.info("本次观看视频为第 %s 次" % (var))
             if isinstance(config["WatchVideoTask"]["ROOM_ID"], list):
                 Room_Id = random.choice(config["WatchVideoTask"]["ROOM_ID"])
             else:
                 Room_Id = random.choice(config["WatchVideoTask"]["ROOM_ID"].split(","))
-            Log.info("本次观看选择UP的ID为 %s" % (Room_Id))
+            Log.info("本次观看视频为第 %s 次，选择UP %s" % (var, Room_Id))
             await self.get_need_vlist(Room_Id)
             need_vilst = random.choice(self.need_vlist[Room_Id]['need_vlist'])
 
-            Log.info("本次观看的视频信息如下")
-            Log.info("标题  %s" % (need_vilst["title"]))
-            Log.info("作者  %s" % (need_vilst["author"]))
-            Log.info("视频BV号  %s" % (need_vilst["bvid"]))
-            Log.info("视频AV号  %s" % (need_vilst["aid"]))
+            Log.info("本次观看选择视频为标题  %s，BV： %s" % (need_vilst["title"], need_vilst["bvid"]))
 
             # 获取视频分P
             url = "https://api.bilibili.com/x/player/pagelist?bvid=" + need_vilst["bvid"]
@@ -130,9 +125,7 @@ class WatchVideoTask:
             }
             data = await AsyncioCurl().request_json("POST", url, headers = config["pcheaders"], data = payload)
 
-            if (data["code"] == 0):
-                Log.info('视频点赞成功')
-            else:
+            if data["code"]:
                 Log.error("出现错误 %s" % (data["message"]))
 
             # 分享一下
@@ -145,9 +138,7 @@ class WatchVideoTask:
 
             data = await AsyncioCurl().request_json("POST", url, headers = config["pcheaders"], data = payload)
 
-            if (data["code"] == 0):
-                Log.info('视频分享成功')
-            else:
+            if data["code"]:
                 Log.error("出现错误 %s" % (data["message"]))
 
             # 再收藏一下
@@ -163,7 +154,5 @@ class WatchVideoTask:
             headers["Referer"] = "https://www.bilibili.com/av%s" % need_vilst["aid"]
             data = await AsyncioCurl().request_json("POST", url, headers = headers, data = payload)
 
-            if (data["code"] == 0):
-                Log.info('视频观看成功')
-            else:
+            if data["code"]:
                 Log.error("出现错误 %s" % (data["message"]))

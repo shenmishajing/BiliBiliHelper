@@ -61,10 +61,8 @@ class GuardRaffleHandler:
     async def join(num, real_roomid, raffle_id):
         await asyncio.sleep(random.uniform(0.5, min(30, num * 1.3)))
         data = await BasicRequest.guard_req_join(real_roomid, raffle_id)
-        Log.raffle("参与了房间 %s 的大航海抽奖" % (real_roomid))
         if not data["code"]:
             Statistics.add2results(data["data"]["award_name"], data["data"]["award_num"])
-            Log.raffle("房间 %s 大航海抽奖结果: %s" % (real_roomid, data["message"]))
             Statistics.add2joined_raffles("大航海(合计)")
         else:
             Log.info(data)
