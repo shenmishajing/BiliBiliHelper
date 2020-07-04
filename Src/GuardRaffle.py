@@ -96,7 +96,6 @@ class GuardRaffle:
                     raffle_str = f'本次周期抽奖获得：'
                     for award_name in self.award:
                         raffle_str += award_name + 'X{}'.format(self.award[award_name])
-                    raffle_str += '，休息 30 s'
                     Log.raffle(raffle_str)
                     self.award = {}
                 await asyncio.sleep(30)
