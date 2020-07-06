@@ -100,7 +100,8 @@ class GuardRaffle:
             if GuardId not in self.had_gotted_guard and GuardId != 0 and data[i]['EndTime'] > time.time():
                 self.had_gotted_guard[GuardId] = data[i]['EndTime']
                 OriginRoomId = data[i]['RoomId']
-                if await self.guard_join(OriginRoomId, GuardId) == -1:
+                res = await self.guard_join(OriginRoomId, GuardId)
+                if res == -1:
                     break
                 await asyncio.sleep(0.2)
 
