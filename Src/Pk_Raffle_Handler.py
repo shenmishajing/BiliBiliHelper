@@ -22,7 +22,7 @@ class PkRaffleHandler:
 
     @staticmethod
     async def check(real_roomid):
-        if GuardRaffle().get_sleep_time():
+        if GuardRaffle().get_sleep_time() != 0:
             return
         if not await Utils.is_normal_room(real_roomid):
             return
@@ -55,7 +55,7 @@ class PkRaffleHandler:
 
     @staticmethod
     async def join(real_roomid, raffle_id):
-        if GuardRaffle().get_sleep_time():
+        if GuardRaffle().get_sleep_time() != 0:
             return False
         await BasicRequest.enter_room(real_roomid)
         data = await BasicRequest.pk_req_join(real_roomid, raffle_id)

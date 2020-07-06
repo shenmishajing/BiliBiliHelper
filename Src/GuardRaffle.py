@@ -35,7 +35,7 @@ class GuardRaffle:
             cls.instance.had_gotted_guard = {}
             cls.instance.award = {}
             cls.instance.last_clear_time = time.time()
-            cls.instance.black_status = False
+            cls.instance.black_status = 0
             run_range = config["Raffle_Handler"]["RUN_RANGE"]
             if isinstance(run_range, str):
                 run_range = run_range.split(',')
@@ -59,8 +59,10 @@ class GuardRaffle:
 
     def get_sleep_time(self):
         if self.get_run_status():
-            if self.black_status:
+            if self.black_status == 1:
                 return random.randint(1800, 7200)
+            elif self.black_status == -1:
+                return -1
             else:
                 return 0
         else:
@@ -128,7 +130,7 @@ class GuardRaffle:
             else:
                 self.award[data['data']['award_name']] = num
         elif data['code'] == -403 and data['msg'] == "访问被拒绝":
-            self.black_status = True
+            self.black_status = 1
             Log.error(f"访问被拒绝：{data}，已进入小黑屋")
             return -1
         elif data['code'] == 400 and (data['msg'] == "你已经领取过啦" or data['msg'] == "已经过期啦,下次早点吧"):
@@ -136,6 +138,7 @@ class GuardRaffle:
             pass
         else:
             Log.raffle(f"房间 {OriginRoomId} 编号 {GuardId}  的上船奖励领取出错: {data}")
+        self.black_status = 0
         return 0
 
     async def work(self):
@@ -146,7 +149,7 @@ class GuardRaffle:
         while True:
             try:
                 sleep_time = self.get_sleep_time()
-                if not sleep_time:
+                if sleep_time <= 0:
                     if time.time() - self.last_clear_time > 300:
                         Log.info("清理过期抽奖 ID 缓存")
                         await self.clear_had_gotted_guard()
@@ -160,9 +163,10 @@ class GuardRaffle:
                         self.award = {}
                     await asyncio.sleep(30)
                 else:
+                    self.award = {}
                     Log.info("抽奖模块退出活动，睡眠 {} s".format(sleep_time))
                     await asyncio.sleep(sleep_time)
-                    self.black_status = True
+                    self.black_status = -1
             except Exception as e:
                 await asyncio.sleep(10)
                 Log.error('出现错误 {}'.format(e))

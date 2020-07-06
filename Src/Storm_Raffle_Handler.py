@@ -17,7 +17,7 @@ class StormRaffleHandler:
 
     @staticmethod
     async def check(room_id, raffle_id=None):
-        if GuardRaffle().get_sleep_time():
+        if GuardRaffle().get_sleep_time() != 0:
             return
         if not await Utils.is_normal_room(room_id):
             return
@@ -38,7 +38,7 @@ class StormRaffleHandler:
 
     @staticmethod
     async def join(room_id, raffle_id):
-        if GuardRaffle().get_sleep_time():
+        if GuardRaffle().get_sleep_time() != 0:
             return
         await BasicRequest.enter_room(room_id)
         data = await BasicRequest.storm_req_join(raffle_id)

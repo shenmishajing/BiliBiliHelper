@@ -24,7 +24,7 @@ class GuardRaffleHandler:
 
     @staticmethod
     async def check(real_roomid, raffle_id = None):
-        if GuardRaffle().get_sleep_time():
+        if GuardRaffle().get_sleep_time() != 0:
             return
         if not await Utils.is_normal_room(real_roomid):
             return
@@ -61,7 +61,7 @@ class GuardRaffleHandler:
 
     @staticmethod
     async def join(num, real_roomid, raffle_id):
-        if GuardRaffle().get_sleep_time():
+        if GuardRaffle().get_sleep_time() != 0:
             return
         await asyncio.sleep(random.uniform(0.5, min(30, num * 1.3)))
         data = await BasicRequest.guard_req_join(real_roomid, raffle_id)

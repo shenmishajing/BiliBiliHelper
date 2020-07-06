@@ -24,7 +24,7 @@ class TvRaffleHandler:
 
     @staticmethod
     async def check(real_roomid, raffle_name):
-        if GuardRaffle().get_sleep_time():
+        if GuardRaffle().get_sleep_time() != 0:
             return
         if not await Utils.is_normal_room(real_roomid):
             return
@@ -50,7 +50,7 @@ class TvRaffleHandler:
 
     @staticmethod
     async def join(real_roomid, raffle_id, raffle_type, raffle_name):
-        if GuardRaffle().get_sleep_time():
+        if GuardRaffle().get_sleep_time() != 0:
             return False
         data = await BasicRequest.tv_req_join(real_roomid, raffle_id, raffle_type)
         Statistics.add2joined_raffles("小电视类(合计)")
@@ -74,7 +74,7 @@ class TvRaffleHandler:
 
     @staticmethod
     async def notice(raffleid, real_roomid, raffle_name):
-        if GuardRaffle().get_sleep_time():
+        if GuardRaffle().get_sleep_time() != 0:
             return
         data = await BasicRequest.tv_req_notice(real_roomid, raffleid)
         if not data["code"]:
