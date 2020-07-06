@@ -10,12 +10,15 @@ from Statistics import Statistics
 from AsyncioCurl import AsyncioCurl
 from BasicRequest import BasicRequest
 from Raffle_Handler import RaffleHandler
+from GuardRaffle import GuardRaffle
 
 
 class StormRaffleHandler:
 
     @staticmethod
     async def check(room_id, raffle_id=None):
+        if GuardRaffle().get_sleep_time():
+            return
         if not await Utils.is_normal_room(room_id):
             return
         if raffle_id is not None:

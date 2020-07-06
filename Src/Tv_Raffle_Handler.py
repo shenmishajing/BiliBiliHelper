@@ -17,12 +17,15 @@ from Timer import Timer
 from Statistics import Statistics
 from AsyncioCurl import AsyncioCurl
 from BasicRequest import BasicRequest
+from GuardRaffle import GuardRaffle
 
 
 class TvRaffleHandler:
 
     @staticmethod
     async def check(real_roomid, raffle_name):
+        if GuardRaffle().get_sleep_time():
+            return
         if not await Utils.is_normal_room(real_roomid):
             return
         data = await BasicRequest.gift_req_check(real_roomid)
