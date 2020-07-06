@@ -30,8 +30,8 @@ class MainDailyTask:
                 Log.warning("主站任务模块up主号未配置,已停止...")
             else:
                 await self.share()
-                await self.coin()
                 await self.watch()
+                await self.coin()
             await asyncio.sleep(std235959ptm())
 
     async def watch(self):
@@ -221,7 +221,7 @@ class MainDailyTask:
             data = await AsyncioCurl().request_json("POST", url, headers = config["pcheaders"], data = payload)
 
             if data["code"] == 0:
-                if var <need_Share:
+                if var < need_Share:
                     sleep_time = random.randint(60, 300)
                     Log.info('视频分享成功，休眠 %d s' % sleep_time)
                     await asyncio.sleep(sleep_time)

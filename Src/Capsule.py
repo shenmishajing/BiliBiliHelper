@@ -14,6 +14,7 @@ else:
 from AsyncioCurl import AsyncioCurl
 from Base import std235959ptm
 from Config import *
+from GuardRaffle import GuardRaffle
 
 
 class Capsule:
@@ -23,25 +24,31 @@ class Capsule:
             return
 
         while 1:
-            count = await self.info()
-            while count > 0:
-                if count >= 100:
-                    status = await self.open(100)
-                elif count >= 10:
-                    status = await self.open(10)
-                elif count > 0:
-                    status = await self.open(1)
-                if not status:
-                    await asyncio.sleep(600)
-                else:
-                    count = await self.info()
-                    await asyncio.sleep(3)
-
-            await asyncio.sleep(std235959ptm())
+            sleep_time = GuardRaffle().get_sleep_time()
+            if not sleep_time:
+                count = await self.info()
+                while count > 0:
+                    if count >= 100:
+                        status = await self.open(100)
+                    elif count >= 10:
+                        status = await self.open(10)
+                    elif count > 0:
+                        status = await self.open(1)
+                    if not status:
+                        await asyncio.sleep(6)
+                        break
+                    else:
+                        count = await self.info()
+                        await asyncio.sleep(3)
+                if not count:
+                    await asyncio.sleep(std235959ptm())
+            else:
+                Log.info("扭蛋模块退出活动，睡眠 {} s".format(sleep_time))
+                await asyncio.sleep(sleep_time)
 
     async def info(self):
         url = "https://api.live.bilibili.com/xlive/web-ucenter/v1/capsule/get_detail"
-        data = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
+        data = await AsyncioCurl().request_json("GET", url, headers = config["pcheaders"])
 
         if data["code"] != 0:
             Log.warning("扭蛋币余额查询异常")
@@ -61,7 +68,7 @@ class Capsule:
             "csrf_token": csrf,
             "csrf": csrf
         }
-        data = await AsyncioCurl().request_json("POST", url, headers=config["pcheaders"], data=payload)
+        data = await AsyncioCurl().request_json("POST", url, headers = config["pcheaders"], data = payload)
 
         if data["code"] != 0:
             Log.warning("扭蛋失败,请稍后重试")
