@@ -17,12 +17,15 @@ from AsyncioCurl import AsyncioCurl
 from BasicRequest import BasicRequest
 from Config import *
 from Raffle_Handler import RaffleHandler
+from GuardRaffle import GuardRaffle
 
 
 class GuardRaffleHandler:
 
     @staticmethod
     async def check(real_roomid, raffle_id = None):
+        if GuardRaffle().get_sleep_time():
+            return
         if not await Utils.is_normal_room(real_roomid):
             return
         if raffle_id is not None:
@@ -58,6 +61,8 @@ class GuardRaffleHandler:
 
     @staticmethod
     async def join(num, real_roomid, raffle_id):
+        if GuardRaffle().get_sleep_time():
+            return
         await asyncio.sleep(random.uniform(0.5, min(30, num * 1.3)))
         data = await BasicRequest.guard_req_join(real_roomid, raffle_id)
         if not data["code"]:

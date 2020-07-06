@@ -38,6 +38,8 @@ class StormRaffleHandler:
 
     @staticmethod
     async def join(room_id, raffle_id):
+        if GuardRaffle().get_sleep_time():
+            return
         await BasicRequest.enter_room(room_id)
         data = await BasicRequest.storm_req_join(raffle_id)
         Statistics.add2joined_raffles("节奏风暴(合计)")

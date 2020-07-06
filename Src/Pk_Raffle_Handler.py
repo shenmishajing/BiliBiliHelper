@@ -55,6 +55,8 @@ class PkRaffleHandler:
 
     @staticmethod
     async def join(real_roomid, raffle_id):
+        if GuardRaffle().get_sleep_time():
+            return False
         await BasicRequest.enter_room(real_roomid)
         data = await BasicRequest.pk_req_join(real_roomid, raffle_id)
         Statistics.add2joined_raffles("PK类(合计)")

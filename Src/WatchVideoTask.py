@@ -56,7 +56,7 @@ class WatchVideoTask:
             Log.warning("观看视频模块up主号未配置,已停止...")
         else:
             sleep_time = random.randint(0, 15)
-            Log.info('观看视频前，休眠 %d s，与其他观看任务错时起动' % sleep_time)
+            Log.info('观看视频前，休眠 %d s，与其他观看任务错时启动' % sleep_time)
             await asyncio.sleep(sleep_time)
             await self.watch()
 
