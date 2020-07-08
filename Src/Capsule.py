@@ -6,6 +6,7 @@
 
 import asyncio
 import platform
+import random
 
 if platform.system() == "Windows":
     from Windows_Log import Log
@@ -25,7 +26,7 @@ class Capsule:
 
         while 1:
             sleep_time = GuardRaffle().get_sleep_time()
-            if not sleep_time:
+            if sleep_time == 0:
                 count = await self.info()
                 while count > 0:
                     if count >= 100:
@@ -43,6 +44,7 @@ class Capsule:
                 if not count:
                     await asyncio.sleep(std235959ptm())
             else:
+                sleep_time = abs(sleep_time)
                 Log.info("扭蛋模块退出活动，睡眠 {} s".format(sleep_time))
                 await asyncio.sleep(sleep_time)
 

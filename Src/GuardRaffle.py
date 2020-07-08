@@ -60,9 +60,15 @@ class GuardRaffle:
     def get_sleep_time(self):
         if self.get_run_status():
             if self.black_status == 1:
-                return random.randint(1800, 7200)
+                sleep_time = random.random.randint(1800, 7200)
+                self.sleep_to = time.time() + sleep_time + 600
+                return sleep_time
             elif self.black_status == -1:
-                return -1
+                cur_time = time.time()
+                if cur_time < self.sleep_to:
+                    return cur_time - self.sleep_to
+                else:
+                    return -600
             else:
                 return 0
         else:
