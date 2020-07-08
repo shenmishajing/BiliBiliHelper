@@ -36,6 +36,7 @@ class GuardRaffle:
             cls.instance.award = {}
             cls.instance.last_clear_time = time.time()
             cls.instance.black_status = 0
+            cls.instance.sleep_to = 0
             run_range = config["Raffle_Handler"]["RUN_RANGE"]
             if isinstance(run_range, str):
                 run_range = run_range.split(',')
@@ -57,20 +58,23 @@ class GuardRaffle:
                 return True
         return False
 
-    def get_sleep_time(self):
+    def set_black_status(self):
+        self.black_status = 1
+        sleep_time = random.randint(1800, 7200)
+        self.sleep_to = int(time.time()) + sleep_time
+
+    def try_clear_black_status(self):
+        self.black_status = -1
+
+    def clear_black_status(self):
+        self.black_status = 0
+
+    def get_sleep_time(self, offset = 600):
         if self.get_run_status():
-            if self.black_status == 1:
-                sleep_time = random.random.randint(1800, 7200)
-                self.sleep_to = time.time() + sleep_time + 600
-                return sleep_time
-            elif self.black_status == -1:
-                cur_time = time.time()
-                if cur_time < self.sleep_to:
-                    return cur_time - self.sleep_to
-                else:
-                    return -600
-            else:
+            if self.black_status == 0:
                 return 0
+            else:
+                return self.black_status * (max(self.sleep_to - int(time.time()), 0) + offset)
         else:
             localtime = self.get_localtime()
             for i in range(len(self.run_range)):
@@ -136,7 +140,7 @@ class GuardRaffle:
             else:
                 self.award[data['data']['award_name']] = num
         elif data['code'] == -403 and data['msg'] == "访问被拒绝":
-            self.black_status = 1
+            self.set_black_status()
             Log.error(f"访问被拒绝：{data}，已进入小黑屋")
             return -1
         elif data['code'] == 400 and (data['msg'] == "你已经领取过啦" or data['msg'] == "已经过期啦,下次早点吧"):
@@ -144,7 +148,7 @@ class GuardRaffle:
             pass
         else:
             Log.raffle(f"房间 {OriginRoomId} 编号 {GuardId}  的上船奖励领取出错: {data}")
-        self.black_status = 0
+        self.clear_black_status()
         return 0
 
     async def work(self):
@@ -154,7 +158,7 @@ class GuardRaffle:
         Log.info("开启舰长抽奖")
         while True:
             try:
-                sleep_time = self.get_sleep_time()
+                sleep_time = self.get_sleep_time(0)
                 if sleep_time <= 0:
                     if time.time() - self.last_clear_time > 300:
                         Log.info("清理过期抽奖 ID 缓存")
@@ -172,7 +176,7 @@ class GuardRaffle:
                     self.award = {}
                     Log.info("抽奖模块退出活动，睡眠 {} s".format(sleep_time))
                     await asyncio.sleep(sleep_time)
-                    self.black_status = -1
+                    self.try_clear_black_status()
             except Exception as e:
                 await asyncio.sleep(10)
                 Log.error('出现错误 {}'.format(e))
