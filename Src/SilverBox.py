@@ -13,6 +13,7 @@ else:
 from AsyncioCurl import AsyncioCurl
 from Config import *
 from Base import *
+from GuardRaffle import GuardRaffle
 
 
 class SilverBox:
@@ -27,10 +28,17 @@ class SilverBox:
             return
 
         while 1:
-            if self.task == 0:
-                await self.getTask()
+            sleep_time = GuardRaffle().get_sleep_time()
+            if sleep_time == 0:
+                if self.task == 0:
+                    await self.getTask()
+                else:
+                    await self.openTask()
             else:
-                await self.openTask()
+                self.task = 0
+                sleep_time = abs(sleep_time)
+                Log.info("银瓜子宝箱模块退出活动，睡眠 {} s".format(sleep_time))
+                await asyncio.sleep(sleep_time)
 
     async def openTask(self):
         url = "https://api.live.bilibili.com/mobile/freeSilverAward"
@@ -39,7 +47,7 @@ class SilverBox:
             "time_end": self.time_end
         }
         sign = Sign(payload)
-        data = await AsyncioCurl().request_json("GET", url, params=sign, headers=config["pcheaders"])
+        data = await AsyncioCurl().request_json("GET", url, params = sign, headers = config["pcheaders"])
 
         if data["code"] != 0:
             Log.warning("开启宝箱失败")
@@ -52,7 +60,7 @@ class SilverBox:
 
     async def getTask(self):
         url = "https://api.live.bilibili.com/lottery/v1/SilverBox/getCurrentTask"
-        data = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
+        data = await AsyncioCurl().request_json("GET", url, headers = config["pcheaders"])
 
         if data["code"] == -10017:
             Log.warning(data["message"])
