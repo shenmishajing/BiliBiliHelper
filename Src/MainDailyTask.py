@@ -98,7 +98,6 @@ class MainDailyTask:
                 Log.error("出现错误 %s" % (data["message"]))
 
     async def coin(self):
-        var = 0
         add_coin = 0
         MainDailyTask_Coin = int(config["MainDailyTask"]["Coin"])
         if MainDailyTask_Coin == 0:
@@ -108,8 +107,7 @@ class MainDailyTask:
                 need_coin = MainDailyTask_Coin
             else:
                 need_coin = 5
-        while var <= 5:
-            var = var + 1
+        while add_coin < need_coin:
 
             check_reward_data = await self.Reward_Request()
             Log.info("第一次检查今日已投币： {}".format(check_reward_data["data"]["coins"]))
@@ -131,7 +129,7 @@ class MainDailyTask:
                 Log.warning('下次一定！')
                 return
 
-            Log.info("本次投币任务为第 %s 次执行" % (var))
+            Log.info("本次投币任务为第 %s 次执行" % (add_coin + 1))
             Room_Id = random.choice(config["MainDailyTask"]["ROOM_ID"].split(","))
             Log.info("本次投币选择UP的ID为 %s" % (Room_Id))
             url = "https://api.bilibili.com/x/space/arc/search?ps=100&pn=1&mid=" + str(Room_Id)
@@ -177,10 +175,9 @@ class MainDailyTask:
 
             await asyncio.sleep(3)
 
-        if (var >= 5):
+        if add_coin > 5:
             # 如果执行了5次还没完成任务，那么就是错误，那么就是见鬼了
             Log.warning('投币任务执行5次以上，触发硬币保护（雾 ，退出投币任务')
-            return
 
     async def share(self):
         var = 0
