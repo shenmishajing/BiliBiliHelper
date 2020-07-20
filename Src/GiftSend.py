@@ -106,14 +106,21 @@ class GiftSend:
                         send = True
                         NeedGift = await Utils.value_to_full_intimacy_today(self.roomid)
                         SendGift = each
-                        # 1个亿元相当于10个单位的亲密度，所以要除掉一些
-                        if each["gift_name"] == "亿元":
+                        # 1个亿元相当于10个单位的亲密度
+                        if each["gift_id"] == 6:
                             # 向下取整
                             NeedGift = int(NeedGift / 10)
                             SendGift["gift_num"] = NeedGift
-                        # 判断需要的礼物是否过多，避免浪费
-                        if each["gift_num"] >= NeedGift:
+                        # 1个小心心相当于50个单位的亲密度
+                        elif each["gift_id"] == 30607:
+                            # 向下取整
+                            NeedGift = int(NeedGift / 50)
                             SendGift["gift_num"] = NeedGift
+                        # 辣条和激爽刨冰等1个单位亲密度的礼物
+                        elif each["gift_id"] in [1, 30610]:
+                            SendGift["gift_num"] = NeedGift
+                        else:
+                            continue
                         await self.send(SendGift)
                         await asyncio.sleep(6)
                         status = await Utils.is_intimacy_full_today(self.roomid)
@@ -144,10 +151,10 @@ class GiftSend:
             Log.warning("获取账号信息失败!" + data["message"])
             return 1
         if isinstance(config["GiftSend"]["ROOM_ID"], list):
-            medal_list = config["GiftSend"]["ROOM_ID"]
+            medal_list = [int(medal) for medal in config["GiftSend"]["ROOM_ID"]]
         else:
-            medal_list = config["GiftSend"]["ROOM_ID"].split(", ")
-        medal_list += [medal[0] for medal in await Utils.fetch_medal(False)]
+            medal_list = [int(medal) for medal in config["GiftSend"]["ROOM_ID"].split(", ")]
+        medal_list += [medal[0] for medal in await Utils.fetch_medal(False) if medal[0] not in medal_list]
         while True:
             # 房间轮询
             status = await Utils.is_intimacy_full_today(medal_list[self.index])
