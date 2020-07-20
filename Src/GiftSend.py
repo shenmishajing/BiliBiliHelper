@@ -110,15 +110,15 @@ class GiftSend:
                         if each["gift_id"] == 6:
                             # 向下取整
                             NeedGift = int(NeedGift / 10)
-                            SendGift["gift_num"] = NeedGift
+                            SendGift["gift_num"] = min(NeedGift, each["gift_num"])
                         # 1个小心心相当于50个单位的亲密度
                         elif each["gift_id"] == 30607:
                             # 向下取整
                             NeedGift = int(NeedGift / 50)
-                            SendGift["gift_num"] = NeedGift
+                            SendGift["gift_num"] = min(NeedGift, each["gift_num"])
                         # 辣条和激爽刨冰等1个单位亲密度的礼物
                         elif each["gift_id"] in [1, 30610]:
-                            SendGift["gift_num"] = NeedGift
+                            SendGift["gift_num"] = min(NeedGift, each["gift_num"])
                         else:
                             continue
                         await self.send(SendGift)
