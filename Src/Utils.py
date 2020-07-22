@@ -302,6 +302,14 @@ class Utils:
             if medal["roomid"] == int(roomid):
                 return medal["today_intimacy"] == medal["day_limit"]
 
+    # 获取当前所有勋章亲密度状态
+    @staticmethod
+    async def get_medal_status(list_wanted_mendal = None):
+        data = await BasicRequest.req_fetch_medal()
+        return {medal["roomid"]: {"day_limit": int(medal["day_limit"]), "today_intimacy": int(medal["today_intimacy"])}
+                for medal in data["data"]["fansMedalList"] if
+                list_wanted_mendal is None or medal["roomid"] in list_wanted_mendal}
+
     # 今日还剩多少亲密度可以赠送
     @staticmethod
     async def value_to_full_intimacy_today(roomid):
