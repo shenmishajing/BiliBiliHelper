@@ -125,8 +125,8 @@ class WatchVideoTask:
             }
             data = await AsyncioCurl().request_json("POST", url, headers = config["pcheaders"], data = payload)
 
-            if data["code"]:
-                Log.error("出现错误 %s" % (data["message"]))
+            # if data["code"]:
+            #     Log.error("出现错误 %s" % (data["message"]))
 
             # 分享一下
             url = "https://api.bilibili.com/x/web-interface/share/add"

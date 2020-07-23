@@ -48,33 +48,36 @@ class GiftSend:
             return
 
         while 1:
-            localtime = time.localtime(time.time())
-            if self.mode == 1:
-                if (localtime.tm_mday != self.today and localtime.tm_hour == int(config["GiftSend"]["TIME"])):
-                    status = await self.SendGift()
-                    if status == 2 or status == 25014:
+            try:
+                localtime = time.localtime(time.time())
+                if self.mode == 1:
+                    if (localtime.tm_mday != self.today and localtime.tm_hour == int(config["GiftSend"]["TIME"])):
+                        status = await self.SendGift()
+                        if status == 2 or status == 25014:
+                            self.today = localtime.tm_mday
+                            Log.info("本次定时送礼完成，睡眠到明天")
+                            await asyncio.sleep(std235959ptm())
+                        elif status == 1:
+                            return
+                    await asyncio.sleep(60)
+
+                elif self.mode == 2:
+                    # 判断是否已经到另一天
+                    if localtime.tm_mday != self.today:
                         self.today = localtime.tm_mday
-                        Log.info("本次定时送礼完成，睡眠到明天")
+                    status = await self.SendGift()
+                    if status == 25014:
+                        self.today = localtime.tm_mday
+                        Log.info("本次循环送礼完成，睡眠到明天")
                         await asyncio.sleep(std235959ptm())
+                    elif status in [0, -1]:
+                        SleepTime = int(-float(config["GiftSend"]["TIME"]) * 3600)
+                        Log.info("本次循环送礼完成，睡眠时间 %s s" % SleepTime)
+                        await asyncio.sleep(SleepTime)
                     elif status == 1:
                         return
-                await asyncio.sleep(60)
-
-            elif self.mode == 2:
-                # 判断是否已经到另一天
-                if localtime.tm_mday != self.today:
-                    self.today = localtime.tm_mday
-                status = await self.SendGift()
-                if status == 25014:
-                    self.today = localtime.tm_mday
-                    Log.info("本次循环送礼完成，睡眠到明天")
-                    await asyncio.sleep(std235959ptm())
-                elif status == 0:
-                    SleepTime = int(-float(config["GiftSend"]["TIME"]) * 3600)
-                    Log.info("本次循环送礼完成，睡眠时间 %s s" % SleepTime)
-                    await asyncio.sleep(SleepTime)
-                elif status == 1:
-                    return
+            except Exception as e:
+                Log.error(e)
 
     # 返回值
     # 0 没有异常正常结束
@@ -93,32 +96,30 @@ class GiftSend:
             if data["code"] != 0:
                 Log.warning("背包查看失败!" + data["message"])
             if len(data["data"]["list"]) != 0:
-                medal_status = await Utils.get_medal_status([self.roomid])
-                if medal_status[self.roomid]["today_intimacy"] == 0:
+                medal_status = await Utils.get_medal_light_status([self.roomid])
+                if medal_status[self.roomid] == 0 and any([each["gift_id"] == 30607 for each in data["data"]["list"]]):
                     for each in data["data"]["list"]:
                         IfExpired = each["expire_at"] >= data["data"]["time"] and each["expire_at"] <= data["data"][
                             "time"] + int(config["GiftSend"]["GIFTTiME"])
                         if IfExpired == True or int(config["GiftSend"]["GIFTTiME"]) == -1:
                             send = True
                             SendGift = copy.deepcopy(each)
-                            # 辣条和激爽刨冰等1个单位亲密度的礼物
-                            if each["gift_id"] in [1, 30610]:
+                            # 1个小心心相当于50个单位的亲密度
+                            if each["gift_id"] == 30607:
                                 SendGift["gift_num"] = 1
                             else:
                                 continue
                             await self.send(SendGift)
                             await asyncio.sleep(6)
-                            medal_status = await Utils.get_medal_status([self.roomid])
-                            status = medal_status[self.roomid]["today_intimacy"] != 0
-                            if status:
-                                break
+                            break
                 else:
                     for each in data["data"]["list"]:
                         IfExpired = each["expire_at"] >= data["data"]["time"] and each["expire_at"] <= data["data"][
                             "time"] + int(config["GiftSend"]["GIFTTiME"])
                         if IfExpired == True or int(config["GiftSend"]["GIFTTiME"]) == -1:
-                            send = True
                             NeedGift = await Utils.value_to_full_intimacy_today(self.roomid)
+                            if not medal_status[self.roomid]:
+                                NeedGift -= 50
                             SendGift = copy.deepcopy(each)
                             # 1个亿元相当于10个单位的亲密度
                             if each["gift_id"] == 6:
@@ -126,7 +127,7 @@ class GiftSend:
                                 NeedGift = int(NeedGift / 10)
                                 SendGift["gift_num"] = min(NeedGift, each["gift_num"])
                             # 1个小心心相当于50个单位的亲密度
-                            elif each["gift_id"] == 30607:
+                            elif each["gift_id"] == 30607 and IfExpired:
                                 # 向下取整
                                 NeedGift = int(NeedGift / 50)
                                 SendGift["gift_num"] = min(NeedGift, each["gift_num"])
@@ -135,6 +136,7 @@ class GiftSend:
                                 SendGift["gift_num"] = min(NeedGift, each["gift_num"])
                             else:
                                 continue
+                            send = True
                             await self.send(SendGift)
                             await asyncio.sleep(6)
                             status = await Utils.is_intimacy_full_today(self.roomid)
@@ -157,24 +159,33 @@ class GiftSend:
     # 1 出现异常退出
     # 25014 今日任务已完成
     async def getRoomInfo(self):
-        self.index = 0
         url = "https://api.bilibili.com/x/member/web/account"
         data = await AsyncioCurl().request_json("GET", url, headers = config["pcheaders"])
 
         if "code" in data and data["code"] != 0:
             Log.warning("获取账号信息失败!" + data["message"])
             return 1
-        medal_status = await Utils.get_medal_status()
+
+        self.uid = data["data"]["mid"]
+
+        url = "https://api.live.bilibili.com/gift/v2/gift/bag_list"
+        data = await AsyncioCurl().request_json("GET", url, headers = config["pcheaders"])
+        if data["code"] != 0:
+            Log.warning("背包查看失败!" + data["message"])
+
+        medal_light_status = await Utils.get_medal_light_status()
         if isinstance(config["GiftSend"]["ROOM_ID"], list):
-            medal_list = [int(medal) for medal in config["GiftSend"]["ROOM_ID"] if int(medal) in medal_status]
+            medal_list = [int(medal) for medal in config["GiftSend"]["ROOM_ID"] if int(medal) in medal_light_status]
         else:
             medal_list = [int(medal) for medal in config["GiftSend"]["ROOM_ID"].split(", ") if
-                          int(medal) in medal_status]
+                          int(medal) in medal_light_status]
         medal_list += [medal[0] for medal in await Utils.fetch_medal(False) if medal[0] not in medal_list]
-        if any([medal["today_intimacy"] == 0 for medal in medal_status.values()]):
+        self.index = 0
+        if any([not medal for medal in medal_light_status.values()]) and any(
+                [each["gift_id"] == 30607 for each in data["data"]["list"]]):
             while True:
                 # 房间轮询
-                if medal_status[medal_list[self.index]]["today_intimacy"] != 0:
+                if medal_light_status[medal_list[self.index]] != 0:
                     if len(medal_list) <= self.index + 1:
                         self.index = 0
                     else:
@@ -182,19 +193,23 @@ class GiftSend:
                 else:
                     break
         else:
+            medal_feed_status = await Utils.get_medal_feed_status(medal_list)
             while True:
                 # 房间轮询
-                if medal_status[medal_list[self.index]]["today_intimacy"] == medal_status[medal_list[self.index]][
-                    "day_limit"]:
+                if medal_feed_status[medal_list[self.index]]["today_intimacy"] + (
+                        1 - medal_light_status[medal_list[self.index]]) * 50 >= \
+                        medal_feed_status[medal_list[self.index]][
+                            "day_limit"]:
                     if len(medal_list) <= self.index + 1:
-                        Log.warning("无其他可用房间，休眠到明天...")
-                        return 25014
+                        if any([not medal_light_status[medal] for medal in medal_list]):
+                            return -1
+                        else:
+                            Log.warning("无其他可用房间，休眠到明天...")
+                            return 25014
                     else:
                         self.index += 1
                 else:
                     break
-
-        self.uid = data["data"]["mid"]
 
         url = "https://api.live.bilibili.com/room/v1/Room/get_info"
         payload = {
