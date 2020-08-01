@@ -31,12 +31,10 @@ class Task:
 
             await self.web_info()
             await self.app_info()
-            data = await self.check()
 
-            await self.double_watch_info(data)
             await self.sign_info()
 
-            if len(self.done) >= 2:
+            if len(self.done) >= 1:
                 self.done = []
                 await asyncio.sleep(std235959ptm())
             else:
@@ -44,7 +42,7 @@ class Task:
 
     async def check(self):
         url = "https://api.live.bilibili.com/i/api/taskInfo"
-        data = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
+        data = await AsyncioCurl().request_json("GET", url, headers = config["pcheaders"])
 
         if data["code"] != 0:
             Log.error("每日任务检查失败")
@@ -67,11 +65,11 @@ class Task:
             return
 
         url = "https://api.live.bilibili.com/sign/doSign"
-        data = await AsyncioCurl().request_json("GET", url, headers=config["pcheaders"])
+        data = await AsyncioCurl().request_json("GET", url, headers = config["pcheaders"])
 
         if data["code"] == 0:
             Log.info("「每日签到」成功，您已连续签到 %s 天，获得%s，%s" % (
-            data["data"]["hadSignDays"], data["data"]["text"], data["data"]["specialText"]))
+                data["data"]["hadSignDays"], data["data"]["text"], data["data"]["specialText"]))
             self.done.append("sign_info")
         elif data["code"] == 1011040:
             Log.warning("「每日签到」今日已签到过")
@@ -96,7 +94,7 @@ class Task:
             Log.error(f"{exc}")
 
     async def double_watch_info(self, value):
-        if len(value["data"]["double_watch_info"]) == 0:
+        if len(value["data"]["watch_info"]) == 0:
             return
         if "double_watch_info" in self.done:
             return
@@ -120,7 +118,7 @@ class Task:
             "csrf_token": account["Token"]["CSRF"],
             "csrf": account["Token"]["CSRF"]
         }
-        data = await AsyncioCurl().request_json("POST", url, headers=config["pcheaders"], data=payload)
+        data = await AsyncioCurl().request_json("POST", url, headers = config["pcheaders"], data = payload)
 
         if data["code"] != 0:
             Log.error("「双端观看直播」奖励领取失败")
