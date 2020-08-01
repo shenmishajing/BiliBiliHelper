@@ -6,6 +6,7 @@ import asyncio
 import platform
 import time
 import copy
+import math
 
 if platform.system() == "Windows":
     from Windows_Log import Log
@@ -97,15 +98,16 @@ class GiftSend:
                 Log.warning("背包查看失败!" + data["message"])
             if len(data["data"]["list"]) != 0:
                 medal_status = await Utils.get_medal_light_status([self.roomid])
+                gift_packages = sorted(data["data"]["list"], key = lambda x: x["expire_at"])
                 if medal_status[self.roomid] == 0 and any([each["gift_id"] == 30607 for each in data["data"]["list"]]):
-                    for each in data["data"]["list"]:
-                        IfExpired = each["expire_at"] >= data["data"]["time"] and each["expire_at"] <= data["data"][
+                    for gift in gift_packages:
+                        IfExpired = gift["expire_at"] >= data["data"]["time"] and gift["expire_at"] <= data["data"][
                             "time"] + int(config["GiftSend"]["GIFTTiME"])
                         if IfExpired == True or int(config["GiftSend"]["GIFTTiME"]) == -1:
                             send = True
-                            SendGift = copy.deepcopy(each)
+                            SendGift = copy.deepcopy(gift)
                             # 1个小心心相当于50个单位的亲密度
-                            if each["gift_id"] == 30607:
+                            if gift["gift_id"] == 30607:
                                 SendGift["gift_num"] = 1
                             else:
                                 continue
@@ -113,28 +115,33 @@ class GiftSend:
                             await asyncio.sleep(6)
                             break
                 else:
-                    for each in data["data"]["list"]:
-                        IfExpired = each["expire_at"] >= data["data"]["time"] and each["expire_at"] <= data["data"][
+                    medals = await Utils.fetch_medal(False)
+                    medals_num = len(medals)
+                    for gift in gift_packages:
+                        IfExpired = gift["expire_at"] >= data["data"]["time"] and gift["expire_at"] <= data["data"][
                             "time"] + int(config["GiftSend"]["GIFTTiME"])
                         if IfExpired == True or int(config["GiftSend"]["GIFTTiME"]) == -1:
                             NeedGift = await Utils.value_to_full_intimacy_today(self.roomid)
                             if not medal_status[self.roomid]:
                                 NeedGift -= 50
-                            SendGift = copy.deepcopy(each)
+                            SendGift = copy.deepcopy(gift)
                             # 1个亿元相当于10个单位的亲密度
-                            if each["gift_id"] == 6:
+                            if gift["gift_id"] == 6:
                                 # 向下取整
                                 NeedGift = int(NeedGift / 10)
-                                SendGift["gift_num"] = min(NeedGift, each["gift_num"])
+                                SendGift["gift_num"] = min(NeedGift, gift["gift_num"])
                             # 1个小心心相当于50个单位的亲密度
-                            elif each["gift_id"] == 30607 and IfExpired:
-                                # 向下取整
-                                NeedGift = int(NeedGift / 50)
-                                SendGift["gift_num"] = min(NeedGift, each["gift_num"])
+                            elif gift["gift_id"] == 30607:
+                                heart_num = sum([g["gift_num"] for g in gift_packages if g["gift_id"] == 30607])
+                                # 向上取整
+                                NeedGift = math.ceil(NeedGift / 50)
+                                SendGift["gift_num"] = min(NeedGift, gift["gift_num"], max(0, heart_num - medals_num))
                             # 辣条和激爽刨冰等1个单位亲密度的礼物
-                            elif each["gift_id"] in [1, 30610]:
-                                SendGift["gift_num"] = min(NeedGift, each["gift_num"])
+                            elif gift["gift_id"] in [1, 30610]:
+                                SendGift["gift_num"] = min(NeedGift, gift["gift_num"])
                             else:
+                                continue
+                            if SendGift["gift_num"] < 1:
                                 continue
                             send = True
                             await self.send(SendGift)
